@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="gardenSky" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#76D7C4"/>
+      <stop offset="40%" stop-color="#A9DFBF"/>
+      <stop offset="75%" stop-color="#EDBB99"/>
+      <stop offset="100%" stop-color="#F9E79F"/>
+    </linearGradient>
+
+    <!-- Sun Ray Glow -->
+    <radialGradient id="sunGlow" cx="15%" cy="10%" r="60%">
+      <stop offset="0%" stop-color="#FFF9C4" stop-opacity="0.9"/>
+      <stop offset="35%" stop-color="#FFF176" stop-opacity="0.4"/>
+      <stop offset="70%" stop-color="#FFF" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Soil Gradient -->
+    <linearGradient id="richSoil" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#8D6E63"/>
+      <stop offset="30%" stop-color="#6D4C41"/>
+      <stop offset="100%" stop-color="#3E2723"/>
+    </linearGradient>
+
+    <!-- Flower Petal 3D Gradient -->
+    <radialGradient id="petalGrad" cx="40%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFF59D"/>
+      <stop offset="60%" stop-color="#FBC02D"/>
+      <stop offset="100%" stop-color="#F57F17"/>
+    </radialGradient>
+
+    <!-- Flower Face Gradient -->
+    <radialGradient id="faceGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="70%" stop-color="#FFB300"/>
+      <stop offset="100%" stop-color="#FB8C00"/>
+    </radialGradient>
+
+    <!-- Sprout Stem Gradient -->
+    <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#81C784"/>
+      <stop offset="40%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </linearGradient>
+
+    <!-- Leaf 3D Gradient -->
+    <radialGradient id="leafGrad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#A5D6A7"/>
+      <stop offset="60%" stop-color="#66BB6A"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </radialGradient>
+
+    <!-- Soft Drop Shadow Filter -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#263238" flood-opacity="0.25"/>
+    </filter>
+
+    <!-- Glow Filter -->
+    <filter id="glowFilt" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Sky & Garden Backdrop -->
+  <rect width="600" height="400" fill="url(#gardenSky)"/>
+
+  <!-- Sun Rays & Warm Glow -->
+  <circle cx="80" cy="40" r="280" fill="url(#sunGlow)"/>
+
+  <!-- Soft Dreamy Garden Bokeh / Light Orbs -->
+  <circle cx="480" cy="110" r="38" fill="#FFFDE7" opacity="0.45" filter="url(#glowFilt)"/>
+  <circle cx="530" cy="170" r="22" fill="#E8F8F5" opacity="0.5"/>
+  <circle cx="90" cy="190" r="32" fill="#FFF9C4" opacity="0.35"/>
+  <circle cx="210" cy="80" r="18" fill="#FFFDE7" opacity="0.55"/>
+
+  <!-- Rolling Background Hills -->
+  <path d="M-20,310 Q140,240 320,280 T620,260 L620,400 L-20,400 Z" fill="#81C784" opacity="0.75"/>
+  <path d="M-20,325 Q180,270 420,310 T620,290 L620,400 L-20,400 Z" fill="#66BB6A" opacity="0.85"/>
+
+  <!-- Warm Soil Ground Bed -->
+  <ellipse cx="300" cy="370" rx="350" ry="80" fill="url(#richSoil)" filter="url(#softShadow)"/>
+  <!-- Soil Pebbles & Highlights -->
+  <ellipse cx="210" cy="345" rx="14" ry="7" fill="#A1887F" opacity="0.6"/>
+  <ellipse cx="390" cy="355" rx="18" ry="8" fill="#8D6E63" opacity="0.7"/>
+  <ellipse cx="140" cy="365" rx="10" ry="5" fill="#BCAAA4" opacity="0.5"/>
+  <ellipse cx="460" cy="342" rx="12" ry="6" fill="#A1887F" opacity="0.6"/>
+
+  <!-- Dew-covered Leaves at Base -->
+  <path d="M220,340 Q250,305 300,328 Q260,348 220,340 Z" fill="url(#leafGrad)"/>
+  <path d="M380,340 Q350,305 300,328 Q340,348 380,340 Z" fill="url(#leafGrad)"/>
+
+  <!-- Golden Sprout Stem -->
+  <path d="M292,345 C290,280 304,240 298,195" stroke="url(#stemGrad)" stroke-width="16" stroke-linecap="round" fill="none"/>
+  <path d="M298,280 C260,265 240,240 235,225 C255,225 285,248 296,268" fill="url(#leafGrad)" filter="url(#softShadow)"/>
+  <path d="M300,250 C340,235 365,210 370,195 C350,195 315,218 302,238" fill="url(#leafGrad)" filter="url(#softShadow)"/>
+
+  <!-- Dew Drops on Leaves -->
+  <ellipse cx="250" cy="235" rx="5" ry="4" fill="#E0F7FA" opacity="0.9"/>
+  <ellipse cx="249" cy="234" rx="2" ry="1.5" fill="#FFF"/>
+  <ellipse cx="350" cy="208" rx="5" ry="4" fill="#E0F7FA" opacity="0.9"/>
+  <ellipse cx="349" cy="207" rx="2" ry="1.5" fill="#FFF"/>
+
+  <!-- Flower Head Group with Shadow -->
+  <g filter="url(#softShadow)" transform="translate(0, 5)">
+    <!-- 8 Golden 3D Petals around Center -->
+    <ellipse cx="300" cy="95" rx="24" ry="45" fill="url(#petalGrad)"/>
+    <ellipse cx="345" cy="115" rx="24" ry="45" transform="rotate(45 345 115)" fill="url(#petalGrad)"/>
+    <ellipse cx="365" cy="160" rx="45" ry="24" fill="url(#petalGrad)"/>
+    <ellipse cx="345" cy="205" rx="24" ry="45" transform="rotate(-45 345 205)" fill="url(#petalGrad)"/>
+    <ellipse cx="300" cy="225" rx="24" ry="45" fill="url(#petalGrad)"/>
+    <ellipse cx="255" cy="205" rx="24" ry="45" transform="rotate(45 255 205)" fill="url(#petalGrad)"/>
+    <ellipse cx="235" cy="160" rx="45" ry="24" fill="url(#petalGrad)"/>
+    <ellipse cx="255" cy="115" rx="24" ry="45" transform="rotate(-45 255 115)" fill="url(#petalGrad)"/>
+
+    <!-- Inner Golden Flower Face -->
+    <circle cx="300" cy="160" r="52" fill="url(#faceGrad)"/>
+    <circle cx="300" cy="160" r="52" stroke="#FFE082" stroke-width="3" fill="none" opacity="0.5"/>
+
+    <!-- Catchlight on Forehead -->
+    <ellipse cx="285" cy="135" rx="18" ry="10" fill="#FFF" opacity="0.45"/>
+
+    <!-- Cute Eyes -->
+    <ellipse cx="280" cy="155" rx="9" ry="12" fill="#2E1C0C"/>
+    <circle cx="277" cy="151" r="4.5" fill="#FFF"/>
+    <circle cx="283" cy="160" r="2" fill="#FFF"/>
+
+    <ellipse cx="320" cy="155" rx="9" ry="12" fill="#2E1C0C"/>
+    <circle cx="317" cy="151" r="4.5" fill="#FFF"/>
+    <circle cx="323" cy="160" r="2" fill="#FFF"/>
+
+    <!-- Rosy Cheeks -->
+    <ellipse cx="267" cy="168" rx="9" ry="5.5" fill="#FF5252" opacity="0.45"/>
+    <ellipse cx="333" cy="168" rx="9" ry="5.5" fill="#FF5252" opacity="0.45"/>
+
+    <!-- Happy Smiling Mouth -->
+    <path d="M290,169 Q300,181 310,169" stroke="#5D4037" stroke-width="3.5" stroke-linecap="round" fill="#D32F2F"/>
+    <path d="M294,175 Q300,179 306,175" stroke="#FF8A80" stroke-width="2" stroke-linecap="round" fill="none"/>
+  </g>
+
+  <!-- Tiny Baby Seedling friend sitting on the ground -->
+  <g transform="translate(170, 315)">
+    <ellipse cx="20" cy="20" rx="15" ry="18" fill="#8D6E63" transform="rotate(-15 20 20)"/>
+    <ellipse cx="17" cy="15" rx="11" ry="14" fill="#A1887F" transform="rotate(-15 20 20)"/>
+    <path d="M18,5 Q20,-10 30,-8 Q25,-2 20,4" fill="#81C784"/>
+    <circle cx="16" cy="18" r="2.5" fill="#2E1C0C"/>
+    <circle cx="15" cy="17" r="1" fill="#FFF"/>
+    <circle cx="23" cy="16" r="2.5" fill="#2E1C0C"/>
+    <circle cx="22" cy="15" r="1" fill="#FFF"/>
+    <path d="M17,23 Q20,26 23,23" stroke="#4E342E" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <ellipse cx="13" cy="21" rx="2" ry="1.2" fill="#FF8A80" opacity="0.6"/>
+    <ellipse cx="25" cy="20" rx="2" ry="1.2" fill="#FF8A80" opacity="0.6"/>
+  </g>
+
+  <!-- Floating Sparkles & Gentle Stardust -->
+  <g fill="#FFFDE7" opacity="0.85" filter="url(#glowFilt)">
+    <path d="M440,80 L443,90 L453,93 L443,96 L440,106 L437,96 L427,93 L437,90 Z"/>
+    <path d="M140,130 L142,137 L149,139 L142,141 L140,148 L138,141 L131,139 L138,137 Z"/>
+    <path d="M470,220 L472,226 L478,228 L472,230 L470,236 L468,230 L462,228 L468,226 Z"/>
+  </g>
+</svg>

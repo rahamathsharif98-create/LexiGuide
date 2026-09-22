@@ -1,0 +1,195 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="100%" height="100%">
+  <defs>
+    <!-- Ocean Deep Gradient -->
+    <linearGradient id="oceanDeep" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00ACC1"/>
+      <stop offset="35%" stop-color="#00838F"/>
+      <stop offset="70%" stop-color="#006064"/>
+      <stop offset="100%" stop-color="#00363A"/>
+    </linearGradient>
+
+    <!-- Sunbeam Rays through water -->
+    <linearGradient id="sunBeam" x1="0%" y1="0%" x2="30%" y2="100%">
+      <stop offset="0%" stop-color="#E0F7FA" stop-opacity="0.45"/>
+      <stop offset="50%" stop-color="#80DEEA" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#00838F" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Seabed Sand Gradient -->
+    <linearGradient id="seaFloor" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082"/>
+      <stop offset="40%" stop-color="#FFCA28"/>
+      <stop offset="100%" stop-color="#FFA000"/>
+    </linearGradient>
+
+    <!-- Stella Starfish 3D Gradient -->
+    <radialGradient id="starfishBody" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FF8A80"/>
+      <stop offset="50%" stop-color="#FF5252"/>
+      <stop offset="85%" stop-color="#E53935"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </radialGradient>
+
+    <!-- Pearl Bubble Gradient -->
+    <radialGradient id="pearlBubble" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95"/>
+      <stop offset="30%" stop-color="#E1F5FE" stop-opacity="0.8"/>
+      <stop offset="70%" stop-color="#81D4FA" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#29B6F6" stop-opacity="0.6"/>
+    </radialGradient>
+
+    <!-- Friendly Turtle Shell Gradient -->
+    <radialGradient id="turtleShell" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#A5D6A7"/>
+      <stop offset="60%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </radialGradient>
+
+    <!-- Coral Pink Gradient -->
+    <linearGradient id="coralPink" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FF4081"/>
+      <stop offset="100%" stop-color="#FF80AB"/>
+    </linearGradient>
+
+    <!-- Coral Purple Gradient -->
+    <linearGradient id="coralPurple" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#7E57C2"/>
+      <stop offset="100%" stop-color="#B39DDB"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="seaShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#001E26" flood-opacity="0.4"/>
+    </filter>
+    <filter id="softAura" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Ocean Background -->
+  <rect width="600" height="400" fill="url(#oceanDeep)"/>
+
+  <!-- Magical Sunbeam Light Rays -->
+  <polygon points="120,0 180,0 290,400 170,400" fill="url(#sunBeam)"/>
+  <polygon points="260,0 330,0 490,400 370,400" fill="url(#sunBeam)"/>
+  <polygon points="400,0 450,0 580,400 500,400" fill="url(#sunBeam)"/>
+
+  <!-- Distant Background Reef Hills -->
+  <path d="M-20,330 Q120,290 280,315 T620,295 L620,400 L-20,400 Z" fill="#004D40" opacity="0.6"/>
+
+  <!-- Golden Sandy Ocean Floor -->
+  <path d="M-20,350 Q150,320 340,345 T620,330 L620,400 L-20,400 Z" fill="url(#seaFloor)" filter="url(#seaShadow)"/>
+
+  <!-- Colorful Coral Reef on Left -->
+  <g filter="url(#seaShadow)">
+    <path d="M40,360 Q50,270 70,260 Q80,290 85,360 Z" fill="url(#coralPurple)"/>
+    <path d="M70,360 Q85,240 110,230 Q120,270 120,360 Z" fill="url(#coralPink)"/>
+    <circle cx="110" cy="230" r="10" fill="#FF4081"/>
+    <path d="M100,360 Q125,260 145,250 Q150,300 145,360 Z" fill="#FFAB91"/>
+  </g>
+
+  <!-- Colorful Seaweed & Coral on Right -->
+  <g filter="url(#seaShadow)">
+    <path d="M490,360 Q475,270 495,230 Q515,270 510,360 Z" fill="#69F0AE" opacity="0.85"/>
+    <path d="M520,360 Q540,250 560,240 Q570,290 550,360 Z" fill="url(#coralPink)"/>
+    <circle cx="560" cy="240" r="11" fill="#FF80AB"/>
+    <path d="M455,360 Q440,280 460,260 Q475,300 470,360 Z" fill="url(#coralPurple)"/>
+  </g>
+
+  <!-- Wise Friendly Sea Turtle in the Background Swimming by -->
+  <g transform="translate(390, 80) scale(0.65)" filter="url(#seaShadow)" opacity="0.9">
+    <!-- Flipper back -->
+    <ellipse cx="60" cy="90" rx="35" ry="14" fill="#66BB6A" transform="rotate(35 60 90)"/>
+    <!-- Shell -->
+    <ellipse cx="100" cy="80" rx="55" ry="42" fill="url(#turtleShell)"/>
+    <!-- Shell Pattern hexagons -->
+    <circle cx="95" cy="75" r="14" fill="#2E7D32" opacity="0.6"/>
+    <circle cx="120" cy="85" r="10" fill="#2E7D32" opacity="0.6"/>
+    <circle cx="75" cy="85" r="10" fill="#2E7D32" opacity="0.6"/>
+    <!-- Head -->
+    <circle cx="160" cy="70" r="18" fill="#81C784"/>
+    <circle cx="165" cy="67" r="4" fill="#1B5E20"/>
+    <circle cx="167" cy="65" r="1.5" fill="#FFF"/>
+    <!-- Friendly smile -->
+    <path d="M162,75 Q168,78 172,74" stroke="#1B5E20" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <!-- Front Flipper -->
+    <ellipse cx="125" cy="60" rx="42" ry="16" fill="#81C784" transform="rotate(-30 125 60)"/>
+  </g>
+
+  <!-- Friendly Little Clownfish Friend -->
+  <g transform="translate(90, 140) scale(0.6)" filter="url(#softAura)">
+    <ellipse cx="50" cy="40" rx="32" ry="20" fill="#FF6D00"/>
+    <polygon points="18,40 0,22 0,58" fill="#FF9E80"/>
+    <path d="M40,21 Q45,40 40,59" stroke="#FFF" stroke-width="6" fill="none"/>
+    <circle cx="65" cy="35" r="5" fill="#212121"/>
+    <circle cx="67" cy="33" r="2" fill="#FFF"/>
+    <path d="M72,42 Q76,46 72,50" stroke="#D84315" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- STELLA THE LITTLE STARFISH (Center Hero, 3D and Adorable!) -->
+  <g filter="url(#seaShadow)" transform="translate(290, 230)">
+    <!-- 5 Starfish Arms with 3D rounded contours -->
+    <!-- Top Arm -->
+    <path d="M0,0 C-15,-30 -25,-65 0,-85 C25,-65 15,-30 0,0 Z" fill="url(#starfishBody)"/>
+    <!-- Top Right Arm -->
+    <path d="M0,0 C20,-20 65,-40 85,-20 C70,10 40,20 0,0 Z" fill="url(#starfishBody)"/>
+    <!-- Bottom Right Arm -->
+    <path d="M0,0 C30,15 65,55 45,75 C20,65 10,35 0,0 Z" fill="url(#starfishBody)"/>
+    <!-- Bottom Left Arm -->
+    <path d="M0,0 C-10,35 -20,65 -45,75 C-65,55 -30,15 0,0 Z" fill="url(#starfishBody)"/>
+    <!-- Top Left Arm (Waving cheerfully!) -->
+    <path d="M0,0 C-40,20 -70,10 -85,-20 C-65,-40 -20,-20 0,0 Z" fill="url(#starfishBody)"/>
+
+    <!-- Central Body Core -->
+    <circle cx="0" cy="0" r="38" fill="url(#starfishBody)"/>
+
+    <!-- 3D Surface Suction-Cup Speckles / Golden Dots -->
+    <circle cx="0" cy="-55" r="4.5" fill="#FFE082" opacity="0.9"/>
+    <circle cx="0" cy="-35" r="3.5" fill="#FFE082" opacity="0.8"/>
+    <circle cx="55" cy="-15" r="4.5" fill="#FFE082" opacity="0.9"/>
+    <circle cx="35" cy="-8" r="3.5" fill="#FFE082" opacity="0.8"/>
+    <circle cx="35" cy="48" r="4" fill="#FFE082" opacity="0.9"/>
+    <circle cx="-35" cy="48" r="4" fill="#FFE082" opacity="0.9"/>
+    <circle cx="-55" cy="-15" r="4.5" fill="#FFE082" opacity="0.9"/>
+
+    <!-- Glossy 3D Highlight Curve -->
+    <ellipse cx="-12" cy="-15" rx="14" ry="8" fill="#FFF" opacity="0.35" transform="rotate(-30 -12 -15)"/>
+
+    <!-- Cute Eyes -->
+    <!-- Left Eye -->
+    <ellipse cx="-14" cy="-3" rx="7.5" ry="10" fill="#1A237E"/>
+    <circle cx="-16" cy="-6" r="3.5" fill="#FFF"/>
+    <circle cx="-11" cy="2" r="1.5" fill="#FFF"/>
+
+    <!-- Right Eye -->
+    <ellipse cx="16" cy="-3" rx="7.5" ry="10" fill="#1A237E"/>
+    <circle cx="14" cy="-6" r="3.5" fill="#FFF"/>
+    <circle cx="19" cy="2" r="1.5" fill="#FFF"/>
+
+    <!-- Sweet Rosy Cheeks -->
+    <ellipse cx="-25" cy="8" rx="7" ry="4" fill="#FF1744" opacity="0.5"/>
+    <ellipse cx="27" cy="8" rx="7" ry="4" fill="#FF1744" opacity="0.5"/>
+
+    <!-- Cute Happy Open Smile -->
+    <path d="M-7,7 Q1,18 9,7" stroke="#880E4F" stroke-width="3" stroke-linecap="round" fill="#C2185B"/>
+    <ellipse cx="1" cy="12" rx="4" ry="2.5" fill="#FF80AB"/>
+  </g>
+
+  <!-- Glowing Water Bubbles Drifting Upwards -->
+  <circle cx="210" cy="180" r="16" fill="url(#pearlBubble)" filter="url(#softAura)"/>
+  <circle cx="240" cy="120" r="11" fill="url(#pearlBubble)"/>
+  <circle cx="225" cy="80" r="7" fill="url(#pearlBubble)"/>
+  <circle cx="360" cy="140" r="14" fill="url(#pearlBubble)" filter="url(#softAura)"/>
+  <circle cx="380" cy="90" r="9" fill="url(#pearlBubble)"/>
+  <circle cx="460" cy="190" r="12" fill="url(#pearlBubble)"/>
+  <circle cx="130" cy="270" r="10" fill="url(#pearlBubble)"/>
+
+  <!-- Bioluminescent Stardust Sparkles -->
+  <g fill="#E0F7FA" opacity="0.9" filter="url(#softAura)">
+    <circle cx="180" cy="220" r="2.5"/>
+    <circle cx="330" cy="100" r="3"/>
+    <circle cx="420" cy="240" r="2"/>
+    <circle cx="280" cy="60" r="2.5"/>
+  </g>
+</svg>

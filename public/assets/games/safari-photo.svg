@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="savannaSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="30%" stop-color="#f97316"/>
+      <stop offset="65%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#fef08a"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#savannaSky)"/>
+
+  <circle cx="400" cy="280" r="100" fill="#fffbeb" opacity="0.9"/>
+
+  <g fill="#451a03">
+    <path d="M 160 380 Q 155 310 160 260 Q 110 240 70 230 Q 110 210 160 220 Q 200 200 250 220 Q 210 240 170 260 Z"/>
+    <rect x="155" y="260" width="10" height="140" rx="4"/>
+    <path d="M 650 390 Q 645 330 650 280 Q 600 260 560 250 Q 600 230 650 240 Q 690 220 740 240 Q 700 260 660 280 Z"/>
+    <rect x="645" y="280" width="10" height="120" rx="4"/>
+  </g>
+
+  <path d="M 0 400 Q 400 370 800 400 L 800 600 L 0 600 Z" fill="#78350f"/>
+
+  <g transform="translate(260, 410)">
+    <circle cx="0" cy="0" r="65" fill="#b45309"/>
+    <circle cx="0" cy="0" r="45" fill="#f59e0b"/>
+    <circle cx="-35" cy="-35" r="16" fill="#b45309"/>
+    <circle cx="-35" cy="-35" r="8" fill="#fef3c7"/>
+    <circle cx="35" cy="-35" r="16" fill="#b45309"/>
+    <circle cx="35" cy="-35" r="8" fill="#fef3c7"/>
+    <circle cx="-15" cy="-5" r="6" fill="#1e293b"/>
+    <circle cx="15" cy="-5" r="6" fill="#1e293b"/>
+    <polygon points="0,8 -8,0 8,0" fill="#78350f"/>
+    <ellipse cx="0" cy="20" rx="14" ry="8" fill="#fef3c7"/>
+  </g>
+
+  <g transform="translate(540, 360)">
+    <rect x="-110" y="-80" width="220" height="160" rx="24" fill="#1e293b" stroke="#64748b" stroke-width="6" filter="drop-shadow(0 15px 30px rgba(0,0,0,0.5))"/>
+    <circle cx="0" cy="0" r="55" fill="#0284c7" stroke="#38bdf8" stroke-width="8"/>
+    <circle cx="0" cy="0" r="35" fill="#0c4a6e"/>
+    <ellipse cx="-14" cy="-14" rx="16" ry="8" fill="#ffffff" opacity="0.7" transform="rotate(-35 -14 -14)"/>
+    <path d="M -90 -60 L -75 -60 L -75 -45" stroke="#38bdf8" stroke-width="3" fill="none"/>
+    <path d="M 90 -60 L 75 -60 L 75 -45" stroke="#38bdf8" stroke-width="3" fill="none"/>
+    <path d="M -90 60 L -75 60 L -75 45" stroke="#38bdf8" stroke-width="3" fill="none"/>
+    <path d="M 90 60 L 75 60 L 75 45" stroke="#38bdf8" stroke-width="3" fill="none"/>
+    <rect x="-65" y="90" width="130" height="30" rx="8" fill="#f59e0b"/>
+    <text x="0" y="111" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle">📸 SNAP: L-I-O-N</text>
+  </g>
+</svg>

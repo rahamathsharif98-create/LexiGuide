@@ -1,0 +1,204 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <!-- Sky & Temple Lighting -->
+    <linearGradient id="runnerSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0284c7"/>
+      <stop offset="35%" stop-color="#06b6d4"/>
+      <stop offset="70%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+
+    <!-- Jungle Canopy Silhouettes -->
+    <linearGradient id="jungleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#022c22"/>
+    </linearGradient>
+
+    <!-- Ancient Temple Stone Tracks -->
+    <linearGradient id="trackGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="50%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+
+    <!-- Golden Coin Metallic Gradient -->
+    <radialGradient id="coinGold" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="30%" stop-color="#fef08a"/>
+      <stop offset="60%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </radialGradient>
+
+    <!-- Speed Dash Energy Glow -->
+    <linearGradient id="speedEnergy" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="1"/>
+    </linearGradient>
+
+    <filter id="goldGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="blueGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- 1. Sky & Sunburst -->
+  <rect width="800" height="600" fill="url(#runnerSky)"/>
+  
+  <!-- Glowing Sun / Temple Portal on Horizon -->
+  <circle cx="400" cy="240" r="140" fill="#fef08a" opacity="0.65" filter="url(#goldGlow)"/>
+  <circle cx="400" cy="240" r="70" fill="#ffffff" opacity="0.9"/>
+
+  <!-- Jungle Canopy Vines & Palm Trees on Flanks -->
+  <path d="M 0 0 L 220 0 L 160 220 L 0 280 Z" fill="url(#jungleGrad)"/>
+  <path d="M 800 0 L 580 0 L 640 220 L 800 280 Z" fill="url(#jungleGrad)"/>
+  
+  <!-- Palm Leaves silhouettes -->
+  <path d="M 0 60 Q 140 80 180 160 Q 90 140 0 110 Z" fill="#047857"/>
+  <path d="M 800 60 Q 660 80 620 160 Q 710 140 800 110 Z" fill="#047857"/>
+  <path d="M 0 140 Q 180 170 210 260 Q 110 230 0 200 Z" fill="#065f46"/>
+  <path d="M 800 140 Q 620 170 590 260 Q 690 230 800 200 Z" fill="#065f46"/>
+
+  <!-- Ancient Temple Arch in Center Horizon -->
+  <g transform="translate(400, 240)">
+    <!-- Arch Pillars -->
+    <rect x="-90" y="-120" width="36" height="130" rx="4" fill="#1e293b"/>
+    <rect x="54" y="-120" width="36" height="130" rx="4" fill="#1e293b"/>
+    <!-- Arch Top Lintels -->
+    <polygon points="-110,-120 110,-120 90,-150 -90,-150" fill="#334155"/>
+    <rect x="-80" y="-140" width="160" height="25" rx="3" fill="#475569"/>
+    <!-- Glowing Runes on Arch -->
+    <line x1="-72" y1="-90" x2="-72" y2="-20" stroke="#38bdf8" stroke-width="4" filter="url(#blueGlow)"/>
+    <line x1="72" y1="-90" x2="72" y2="-20" stroke="#38bdf8" stroke-width="4" filter="url(#blueGlow)"/>
+  </g>
+
+  <!-- 2. 3-Lane 3D Perspective Running Track -->
+  <!-- Track Base Polygon -->
+  <polygon points="340,240 460,240 760,600 40,600" fill="url(#trackGrad)"/>
+
+  <!-- Lane Dividers (Glowing Cyan Neon Lines) -->
+  <line x1="380" y1="240" x2="280" y2="600" stroke="#38bdf8" stroke-width="6" stroke-dasharray="25,15" filter="url(#blueGlow)"/>
+  <line x1="420" y1="240" x2="520" y2="600" stroke="#38bdf8" stroke-width="6" stroke-dasharray="25,15" filter="url(#blueGlow)"/>
+  
+  <!-- Outer Track Curbs with Stone Blocks -->
+  <line x1="340" y1="240" x2="40" y2="600" stroke="#f59e0b" stroke-width="12"/>
+  <line x1="460" y1="240" x2="760" y2="600" stroke="#f59e0b" stroke-width="12"/>
+
+  <!-- Speed Dash Motion Lines on Track -->
+  <line x1="200" y1="460" x2="160" y2="520" stroke="#bae6fd" stroke-width="3" opacity="0.6"/>
+  <line x1="600" y1="460" x2="640" y2="520" stroke="#bae6fd" stroke-width="3" opacity="0.6"/>
+  <line x1="350" y1="520" x2="330" y2="570" stroke="#ffffff" stroke-width="4" opacity="0.8"/>
+  <line x1="450" y1="520" x2="470" y2="570" stroke="#ffffff" stroke-width="4" opacity="0.8"/>
+
+  <!-- 3. Floating Gold Letter Coins Along the Track -->
+  <!-- Distant Left Coin: Letter 'A' -->
+  <g transform="translate(365, 290) scale(0.65)" filter="url(#goldGlow)">
+    <circle cx="0" cy="0" r="28" fill="url(#coinGold)" stroke="#ffffff" stroke-width="3"/>
+    <text x="0" y="10" font-family="system-ui, sans-serif" font-size="28" font-weight="900" fill="#78350f" text-anchor="middle">A</text>
+  </g>
+
+  <!-- Mid-distance Right Coin: Letter 'B' -->
+  <g transform="translate(455, 340) scale(0.85)" filter="url(#goldGlow)">
+    <circle cx="0" cy="0" r="32" fill="url(#coinGold)" stroke="#ffffff" stroke-width="3.5"/>
+    <text x="0" y="11" font-family="system-ui, sans-serif" font-size="32" font-weight="900" fill="#78350f" text-anchor="middle">B</text>
+  </g>
+
+  <!-- Foreground Center Coin: Letter 'C' Floating with Sparkles -->
+  <g transform="translate(400, 420)" filter="url(#goldGlow)">
+    <circle cx="0" cy="0" r="44" fill="url(#coinGold)" stroke="#ffffff" stroke-width="4.5"/>
+    <circle cx="0" cy="0" r="36" fill="none" stroke="#fef08a" stroke-width="2" stroke-dasharray="6,4"/>
+    <text x="0" y="15" font-family="system-ui, sans-serif" font-size="44" font-weight="900" fill="#78350f" text-anchor="middle">C</text>
+    <!-- Coin Sparkles -->
+    <polygon points="0,-48 6,-38 18,-36 8,-28 10,-16 0,-24 -10,-16 -8,-28 -18,-36 -6,-38" fill="#ffffff"/>
+    <circle cx="36" cy="-30" r="6" fill="#ffffff"/>
+    <circle cx="-38" cy="30" r="5" fill="#fef08a"/>
+  </g>
+
+  <!-- 4. Hero Runner Fox (Lexi) Leaping In Mid-Air with Dynamic Action Pose -->
+  <g transform="translate(400, 490)">
+    <!-- Speed Trail & Shadow on Ground -->
+    <ellipse cx="0" cy="70" rx="90" ry="18" fill="#000000" opacity="0.45" filter="blur(6px)"/>
+    <!-- Blue Sonic Speed Dash Flame Wave Behind Hero -->
+    <path d="M -80 30 Q 0 -40 80 30 Q 0 50 -80 30 Z" fill="url(#speedEnergy)" opacity="0.8"/>
+    <path d="M -110 50 L -60 30 L -90 20 L -40 10 L -120 0 L -50 -15" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+    <path d="M 110 50 L 60 30 L 90 20 L 40 10 L 120 0 L 50 -15" stroke="#38bdf8" stroke-width="4" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Running Legs with Red Sneakers -->
+    <!-- Left Leg (Kicking Backwards) -->
+    <path d="M -25 15 L -55 35 L -80 30" stroke="#ea580c" stroke-width="14" stroke-linecap="round"/>
+    <!-- Left Sneaker -->
+    <ellipse cx="-85" cy="30" rx="16" ry="10" fill="#ef4444"/>
+    <rect x="-95" cy="35" width="22" height="6" rx="3" fill="#ffffff"/>
+
+    <!-- Right Leg (Forward Knee Thrust) -->
+    <path d="M 20 15 L 45 40 L 40 65" stroke="#ea580c" stroke-width="14" stroke-linecap="round"/>
+    <!-- Right Sneaker -->
+    <ellipse cx="40" cy="70" rx="18" ry="11" fill="#ef4444"/>
+    <rect x="30" cy="76" width="24" height="6" rx="3" fill="#ffffff"/>
+
+    <!-- Big Fluffy Animated Tail with White Tip Streaming in Wind -->
+    <path d="M -30 0 Q -95 -20 -115 -60 Q -75 -70 -25 -25 Z" fill="#ea580c"/>
+    <path d="M -90 -45 Q -115 -60 -115 -60 Q -95 -70 -80 -55 Z" fill="#ffffff"/>
+
+    <!-- Fox Body & Torso with White Bib -->
+    <ellipse cx="0" cy="0" rx="38" ry="42" fill="#ea580c"/>
+    <ellipse cx="0" cy="5" rx="24" ry="28" fill="#ffffff"/>
+
+    <!-- Fluttering Adventurer Scarf -->
+    <path d="M -18 -25 Q -60 -45 -85 -35 Q -55 -20 -15 -18 Z" fill="#0284c7"/>
+    <circle cx="0" cy="-22" r="12" fill="#0369a1"/>
+
+    <!-- Fox Head -->
+    <g transform="translate(0, -50)">
+      <!-- Left & Right Ears -->
+      <polygon points="-32,-15 -48,-65 -15,-35" fill="#ea580c"/>
+      <polygon points="-28,-20 -40,-55 -18,-35" fill="#fed7aa"/>
+      <polygon points="32,-15 48,-65 15,-35" fill="#ea580c"/>
+      <polygon points="28,-20 40,-55 18,-35" fill="#fed7aa"/>
+
+      <!-- Face Shape -->
+      <ellipse cx="0" cy="0" rx="36" ry="30" fill="#ea580c"/>
+      <!-- White Cheeks -->
+      <path d="M -34 5 Q -15 28 0 15 Q 15 28 34 5 Q 0 -5 -34 5 Z" fill="#ffffff"/>
+
+      <!-- Friendly Big Eyes with Sparkles -->
+      <ellipse cx="-13" cy="-3" rx="7" ry="9" fill="#08233a"/>
+      <circle cx="-15" cy="-6" r="3" fill="#ffffff"/>
+      <circle cx="-11" cy="-1" r="1.5" fill="#ffffff"/>
+
+      <ellipse cx="13" cy="-3" rx="7" ry="9" fill="#08233a"/>
+      <circle cx="11" cy="-6" r="3" fill="#ffffff"/>
+      <circle cx="15" cy="-1" r="1.5" fill="#ffffff"/>
+
+      <!-- Cute Black Button Nose -->
+      <ellipse cx="0" cy="11" rx="5" ry="4" fill="#08233a"/>
+      <path d="M -4 16 Q 0 20 4 16" stroke="#08233a" stroke-width="2" fill="none"/>
+    </g>
+
+    <!-- Arms Pumping in Sprint -->
+    <!-- Left Arm -->
+    <path d="M -25 -10 L -45 -25 L -55 -10" stroke="#ea580c" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="-55" cy="-10" r="9" fill="#ffffff"/>
+    <!-- Right Arm Forward -->
+    <path d="M 25 -10 L 48 5 L 60 -12" stroke="#ea580c" stroke-width="11" stroke-linecap="round"/>
+    <circle cx="60" cy="-12" r="9" fill="#ffffff"/>
+  </g>
+
+  <!-- 5. Dynamic Corner Action Badges -->
+  <g transform="translate(40, 45)">
+    <rect x="0" y="0" width="135" height="40" rx="20" fill="#08233a" opacity="0.85"/>
+    <text x="18" y="26" font-family="system-ui, sans-serif" font-size="20">⚡</text>
+    <text x="44" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#38bdf8">ENDLESS RUN</text>
+  </g>
+
+  <g transform="translate(620, 45)">
+    <rect x="0" y="0" width="140" height="40" rx="20" fill="#f59e0b" opacity="0.95" filter="url(#goldGlow)"/>
+    <text x="18" y="26" font-family="system-ui, sans-serif" font-size="20">🪙</text>
+    <text x="44" y="26" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#08233a">COLLECT COINS</text>
+  </g>
+</svg>

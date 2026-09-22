@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bakeryBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdf4ff"/>
+      <stop offset="50%" stop-color="#fae8ff"/>
+      <stop offset="100%" stop-color="#f5d0fe"/>
+    </linearGradient>
+    <linearGradient id="cakePink" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#db2777"/>
+    </linearGradient>
+    <linearGradient id="cakeCyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0284c7"/>
+    </linearGradient>
+    <linearGradient id="cakeYellow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#eab308"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bakeryBg)"/>
+
+  <g opacity="0.25" stroke="#d946ef" stroke-width="1">
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="0" y1="400" x2="800" y2="400"/>
+  </g>
+
+  <rect x="0" y="460" width="800" height="140" fill="#b45309"/>
+  <rect x="0" y="450" width="800" height="20" fill="#d97706" rx="4"/>
+
+  <g transform="translate(400, 410)">
+    <ellipse cx="0" cy="20" rx="160" ry="40" fill="#b45309" opacity="0.3"/>
+    <rect x="-140" y="-40" width="280" height="80" rx="20" fill="url(#cakeYellow)"/>
+    <ellipse cx="0" cy="-40" rx="140" ry="30" fill="#fef08a"/>
+    <path d="M -140 -35 Q -105 -15 -70 -35 Q -35 -15 0 -35 Q 35 -15 70 -35 Q 105 -15 140 -35 L 140 -40 L -140 -40 Z" fill="#ffffff"/>
+    <rect x="-60" y="-15" width="120" height="35" rx="10" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="10" font-family="system-ui, sans-serif" font-size="24" font-weight="900" fill="#854d0e" text-anchor="middle">SUN</text>
+  </g>
+
+  <g transform="translate(400, 310)">
+    <rect x="-100" y="-35" width="200" height="70" rx="16" fill="url(#cakeCyan)"/>
+    <ellipse cx="0" cy="-35" rx="100" ry="22" fill="#7dd3fc"/>
+    <path d="M -100 -30 Q -75 -15 -50 -30 Q -25 -15 0 -30 Q 25 -15 50 -30 Q 75 -15 100 -30 L 100 -35 L -100 -35 Z" fill="#ffffff"/>
+    <rect x="-55" y="-12" width="110" height="32" rx="10" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="11" font-family="system-ui, sans-serif" font-size="22" font-weight="900" fill="#0369a1" text-anchor="middle">FLOW</text>
+  </g>
+
+  <g transform="translate(400, 220)">
+    <rect x="-65" y="-30" width="130" height="60" rx="14" fill="url(#cakePink)"/>
+    <ellipse cx="0" cy="-30" rx="65" ry="16" fill="#f472b6"/>
+    <path d="M -65 -25 Q -45 -12 -25 -25 Q 0 -12 25 -25 Q 45 -12 65 -25 L 65 -30 L -65 -30 Z" fill="#ffffff"/>
+    <rect x="-40" y="-10" width="80" height="30" rx="8" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="12" font-family="system-ui, sans-serif" font-size="20" font-weight="900" fill="#be185d" text-anchor="middle">ER</text>
+    <circle cx="0" cy="-45" r="14" fill="#ef4444"/>
+    <polygon points="0,-55 -8,-45 8,-45" fill="#22c55e"/>
+  </g>
+
+  <g transform="translate(640, 150)">
+    <ellipse cx="0" cy="20" rx="50" ry="18" fill="#cbd5e1"/>
+    <path d="M -45 15 C -60 -20, -20 -50, 0 -30 C 20 -50, 60 -20, 45 15 Z" fill="#ffffff" stroke="#e2e8f0" stroke-width="4"/>
+    <rect x="-35" y="10" width="70" height="20" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="3"/>
+    <text x="0" y="2" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#ec4899" text-anchor="middle">MAGIC</text>
+  </g>
+</svg>

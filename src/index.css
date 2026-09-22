@@ -1,0 +1,819 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Nunito', ui-sans-serif, system-ui, sans-serif;
+
+  /* LexiGuide Core Palette Tokens */
+  --color-lexi-bg: #F2FBFC;
+  --color-lexi-bg-subtle: #E6F8FA;
+  --color-lexi-surface: #FFFFFF;
+  --color-lexi-border: #D7EEF1;
+  --color-lexi-cyan: #13CFE3;
+  --color-lexi-cyan-deep: #0899AA;
+  --color-lexi-cyan-soft: #DDF9FC;
+  --color-lexi-navy: #08233A;
+  --color-lexi-secondary: #527080;
+  --color-lexi-gold: #FFC857;
+  --color-lexi-success: #39B87F;
+  --color-lexi-error: #D95C5C;
+
+  /* Backward-compatible brand shades with LexiGuide Cyan core */
+  --color-brand-50: #F2FBFC;
+  --color-brand-100: #DDF9FC;
+  --color-brand-200: #b8f3fa;
+  --color-brand-300: #7ae7f3;
+  --color-brand-400: #3fd5e6;
+  --color-brand-500: #13CFE3;
+  --color-brand-600: #0899AA;
+  --color-brand-700: #06727f;
+  --color-brand-800: #084c59;
+  --color-brand-900: #08233A;
+
+  /* Semantic Palettes */
+  --color-sun-100: #fff6de;
+  --color-sun-300: #ffe499;
+  --color-sun-500: #FFC857;
+
+  --color-berry-100: #f2e3ff;
+  --color-berry-300: #d6aeff;
+  --color-berry-500: #a86bff;
+
+  --color-mint-100: #e3f8ef;
+  --color-mint-300: #8ee0b7;
+  --color-mint-500: #39B87F;
+
+  --color-peach-100: #ffe6d9;
+  --color-peach-300: #ffbf99;
+  --color-peach-500: #ff8a4c;
+
+  --color-coral-500: #D95C5C;
+
+  --shadow-soft: 0 8px 30px rgba(8, 35, 58, 0.08);
+  --shadow-card: 0 4px 20px rgba(8, 35, 58, 0.06);
+  --shadow-elevated: 0 12px 40px rgba(8, 35, 58, 0.10);
+}
+
+:root {
+  --app-bg: #F2FBFC;
+  --app-surface: #FFFFFF;
+  --primary-cyan: #13CFE3;
+  --deep-cyan: #0899AA;
+  --soft-cyan: #DDF9FC;
+  --deep-navy: #08233A;
+  --text-secondary: #527080;
+  --reward-gold: #FFC857;
+  --border-color: #D7EEF1;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background-color: #F2FBFC;
+  color: #08233A;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.animate-float { animation: float-y 3s ease-in-out infinite; }
+
+@keyframes pop-in {
+  0% { transform: scale(0.85); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-pop { animation: pop-in 0.35s cubic-bezier(.34,1.56,.64,1) both; }
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(255 107 107 / 0.45); }
+  100% { box-shadow: 0 0 0 18px rgb(255 107 107 / 0); }
+}
+.animate-pulse-ring { animation: pulse-ring 1.4s ease-out infinite; }
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, #eef4f8 25%, #f8fbfd 37%, #eef4f8 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Accessibility: prefers-reduced-motion support */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Accessible focus styling for keyboard users */
+:focus-visible {
+  outline: 2px solid #12aeef;
+  outline-offset: 2px;
+}
+
+/* =========================================================================
+   Story Sanctuary Moving VFX - Calming, gentle, magical comfort for children
+   ========================================================================= */
+@keyframes story-sparkle-float-1 {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(0.85);
+    opacity: 0.3;
+  }
+  40% {
+    transform: translateY(-10px) translateX(5px) scale(1.2);
+    opacity: 0.95;
+  }
+  75% {
+    transform: translateY(-18px) translateX(-3px) scale(0.95);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-26px) translateX(3px) scale(0.7);
+    opacity: 0.15;
+  }
+}
+
+@keyframes story-sparkle-float-2 {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(0.9);
+    opacity: 0.25;
+  }
+  35% {
+    transform: translateY(-12px) translateX(-6px) scale(1.25);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-22px) translateX(4px) scale(1);
+    opacity: 0.75;
+  }
+  100% {
+    transform: translateY(-30px) translateX(-2px) scale(0.75);
+    opacity: 0.2;
+  }
+}
+
+@keyframes story-sparkle-float-3 {
+  0% {
+    transform: translateY(0px) translateX(0px) scale(0.8);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-14px) translateX(4px) scale(1.15);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(-28px) translateX(-4px) scale(0.7);
+    opacity: 0.1;
+  }
+}
+
+@keyframes story-aura-pulse {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.75;
+  }
+}
+
+@keyframes story-gentle-bob {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.018);
+  }
+}
+
+@keyframes story-light-sheen {
+  0% {
+    transform: translateX(-160%) skewX(-22deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.65;
+  }
+  30% {
+    transform: translateX(260%) skewX(-22deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(260%) skewX(-22deg);
+    opacity: 0;
+  }
+}
+
+.animate-story-sparkle-1 {
+  animation: story-sparkle-float-1 4.5s ease-in-out infinite;
+}
+
+.animate-story-sparkle-2 {
+  animation: story-sparkle-float-2 5.3s ease-in-out infinite 1.4s;
+}
+
+.animate-story-sparkle-3 {
+  animation: story-sparkle-float-3 4.8s ease-in-out infinite 2.5s;
+}
+
+.animate-story-aura {
+  animation: story-aura-pulse 5.5s ease-in-out infinite;
+}
+
+.animate-story-bob {
+  animation: story-gentle-bob 4.5s ease-in-out infinite;
+}
+
+.animate-story-sheen {
+  animation: story-light-sheen 6.5s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.5s;
+}
+
+/* =========================================================================
+   Unique Story Action Motions (Rocket Fly, Sunflower Sway, Ocean, Fox, Bear)
+   ========================================================================= */
+
+/* 1. Rocket: Blasts / glides upwards towards space */
+@keyframes vfx-rocket-fly {
+  0%, 100% {
+    transform: translateY(6px) translateX(-2px) scale(1.04);
+  }
+  50% {
+    transform: translateY(-12px) translateX(3px) scale(1.08);
+  }
+}
+.animate-vfx-rocket-fly {
+  animation: vfx-rocket-fly 3.4s ease-in-out infinite;
+}
+
+@keyframes vfx-shooting-star {
+  0% {
+    transform: translateX(100px) translateY(-50px) scale(0.3);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  60% {
+    transform: translateX(-140px) translateY(90px) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateX(-220px) translateY(150px) scale(0.2);
+    opacity: 0;
+  }
+}
+.animate-vfx-shooting-star {
+  animation: vfx-shooting-star 3s linear infinite;
+}
+
+@keyframes vfx-thruster-pulse {
+  0%, 100% {
+    transform: scale(0.85) translateY(0);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1.25) translateY(2px);
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(255, 120, 0, 0.95));
+  }
+}
+.animate-vfx-thruster {
+  animation: vfx-thruster-pulse 0.7s ease-in-out infinite;
+}
+
+/* 2. Sunflower: Gentle rhythmic swaying in the warm breeze */
+@keyframes vfx-sunflower-sway {
+  0%, 100% {
+    transform: rotate(-3.5deg) scale(1.04);
+  }
+  50% {
+    transform: rotate(4deg) scale(1.07);
+  }
+}
+.animate-vfx-sunflower-sway {
+  animation: vfx-sunflower-sway 4.2s ease-in-out infinite;
+  transform-origin: 50% 90%;
+}
+
+@keyframes vfx-pollen-float {
+  0% {
+    transform: translateY(20px) translateX(-12px) scale(0.7);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.95;
+  }
+  70% {
+    transform: translateY(-28px) translateX(18px) scale(1.15);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-55px) translateX(30px) scale(0.6);
+    opacity: 0;
+  }
+}
+.animate-vfx-pollen-1 {
+  animation: vfx-pollen-float 4.2s ease-out infinite;
+}
+.animate-vfx-pollen-2 {
+  animation: vfx-pollen-float 5.2s ease-out infinite 1.8s;
+}
+
+/* 3. Curious Fox: Gentle breathing & magical blue crystal pulse */
+@keyframes vfx-fox-curious {
+  0%, 100% {
+    transform: translateY(2px) scale(1.04);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.07);
+  }
+}
+.animate-vfx-fox-curious {
+  animation: vfx-fox-curious 4.5s ease-in-out infinite;
+}
+
+@keyframes vfx-crystal-beacon {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.4;
+    filter: drop-shadow(0 0 6px rgba(19, 207, 227, 0.6));
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    filter: drop-shadow(0 0 16px rgba(19, 207, 227, 1)) drop-shadow(0 0 24px rgba(8, 153, 170, 0.9));
+  }
+}
+.animate-vfx-crystal {
+  animation: vfx-crystal-beacon 2.2s ease-in-out infinite;
+}
+
+@keyframes vfx-firefly-drift {
+  0% {
+    transform: translateY(15px) translateX(0px) scale(0.7);
+    opacity: 0.2;
+  }
+  40% {
+    transform: translateY(-12px) translateX(-10px) scale(1.25);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-32px) translateX(10px) scale(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-52px) translateX(-4px) scale(0.5);
+    opacity: 0;
+  }
+}
+.animate-vfx-firefly-1 {
+  animation: vfx-firefly-drift 4.4s ease-in-out infinite;
+}
+.animate-vfx-firefly-2 {
+  animation: vfx-firefly-drift 5.4s ease-in-out infinite 2s;
+}
+
+/* 4. Lost Starfish: Buoyant underwater bob & rising bubbles */
+@keyframes vfx-ocean-drift {
+  0%, 100% {
+    transform: translateY(4px) rotate(-2deg) scale(1.04);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg) scale(1.07);
+  }
+}
+.animate-vfx-ocean-drift {
+  animation: vfx-ocean-drift 3.8s ease-in-out infinite;
+}
+
+@keyframes vfx-bubble-rise {
+  0% {
+    transform: translateY(40px) translateX(0px) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  80% {
+    transform: translateY(-70px) translateX(10px) scale(1.15);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-110px) translateX(-6px) scale(0.8);
+    opacity: 0;
+  }
+}
+.animate-vfx-bubble-1 {
+  animation: vfx-bubble-rise 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.animate-vfx-bubble-2 {
+  animation: vfx-bubble-rise 4.3s cubic-bezier(0.4, 0, 0.2, 1) infinite 1.3s;
+}
+.animate-vfx-bubble-3 {
+  animation: vfx-bubble-rise 3.1s cubic-bezier(0.4, 0, 0.2, 1) infinite 2.2s;
+}
+
+@keyframes vfx-fish-swim {
+  0% {
+    transform: translateX(-35px) translateY(6px) scale(0.8);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.95;
+  }
+  75% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(250px) translateY(-14px) scale(0.8);
+    opacity: 0;
+  }
+}
+.animate-vfx-fish {
+  animation: vfx-fish-swim 6.5s ease-in-out infinite;
+}
+
+/* 5. Bella the Baking Bear: Sweet aroma steam & gentle warmth */
+@keyframes vfx-bear-bake {
+  0%, 100% {
+    transform: translateY(2px) scale(1.04);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.07);
+  }
+}
+.animate-vfx-bear-bake {
+  animation: vfx-bear-bake 3.6s ease-in-out infinite;
+}
+
+@keyframes vfx-steam-rise {
+  0% {
+    transform: translateY(15px) scale(0.6) rotate(-4deg);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  70% {
+    transform: translateY(-28px) scale(1.2) rotate(6deg);
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-60px) scale(1.5) rotate(-8deg);
+    opacity: 0;
+  }
+}
+.animate-vfx-steam-1 {
+  animation: vfx-steam-rise 3.3s ease-out infinite;
+}
+.animate-vfx-steam-2 {
+  animation: vfx-steam-rise 4.1s ease-out infinite 1.4s;
+}
+
+/* =========================================================================
+   Learn Home Activity Custom Action Motions (Sound, Detective, Trace, Blocks, etc.)
+   ========================================================================= */
+
+/* Sound Safari: Headphone / beat pulse */
+@keyframes vfx-sound-pulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  25% {
+    transform: scale(1.07) rotate(-2deg);
+  }
+  50% {
+    transform: scale(0.98) rotate(1deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(2deg);
+  }
+}
+.animate-vfx-sound-pulse {
+  animation: vfx-sound-pulse 2.8s ease-in-out infinite;
+}
+
+/* Letter Detective: Magnifying glass scanning clue motion */
+@keyframes vfx-detective-search {
+  0%, 100% {
+    transform: translateX(-4px) translateY(2px) rotate(-6deg) scale(1.02);
+  }
+  50% {
+    transform: translateX(4px) translateY(-3px) rotate(6deg) scale(1.06);
+  }
+}
+.animate-vfx-detective-search {
+  animation: vfx-detective-search 3.6s ease-in-out infinite;
+}
+
+/* Trace & Speak: Pencil writing stroke */
+@keyframes vfx-pencil-trace {
+  0%, 100% {
+    transform: translateX(-5px) translateY(3px) rotate(-4deg);
+  }
+  50% {
+    transform: translateX(5px) translateY(-3px) rotate(5deg) scale(1.05);
+  }
+}
+.animate-vfx-pencil-trace {
+  animation: vfx-pencil-trace 3s ease-in-out infinite;
+}
+
+/* Read With Me: Pop-up storybook magical float */
+@keyframes vfx-book-float {
+  0%, 100% {
+    transform: translateY(3px) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.04);
+  }
+}
+.animate-vfx-book-float {
+  animation: vfx-book-float 3.8s ease-in-out infinite;
+}
+
+/* Word Builder: Toy block interlocking bounce */
+@keyframes vfx-blocks-bounce {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-5px) scale(1.06) rotate(-2deg);
+  }
+  70% {
+    transform: translateY(-2px) scale(1.02) rotate(2deg);
+  }
+}
+.animate-vfx-blocks-bounce {
+  animation: vfx-blocks-bounce 2.6s ease-in-out infinite;
+}
+
+/* Picture Match: Camera shutter click gleam */
+@keyframes vfx-camera-snap {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  45% {
+    transform: scale(1.06) rotate(-2deg);
+  }
+  50% {
+    transform: scale(1.1) rotate(0deg);
+  }
+  55% {
+    transform: scale(1.04) rotate(2deg);
+  }
+}
+.animate-vfx-camera-snap {
+  animation: vfx-camera-snap 3.2s ease-in-out infinite;
+}
+
+/* Speak & Shine: Singing microphone rhythm shine */
+@keyframes vfx-mic-shine {
+  0%, 100% {
+    transform: translateY(0px) scale(1) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.07) rotate(2deg);
+  }
+}
+.animate-vfx-mic-shine {
+  animation: vfx-mic-shine 2.4s ease-in-out infinite;
+}
+
+/* Floating musical note drift */
+@keyframes vfx-note-drift {
+  0% {
+    transform: translateY(15px) translateX(0) scale(0.6);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.95;
+  }
+  70% {
+    transform: translateY(-18px) translateX(10px) scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-36px) translateX(18px) scale(0.6);
+    opacity: 0;
+  }
+}
+.animate-vfx-note-1 {
+  animation: vfx-note-drift 3.5s ease-out infinite;
+}
+.animate-vfx-note-2 {
+  animation: vfx-note-drift 4.2s ease-out infinite 1.5s;
+}
+
+/* My Journey Stat Badges: Trophy Shine & Star Glow */
+@keyframes vfx-trophy-shine {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-3px) rotate(-3deg) scale(1.08);
+  }
+  75% {
+    transform: translateY(-2px) rotate(3deg) scale(1.05);
+  }
+}
+.animate-vfx-trophy {
+  animation: vfx-trophy-shine 3.2s ease-in-out infinite;
+}
+
+@keyframes vfx-star-glow {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    filter: drop-shadow(0 0 4px rgba(255, 200, 87, 0.6));
+  }
+  50% {
+    transform: scale(1.14) rotate(6deg);
+    filter: drop-shadow(0 0 14px rgba(255, 200, 87, 0.95)) drop-shadow(0 0 20px rgba(255, 159, 28, 0.8));
+  }
+}
+.animate-vfx-star {
+  animation: vfx-star-glow 2.8s ease-in-out infinite;
+}
+
+/* Cosmic UFO: Bouncy hover & flying saucer tilt */
+@keyframes vfx-ufo-hover {
+  0%, 100% {
+    transform: translateY(2px) rotate(-2.5deg) scale(1.02);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2.5deg) scale(1.06);
+  }
+}
+.animate-vfx-ufo {
+  animation: vfx-ufo-hover 3.2s ease-in-out infinite;
+}
+
+/* Musical Drum: Rhythmic beat bounce */
+@keyframes vfx-drum-bounce {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+  }
+  20% {
+    transform: scale(1.08) rotate(-3deg);
+  }
+  50% {
+    transform: scale(0.96) rotate(2deg);
+  }
+  75% {
+    transform: scale(1.04) rotate(-1deg);
+  }
+}
+.animate-vfx-drum {
+  animation: vfx-drum-bounce 2.2s ease-in-out infinite;
+}
+
+/* Word Train: Playful train chug motion */
+@keyframes vfx-train-chug {
+  0%, 100% {
+    transform: translateX(0px) translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateX(4px) translateY(-3px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateX(-2px) translateY(0px) rotate(-1deg);
+  }
+  75% {
+    transform: translateX(3px) translateY(-2px) rotate(1deg);
+  }
+}
+.animate-vfx-train {
+  animation: vfx-train-chug 2.5s ease-in-out infinite;
+}
+
+@keyframes vfx-runner-dash {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) scale(1);
+  }
+  25% {
+    transform: translateY(-4px) rotate(2deg) scale(1.02);
+  }
+  50% {
+    transform: translateY(-1px) rotate(0deg) scale(1.01);
+  }
+  75% {
+    transform: translateY(-5px) rotate(-2deg) scale(1.03);
+  }
+}
+.animate-vfx-runner-dash {
+  animation: vfx-runner-dash 1.6s ease-in-out infinite;
+}
+
+/* Sky Archer: Smooth air glider soaring */
+@keyframes vfx-archer-float {
+  0%, 100% { transform: translateY(0px) rotate(-1.5deg) scale(1); }
+  50% { transform: translateY(-7px) rotate(2deg) scale(1.03); }
+}
+.animate-vfx-archer-float {
+  animation: vfx-archer-float 3s ease-in-out infinite;
+}
+
+/* Cosmic Miner: Deep space gravitational drift */
+@keyframes vfx-cosmic-drift {
+  0%, 100% { transform: translateY(0px) rotate(0deg) scale(1); }
+  35% { transform: translateY(-6px) rotate(1.5deg) scale(1.03); }
+  70% { transform: translateY(3px) rotate(-1.5deg) scale(0.99); }
+}
+.animate-vfx-cosmic-drift {
+  animation: vfx-cosmic-drift 3.6s ease-in-out infinite;
+}
+
+/* Coral Diver: Submarine gentle ocean currents */
+@keyframes vfx-submarine-bob {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2.5deg) scale(1.02); }
+}
+.animate-vfx-submarine-bob {
+  animation: vfx-submarine-bob 3.4s ease-in-out infinite;
+}
+
+/* Magic Bakery: Fluffy cake bounce */
+@keyframes vfx-bakery-bounce {
+  0%, 100% { transform: scale(1) translateY(0); }
+  30% { transform: scale(1.05, 0.96) translateY(-4px); }
+  60% { transform: scale(0.98, 1.03) translateY(-1px); }
+}
+.animate-vfx-bakery-bounce {
+  animation: vfx-bakery-bounce 2.2s ease-in-out infinite;
+}
+
+/* Dino Fossil: Excitement discovery wobble */
+@keyframes vfx-fossil-rumble {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-1deg) scale(1.02); }
+  75% { transform: translateY(-1px) rotate(1deg) scale(1.01); }
+}
+.animate-vfx-fossil-rumble {
+  animation: vfx-fossil-rumble 2.8s ease-in-out infinite;
+}
+
+/* Cloud Bouncer: Springy cloud jump */
+@keyframes vfx-cloud-jump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-10px) scale(1.06); }
+  70% { transform: translateY(2px) scale(0.97); }
+}
+.animate-vfx-cloud-jump {
+  animation: vfx-cloud-jump 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+/* Voxel Crafter: Isometric block levitation */
+@keyframes vfx-voxel-cube {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(2deg) scale(1.04); }
+}
+.animate-vfx-voxel-cube {
+  animation: vfx-voxel-cube 3s ease-in-out infinite;
+}
+
+/* Safari Photo: Lens focus zoom pulse */
+@keyframes vfx-safari-zoom {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(-1.5deg); }
+}
+.animate-vfx-safari-zoom {
+  animation: vfx-safari-zoom 3.2s ease-in-out infinite;
+}
+
+/* Ancient Labyrinth: Torchlit chamber flame flicker */
+@keyframes vfx-torch-flame {
+  0%, 100% { transform: translateY(0px) scale(1); filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.4)); }
+  50% { transform: translateY(-4px) scale(1.03); filter: drop-shadow(0 0 16px rgba(251, 191, 36, 0.7)); }
+}
+.animate-vfx-torch-flame {
+  animation: vfx-torch-flame 2.5s ease-in-out infinite;
+}
+
+
+
+
+
+

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <radialGradient id="spaceBg" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#020617"/>
+    </radialGradient>
+    <linearGradient id="crystalCyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#67e8f9"/>
+      <stop offset="50%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0e7490"/>
+    </linearGradient>
+    <linearGradient id="crystalPink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="50%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#9d174d"/>
+    </linearGradient>
+    <linearGradient id="crystalAmber" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="50%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <filter id="glowCosmic" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#spaceBg)"/>
+  
+  <g fill="#ffffff">
+    <circle cx="80" cy="80" r="2" opacity="0.9"/>
+    <circle cx="220" cy="120" r="3" opacity="0.7"/>
+    <circle cx="380" cy="60" r="1.5" opacity="0.8"/>
+    <circle cx="650" cy="90" r="2.5" opacity="0.9"/>
+    <circle cx="720" cy="180" r="1.5" opacity="0.6"/>
+    <circle cx="150" cy="220" r="2" opacity="0.8"/>
+    <circle cx="520" cy="140" r="2" opacity="0.9"/>
+  </g>
+
+  <g transform="translate(640, 120)">
+    <circle cx="0" cy="0" r="55" fill="#6366f1"/>
+    <ellipse cx="0" cy="0" rx="95" ry="22" fill="none" stroke="#a5b4fc" stroke-width="8" opacity="0.75" transform="rotate(-18)"/>
+  </g>
+
+  <path d="M 0 420 Q 200 370 450 410 Q 650 430 800 390 L 800 600 L 0 600 Z" fill="#1e293b"/>
+  <ellipse cx="180" cy="460" rx="60" ry="18" fill="#0f172a" opacity="0.8"/>
+  <ellipse cx="580" cy="480" rx="80" ry="22" fill="#0f172a" opacity="0.8"/>
+
+  <g transform="translate(160, 310)" filter="url(#glowCosmic)">
+    <polygon points="0,-80 35,-20 25,60 -25,60 -35,-20" fill="url(#crystalCyan)"/>
+    <polygon points="0,-80 0,60 -25,60 -35,-20" fill="#a5f3fc" opacity="0.4"/>
+    <circle cx="0" cy="0" r="22" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="8" font-family="system-ui, sans-serif" font-size="24" font-weight="900" fill="#0891b2" text-anchor="middle">M</text>
+  </g>
+
+  <g transform="translate(400, 270)" filter="url(#glowCosmic)">
+    <polygon points="0,-100 45,-25 30,80 -30,80 -45,-25" fill="url(#crystalPink)"/>
+    <polygon points="0,-100 0,80 -30,80 -45,-25" fill="#fbcfe8" opacity="0.4"/>
+    <circle cx="0" cy="0" r="28" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="11" font-family="system-ui, sans-serif" font-size="32" font-weight="900" fill="#be185d" text-anchor="middle">O</text>
+  </g>
+
+  <g transform="translate(620, 330)" filter="url(#glowCosmic)">
+    <polygon points="0,-75 35,-15 22,55 -22,55 -35,-15" fill="url(#crystalAmber)"/>
+    <circle cx="0" cy="0" r="22" fill="#ffffff" opacity="0.95"/>
+    <text x="0" y="8" font-family="system-ui, sans-serif" font-size="24" font-weight="900" fill="#b45309" text-anchor="middle">N</text>
+  </g>
+
+  <g transform="translate(380, 470)" filter="drop-shadow(0 15px 25px rgba(0,0,0,0.6))">
+    <rect x="-70" y="-35" width="140" height="45" rx="14" fill="#38bdf8"/>
+    <rect x="-45" y="-65" width="90" height="35" rx="12" fill="#0284c7"/>
+    <ellipse cx="-5" cy="-50" rx="35" ry="20" fill="#bae6fd" opacity="0.85"/>
+    <circle cx="-15" cy="-52" r="8" fill="#ffffff" opacity="0.8"/>
+    <circle cx="-55" cy="20" r="25" fill="#334155" stroke="#64748b" stroke-width="8"/>
+    <circle cx="55" cy="20" r="25" fill="#334155" stroke="#64748b" stroke-width="8"/>
+    <polygon points="70,-10 220,-40 220,50 70,10" fill="#fef08a" opacity="0.25"/>
+  </g>
+</svg>

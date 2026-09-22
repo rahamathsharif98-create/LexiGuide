@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="twilightSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="40%" stop-color="#1e1b4b"/>
+      <stop offset="80%" stop-color="#2e1065"/>
+      <stop offset="100%" stop-color="#064e3b"/>
+    </linearGradient>
+
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fef08a" stop-opacity="1"/>
+      <stop offset="50%" stop-color="#fef08a" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="dewGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="1"/>
+      <stop offset="70%" stop-color="#0284c7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0369a1" stop-opacity="0.2"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Twilight Sky Background -->
+  <rect width="800" height="600" fill="url(#twilightSky)"/>
+
+  <!-- Glowing Moon -->
+  <circle cx="400" cy="120" r="140" fill="url(#moonGlow)"/>
+  <circle cx="400" cy="120" r="60" fill="#fef08a"/>
+
+  <!-- Twinkling Ambient Stars -->
+  <circle cx="120" cy="80" r="2.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="220" cy="140" r="3.5" fill="#fde047" opacity="0.9"/>
+  <circle cx="680" cy="90" r="2.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="730" cy="180" r="3.5" fill="#fde047" opacity="0.9"/>
+  <circle cx="90" cy="240" r="2" fill="#ffffff" opacity="0.7"/>
+  <circle cx="710" cy="270" r="2" fill="#ffffff" opacity="0.7"/>
+
+  <!-- Mossy Forest Wooden Frame -->
+  <path d="M 40 600 Q 60 250 80 0" stroke="#292524" stroke-width="50" fill="none" stroke-linecap="round"/>
+  <path d="M 760 600 Q 740 250 720 0" stroke="#292524" stroke-width="50" fill="none" stroke-linecap="round"/>
+  <path d="M 50 40 Q 400 90 750 40" stroke="#1c1917" stroke-width="40" fill="none" stroke-linecap="round"/>
+
+  <!-- Concentric Geometric Web Rings -->
+  <polygon points="400,220 490,260 520,340 480,410 400,440 320,410 280,340 310,260" stroke="#c4b5fd" stroke-width="2.5" fill="none" opacity="0.5"/>
+  <polygon points="400,160 550,210 590,340 540,460 400,500 260,460 210,340 250,210" stroke="#c4b5fd" stroke-width="2.5" fill="none" opacity="0.6"/>
+  <polygon points="400,90 620,160 670,340 600,520 400,570 200,520 130,340 180,160" stroke="#c4b5fd" stroke-width="3" fill="none" opacity="0.7"/>
+
+  <!-- Web Radial Spokes -->
+  <line x1="400" y1="340" x2="400" y2="70" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="680" y2="150" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="720" y2="340" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="640" y2="530" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="400" y2="580" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="160" y2="530" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="80" y2="340" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+  <line x1="400" y1="340" x2="120" y2="150" stroke="#e0e7ff" stroke-width="3" opacity="0.65"/>
+
+  <!-- Glowing Dewdrops -->
+  <circle cx="490" cy="260" r="9" fill="url(#dewGlow)"/>
+  <circle cx="520" cy="340" r="9" fill="url(#dewGlow)"/>
+  <circle cx="480" cy="410" r="9" fill="url(#dewGlow)"/>
+  <circle cx="320" cy="410" r="9" fill="url(#dewGlow)"/>
+  <circle cx="280" cy="340" r="9" fill="url(#dewGlow)"/>
+  <circle cx="310" cy="260" r="9" fill="url(#dewGlow)"/>
+
+  <!-- Dewdrop Letter Nodes -->
+  <!-- Node 1: SP -->
+  <g transform="translate(200, 210)">
+    <circle cx="0" cy="0" r="46" fill="#38bdf8" filter="drop-shadow(0 6px 14px rgba(56,189,248,0.4))"/>
+    <circle cx="0" cy="0" r="40" fill="#ffffff"/>
+    <text x="0" y="10" font-family="system-ui, sans-serif" font-size="28" font-weight="900" fill="#0f172a" text-anchor="middle">SP</text>
+  </g>
+
+  <!-- Node 2: IN -->
+  <g transform="translate(600, 210)">
+    <circle cx="0" cy="0" r="46" fill="#34d399" filter="drop-shadow(0 6px 14px rgba(52,211,153,0.4))"/>
+    <circle cx="0" cy="0" r="40" fill="#ffffff"/>
+    <text x="0" y="10" font-family="system-ui, sans-serif" font-size="28" font-weight="900" fill="#0f172a" text-anchor="middle">IN</text>
+  </g>
+
+  <!-- Node 3: WEB -->
+  <g transform="translate(400, 500)">
+    <circle cx="0" cy="0" r="44" fill="#a855f7" filter="drop-shadow(0 6px 14px rgba(168,85,247,0.4))"/>
+    <circle cx="0" cy="0" r="38" fill="#ffffff"/>
+    <text x="0" y="8" font-family="system-ui, sans-serif" font-size="22" font-weight="900" fill="#0f172a" text-anchor="middle">WEB</text>
+  </g>
+
+  <!-- Spinny the Spider Mascot in Center -->
+  <g transform="translate(400, 340)">
+    <!-- Silk hanging thread -->
+    <line x1="0" y1="-80" x2="0" y2="0" stroke="#fef08a" stroke-width="4"/>
+
+    <!-- 8 Cute Legs with Yellow Shoes -->
+    <!-- Left Legs -->
+    <path d="M -25 -5 Q -70 -35 -85 -10" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-88" cy="-8" rx="10" ry="7" fill="#facc15"/>
+    <path d="M -30 10 Q -80 0 -95 20" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-98" cy="22" rx="10" ry="7" fill="#facc15"/>
+    <path d="M -30 25 Q -80 35 -85 55" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-88" cy="57" rx="10" ry="7" fill="#facc15"/>
+    <path d="M -25 40 Q -65 65 -60 80" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="-60" cy="83" rx="10" ry="7" fill="#facc15"/>
+
+    <!-- Right Legs -->
+    <path d="M 25 -5 Q 70 -35 85 -10" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="88" cy="-8" rx="10" ry="7" fill="#facc15"/>
+    <path d="M 30 10 Q 80 0 95 20" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="98" cy="22" rx="10" ry="7" fill="#facc15"/>
+    <path d="M 30 25 Q 80 35 85 55" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="88" cy="57" rx="10" ry="7" fill="#facc15"/>
+    <path d="M 25 40 Q 65 65 60 80" stroke="#7c3aed" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <ellipse cx="60" cy="83" rx="10" ry="7" fill="#facc15"/>
+
+    <!-- Plump Round Body -->
+    <ellipse cx="0" cy="18" rx="46" ry="42" fill="#8b5cf6" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.3))"/>
+    <ellipse cx="0" cy="24" rx="28" ry="24" fill="#c4b5fd"/>
+
+    <!-- Big Cute Disney Eyes -->
+    <!-- Left Eye -->
+    <circle cx="-16" cy="10" r="15" fill="#ffffff"/>
+    <circle cx="-14" cy="11" r="8" fill="#0f172a"/>
+    <circle cx="-11" cy="8" r="3.5" fill="#ffffff"/>
+    <!-- Right Eye -->
+    <circle cx="16" cy="10" r="15" fill="#ffffff"/>
+    <circle cx="14" cy="11" r="8" fill="#0f172a"/>
+    <circle cx="11" cy="8" r="3.5" fill="#ffffff"/>
+
+    <!-- Rosy Cheeks -->
+    <circle cx="-28" cy="24" r="6" fill="#f472b6" opacity="0.7"/>
+    <circle cx="28" cy="24" r="6" fill="#f472b6" opacity="0.7"/>
+
+    <!-- Cheerful Smile -->
+    <path d="M -10 28 Q 0 38 10 28" stroke="#1e1b4b" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- Title Pill Overlay -->
+  <g transform="translate(400, 550)">
+    <rect x="-180" y="-24" width="360" height="48" rx="24" fill="#1e1b4b" stroke="#a855f7" stroke-width="2.5" opacity="0.9"/>
+    <text x="0" y="8" font-family="system-ui, sans-serif" font-size="20" font-weight="900" fill="#facc15" text-anchor="middle">SPINNY'S WEB WEAVER</text>
+  </g>
+</svg>

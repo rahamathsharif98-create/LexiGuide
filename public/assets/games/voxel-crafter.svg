@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="voxelSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#voxelSky)"/>
+
+  <g transform="translate(400, 320)">
+    <polygon points="0,-120 220,-30 0,60 -220,-30" fill="#22c55e" stroke="#16a34a" stroke-width="4"/>
+    <polygon points="-220,-30 0,60 0,180 -220,90" fill="#854d0e" stroke="#713f12" stroke-width="4"/>
+    <polygon points="220,-30 0,60 0,180 220,90" fill="#a16207" stroke="#713f12" stroke-width="4"/>
+
+    <g transform="translate(-110, -50)">
+      <polygon points="0,-40 35,-20 0,0 -35,-20" fill="#fbbf24" stroke="#d97706" stroke-width="2"/>
+      <polygon points="-35,-20 0,0 0,40 -35,20" fill="#b45309" stroke="#78350f" stroke-width="2"/>
+      <polygon points="35,-20 0,0 0,40 35,20" fill="#d97706" stroke="#78350f" stroke-width="2"/>
+      <text x="0" y="-14" font-family="system-ui, sans-serif" font-size="20" font-weight="900" fill="#78350f" text-anchor="middle">C</text>
+    </g>
+
+    <g transform="translate(0, -90)">
+      <polygon points="0,-48 42,-24 0,0 -42,-24" fill="#67e8f9" stroke="#06b6d4" stroke-width="2"/>
+      <polygon points="-42,-24 0,0 0,48 -42,24" fill="#0891b2" stroke="#0e7490" stroke-width="2"/>
+      <polygon points="42,-24 0,0 0,48 42,24" fill="#06b6d4" stroke="#0e7490" stroke-width="2"/>
+      <text x="0" y="-18" font-family="system-ui, sans-serif" font-size="24" font-weight="900" fill="#083344" text-anchor="middle">A</text>
+    </g>
+
+    <g transform="translate(110, -50)">
+      <polygon points="0,-40 35,-20 0,0 -35,-20" fill="#fde047" stroke="#ca8a04" stroke-width="2"/>
+      <polygon points="-35,-20 0,0 0,40 -35,20" fill="#a16207" stroke="#713f12" stroke-width="2"/>
+      <polygon points="35,-20 0,0 0,40 35,20" fill="#ca8a04" stroke="#713f12" stroke-width="2"/>
+      <text x="0" y="-14" font-family="system-ui, sans-serif" font-size="20" font-weight="900" fill="#713f12" text-anchor="middle">T</text>
+    </g>
+
+    <rect x="-80" y="80" width="160" height="44" rx="12" fill="#ffffff" stroke="#38bdf8" stroke-width="4"/>
+    <text x="0" y="110" font-family="system-ui, sans-serif" font-size="22" font-weight="900" fill="#0284c7" text-anchor="middle">CAT 🐱</text>
+  </g>
+</svg>

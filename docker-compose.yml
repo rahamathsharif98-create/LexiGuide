@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: lexiguide-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-readquest}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-readquest_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-readquest}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-readquest} -d ${POSTGRES_DB:-readquest}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: lexiguide-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-readquest}:${POSTGRES_PASSWORD:-readquest_secure_password}@postgres:5432/${POSTGRES_DB:-readquest}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:5173}
+      JWT_SECRET: ${JWT_SECRET:-production-secret-must-be-changed-in-env}
+      API_BASE_URL: ${API_BASE_URL:-http://localhost:8000}
+      AI_MODE: ${AI_MODE:-mock}
+      WHISPER_MODEL_SIZE: ${WHISPER_MODEL_SIZE:-base}
+      MAX_AUDIO_UPLOAD_MB: ${MAX_AUDIO_UPLOAD_MB:-15}
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: lexiguide-frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    restart: unless-stopped
+
+volumes:
+  pgdata:
