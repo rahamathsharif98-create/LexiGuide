@@ -5,11 +5,9 @@
 ---
 
 ### Authors:
-- **[Student 1 Name]** — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  
-- **[Student 2 Name]** — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  
-- **[Student 3 Name]** — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  
-- **[Student 4 Name]** — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  
-
+- **P.Srihitha**                   — Department of Computer Science and Engineering, velagapudi ramakrishna siddhartha engineering college, sahe, vijayawada,                                            Andhrapradesh, India 
+- **Sai Krishna**                   — Department of Computer Science and Engineering, velagapudi ramakrishna siddhartha engineering college, sahe, vijayawada,                                           Andhrapradesh, India
+-  - **shaik rahamath sharif**      — Department of Computer Science and Engineering, velagapudi ramakrishna siddhartha engineering college, sahe, vijayawada,                                            Andhrapradesh, India 
 ---
 
 ## Abstract
