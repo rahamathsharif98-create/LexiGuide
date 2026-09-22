@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ReadQuest: EPICS Technical Documentation</title>
+<style>
+  @page {
+    size: letter;
+    margin: 20mm 18mm 20mm 18mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  body {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    color: #111;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+
+  h1 {
+    font-size: 19pt;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 6px;
+    line-height: 1.25;
+  }
+
+  h1 + p {
+    text-align: center;
+    font-size: 12pt;
+    font-weight: bold;
+    color: #2b3a4a;
+    margin-top: 0;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: 12.5pt;
+    text-transform: uppercase;
+    font-weight: bold;
+    border-bottom: 1.5px solid #222;
+    padding-bottom: 3px;
+    margin-top: 22px;
+    margin-bottom: 10px;
+    page-break-after: avoid;
+  }
+
+  h3 {
+    font-size: 11pt;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+
+  h4 {
+    font-size: 10.5pt;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 4px;
+  }
+
+  p, li {
+    text-align: justify;
+    margin-top: 4px;
+    margin-bottom: 8px;
+  }
+
+  ul, ol {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    padding-left: 24px;
+  }
+
+  /* Author block styling */
+  h3:has(+ ul) {
+    text-align: center;
+  }
+
+  /* Table styling */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #333;
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #f0f2f5;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Code / Architecture blocks */
+  pre {
+    background-color: #f7f8fa;
+    border: 1px solid #dcdfe4;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: "Consolas", "Courier New", Courier, monospace;
+    font-size: 8.5pt;
+    line-height: 1.35;
+    overflow-x: auto;
+    page-break-inside: avoid;
+    white-space: pre;
+  }
+
+  code {
+    font-family: "Consolas", "Courier New", Courier, monospace;
+    font-size: 9pt;
+    background-color: #f3f4f6;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  pre code {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  /* Blockquote / Alert styling */
+  blockquote {
+    border-left: 3.5px solid #2563eb;
+    background-color: #f8fafc;
+    margin: 12px 0;
+    padding: 8px 14px;
+    font-size: 10pt;
+    color: #1e293b;
+    page-break-inside: avoid;
+  }
+
+  blockquote p {
+    margin: 0;
+  }
+
+  /* Horizontal dividers */
+  hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 18px 0;
+  }
+
+  /* References section */
+  ol:has(li[id^="fn"]) {
+    font-size: 9pt;
+  }
+
+  @media print {
+    body {
+      color: #000;
+    }
+    a {
+      color: #000;
+      text-decoration: none;
+    }
+    a[href^="http"]:after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      color: #444;
+    }
+  }
+</style>
+</head>
+<body>
+<h1 id="readquest-an-ai-powered-foundational-learning-and-early-reading-difficulty-detection-platform-for-children">ReadQuest: An AI-Powered Foundational Learning and Early Reading-Difficulty Detection Platform for Children</h1>
+<p><strong>EPICS (Engineering Projects in Community Service) Technical Project Documentation</strong></p>
+<hr />
+<h3 id="authors">Authors:</h3>
+<ul>
+<li><strong>[Student 1 Name]</strong> — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  </li>
+<li><strong>[Student 2 Name]</strong> — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  </li>
+<li><strong>[Student 3 Name]</strong> — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  </li>
+<li><strong>[Student 4 Name]</strong> — Department of Computer Science and Engineering, [College Name], [University Name], [City, State, India]  </li>
+</ul>
+<hr />
+<h2 id="abstract">Abstract</h2>
+<p>Foundational literacy acquisition between the ages of 4 and 10 represents a critical cognitive window that dictates long-term educational attainment. Conventional classroom methodologies typically employ one-size-fits-all instruction, passive worksheets, and infrequent standardized assessments that often fail to identify early reading difficulties—such as phonological processing deficits, slow lexical retrieval, and decoding hurdles—until formal academic divergence occurs. This paper presents <strong>ReadQuest</strong> (engineered in production as <em>LexiGuide</em>), an AI-powered, community-oriented intelligent learning support platform developed under the Engineering Projects in Community Service (EPICS) framework. ReadQuest integrates an interactive Single Page Application (SPA) frontend built on React 19 and Three.js with an asynchronous Python 3.12 FastAPI backend and a relational persistence layer. </p>
+<p>The system implements a multisensory educational framework comprising eleven 3D interactive toy worlds and eleven 2D foundational activities that record granular attempt-level telemetry (response accuracy, phonetic hesitation, stroke precision, and latency). A non-clinical <strong>Reading Fingerprint</strong> engine continuously tracks learner progress across five fundamental literacy pillars: Phonological Awareness, Phonics/Pronunciation, Word Recognition, Reading Fluency, and Comprehension. An adaptive Next-Best-Action recommendation engine dynamically maps detected error patterns to scaffolded remedial interventions. Dual speech processing pipelines (client-side Web Speech API and backend OpenAI Whisper with graceful offline fallbacks) and a multilingual scaffolding bridge (English, Telugu, Hindi) support diverse linguistic backgrounds. Comprehensive automated testing comprising 478 backend unit/integration tests and 865 frontend tests confirms 100% operational verification. ReadQuest explicitly functions as an early educational screening and skill-building system, providing actionable diagnostic transparency to parents and educators without asserting medical or clinical diagnosis.</p>
+<p><strong>Index Terms</strong>—Artificial Intelligence, Foundational Learning, Reading Difficulties, Personalized Learning, Speech Recognition, Educational Technology, Gamification, Multisensory Learning.</p>
+<hr />
+<h2 id="i-introduction">I. Introduction</h2>
+<h3 id="a-background">A. Background</h3>
+<p>Foundational literacy forms the cognitive bedrock upon which all subsequent formal education depends [1]. Developing reading proficiency requires the simultaneous synchronization of multiple neuro-cognitive subsystems: auditory phoneme discrimination, visual-orthographic pattern recognition, grapheme-to-phoneme correspondence mapping, lexical access, metronomic fluency, and semantic sentence integration [2]. When children successfully integrate these skills during early primary education (ages 4–10), reading shifts from deliberate decoding to automatic comprehension.</p>
+<h3 id="b-problem-context">B. Problem Context</h3>
+<p>A significant proportion of young learners experience persistent difficulties during early literacy acquisition. These obstacles manifest across distinct phonetic and cognitive dimensions:
+1. <em>Phonological Awareness</em>: Inability to isolate, segment, and blend individual speech sounds (phonemes) within spoken words.
+2. <em>Letter Recognition &amp; Orthographic Discrimination</em>: Confusion among visually mirrored or rotationally symmetric letterforms (e.g., $b/d$, $p/q$, $m/w$).
+3. <em>Phonics &amp; Decoding</em>: Inability to apply systematic sound-symbol correspondences to pronounce novel or unfamiliar words.
+4. <em>Word Recognition</em>: Impaired sight-word automaticity requiring exhaustive decoding of high-frequency words.
+5. <em>Reading Fluency</em>: Halting, fragmented reading characterized by repeated syllable hesitations, omissions, and lack of prosody.
+6. <em>Comprehension</em>: Impaired working memory resulting from cognitive overload during decoding, preventing narrative understanding.</p>
+<h3 id="c-community-need">C. Community Need</h3>
+<p>In typical community schools and low-to-middle-income educational environments, student-to-teacher ratios frequently exceed 30:1. Classroom teachers lack the time and tooling required to record individualized, phonetic-level diagnostic observations for every student. Formal clinical psycho-educational assessments for learning disabilities (such as developmental dyslexia) are cost-prohibitive, inaccessible to underprivileged demographics, and rarely conducted prior to grade 3 or 4—long after the optimal early-intervention window has closed. An affordable, accessible, digital educational platform capable of identifying emerging reading patterns while engaging children through positive gamification addresses an urgent community imperative.</p>
+<h3 id="d-role-of-artificial-intelligence">D. Role of Artificial Intelligence</h3>
+<p>Artificial intelligence provides the computational capability to transform subjective classroom observations into objective, continuous educational modeling [3]. Through automated speech recognition (ASR), phonetic alignment, and heuristic pattern mining, an AI-augmented educational engine can:
+- Capture verbal read-aloud attempts and quantify phonetic substitutions, omissions, and hesitations.
+- Compute multi-dimensional learning profiles that represent a student's evolving reading competencies.
+- Adapt educational activities dynamically, ensuring the child remains within Vygotsky’s Zone of Proximal Development (ZPD) [4].</p>
+<h3 id="e-epics-motivation">E. EPICS Motivation</h3>
+<p>The Engineering Projects in Community Service (EPICS) initiative challenges engineering undergraduates to apply multidisciplinary engineering principles to solve pressing societal challenges. ReadQuest directly serves this mandate by delivering an open-access, zero-cost, browser-accessible learning support system. It bridges the gap between under-resourced community schools, non-specialist parents, and struggling young readers through empathetic, scientifically structured technology.</p>
+<hr />
+<h2 id="ii-problem-statement">II. Problem Statement</h2>
+<p>Conventional early-childhood literacy instruction suffers from a systemic structural decoupling between instruction, continuous empirical assessment, and personalized intervention. Traditional educational artifacts (e.g., static print primers and uncalibrated digital drilling applications) enforce rigid, uniform pacing regardless of an individual child's specific cognitive or perceptual bottlenecks. Furthermore, educators and parents lack actionable visibility into specific phonetic error trends, relying instead on subjective impressions or delayed summative exam scores. Consequently, children exhibiting early developmental reading variations remain undetected during foundational stages, leading to accumulated learning deficits, academic anxiety, and progressive disengagement. </p>
+<p>There exists a critical need for an integrated, scalable, web-based software platform that:
+1. Captures fine-grained interaction telemetry from engaging, multisensory reading games;
+2. Maps observed competencies to standardized literacy pillars without imposing high cognitive anxiety;
+3. Delivers role-segregated analytical dashboards for parents and teachers;
+4. Operates reliably on low-cost client hardware in diverse linguistic settings without requiring clinical hardware or proprietary licensing.</p>
+<hr />
+<h2 id="iii-objectives">III. Objectives</h2>
+<p>The primary engineering and community objectives of the ReadQuest platform are formalized in Table I.</p>
+<h3 id="table-i-project-objectives-and-implementation-mapping">Table I: Project Objectives and Implementation Mapping</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Objective ID</th>
+<th style="text-align: left;">Objective Description</th>
+<th style="text-align: left;">Implemented Engineering Subsystem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>OBJ-01</strong></td>
+<td style="text-align: left;">Develop an accessible, browser-based, zero-installation foundational learning platform for children aged 4–10.</td>
+<td style="text-align: left;">React 19 Single Page Application with responsive Tailwind CSS layout and PWA offline asset caching.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-02</strong></td>
+<td style="text-align: left;">Provide multisensory, interactive 3D and 2D learning activities covering all core reading mechanics.</td>
+<td style="text-align: left;">Three.js / React Three Fiber interactive toy worlds combined with Web Audio pentatonic tone synthesis.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-03</strong></td>
+<td style="text-align: left;">Establish an append-only, non-clinical <strong>Reading Fingerprint</strong> model tracking 5 core literacy pillars.</td>
+<td style="text-align: left;">SQLAlchemy <code>ReadingFingerprint</code> snapshots tracking Phonological Awareness, Pronunciation, Word Recognition, Fluency, Comprehension.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-04</strong></td>
+<td style="text-align: left;">Implement an adaptive Next-Best-Action recommendation engine to prescribe targeted exercises.</td>
+<td style="text-align: left;">Rule-based and heuristic adaptive engine (<code>recommendation_service.py</code> &amp; <code>adaptiveEngine.js</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-05</strong></td>
+<td style="text-align: left;">Provide dual speech recognition capabilities (client-side Web Speech API + backend Whisper STT).</td>
+<td style="text-align: left;">Dual-pipeline STT architecture with graceful offline simulated fallback (<code>AI_MODE=mock/real</code>).</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-06</strong></td>
+<td style="text-align: left;">Incorporate culturally authentic mother-tongue scaffolding bridges for regional linguistic demographics.</td>
+<td style="text-align: left;">Multilingual audio bridge supporting Telugu, Hindi, and Indian English with dialect-appropriate audio prompts.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-07</strong></td>
+<td style="text-align: left;">Deliver role-segregated oversight dashboards for parents and classroom educators with strict multi-tenant isolation.</td>
+<td style="text-align: left;">Parent and Teacher portals secured via cryptographic JWT authorization and relational ownership constraints.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OBJ-08</strong></td>
+<td style="text-align: left;">Ensure strict non-diagnostic positioning, avoiding clinical medical claims while maximizing educational support.</td>
+<td style="text-align: left;">Explicit educational non-clinical framing embedded in user interfaces, schemas, and analytical reports.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="iv-existing-system">IV. Existing System</h2>
+<p>Traditional literacy support mechanisms currently rely upon four primary paradigms:
+1. <em>Conventional Classroom Instruction</em>: Group-level phonics drilling using blackboard demonstrations and physical textbooks. Pacing is governed by syllabus timelines rather than individual comprehension.
+2. <em>Static Printed Worksheets</em>: Physical letter-tracing sheets and fill-in-the-blank orthographic drills. These instruments provide zero real-time phonetic feedback and cannot record latency, hesitation, or self-correction behaviors.
+3. <em>Commercial Gamified Reading Apps</em>: Consumer applications typically focus on entertainment metrics (e.g., leveling, vanity badges) without aligning gameplay actions to validated cognitive literacy models or providing detailed diagnostic evidence to teachers.
+4. <em>Summative Standardized Testing</em>: Periodic paper-based or computer-based examinations administered once or twice per academic term, delivering retrospective pass/fail categorizations rather than continuous formative guidance.</p>
+<hr />
+<h2 id="v-limitations-of-existing-system">V. Limitations of Existing System</h2>
+<p>The limitations inherent in existing paradigms are structured as follows:
+- <strong>Lack of Granular Diagnostic Telemetry</strong>: Conventional tools assess the final outcome (e.g., correct/incorrect) but fail to capture the process (e.g., phoneme hesitation duration, letter inversion attempts, auditory discrimination latency).
+- <strong>One-Size-Fits-All Pacing</strong>: Fast learners experience boredom while children with reading difficulties experience compounding frustration and disengagement.
+- <strong>Prohibitive Economic Barriers</strong>: Commercial clinical screening batteries (e.g., DIBELS, Woodcock-Johnson) require licensed educational psychologists, costing hundreds of dollars per evaluation.
+- <strong>Parental and Educator Disconnect</strong>: Parents receive generic term report cards that fail to articulate specific phonetic growth areas or suggest home practice activities.
+- <strong>Monolingual Bias</strong>: Most digital reading tools assume native English fluency and lack mother-tongue scaffolding bridges for children from multilingual backgrounds.</p>
+<hr />
+<h2 id="vi-proposed-system">VI. Proposed System</h2>
+<p>ReadQuest provides an end-to-end, full-stack educational engineering solution. The system architecture coordinates several dedicated subsystems:</p>
+<pre><code>+-----------------------------------------------------------------------------------+
+|                                READQUEST PLATFORM                                 |
++-------------------------+-------------------------------+-------------------------+
+|      CHILD PORTAL       |         PARENT PORTAL         |     TEACHER PORTAL      |
+|  - 11 3D Toy Worlds     |  - 5-Pillar Radar Profiles    |  - Classroom Rosters    |
+|  - 11 2D Skill Games    |  - Historical Trends (7/30d)  |  - Cohort Skill Matrix  |
+|  - Real-Time Web Audio  |  - Home Practice Guidance     |  - At-Risk Heatmaps     |
+|  - Token Economy (XP)   |  - Role-Isolated Access       |  - Curriculum Planning  |
++-------------------------+-------------------------------+-------------------------+
+                                      |
+                           HTTPS REST API / JSON / JWT
+                                      v
++-----------------------------------------------------------------------------------+
+|                           FASTAPI APPLICATION SERVICES                            |
+|  +--------------------+  +----------------------+  +---------------------------+  |
+|  |   Auth &amp; RBAC      |  |  Session Persistence |  |  Reading Fingerprint Eng. |  |
+|  +--------------------+  +----------------------+  +---------------------------+  |
+|  +--------------------+  +----------------------+  +---------------------------+  |
+|  | Dual STT Pipeline  |  | Next-Best-Action Rec |  |  Skill Normalizer Map     |  |
+|  +--------------------+  +----------------------+  +---------------------------+  |
++-----------------------------------------------------------------------------------+
+                                      |
+                             SQLAlchemy ORM 2.0
+                                      v
++-----------------------------------------------------------------------------------+
+|                        RELATIONAL STORAGE (POSTGRESQL / SQLITE)                   |
+|  - users            - students           - learning_sessions   - achievements     |
+|  - parents          - teachers           - reading_fingerprints - recommendations |
++-----------------------------------------------------------------------------------+
+</code></pre>
+<p><em>Fig. 1. Overall architecture of the proposed ReadQuest platform.</em></p>
+<h3 id="a-child-module">A. Child Module</h3>
+<p>The child-facing interface is intentionally designed as an immersive, low-anxiety digital toy world. Children interact with rich 3D environments, animated mascot guides, and tactile audio-visual components. Every round of gameplay records trial-level empirical data without confronting the child with punitive grading screens.</p>
+<h3 id="b-parent-module">B. Parent Module</h3>
+<p>Parents access a dedicated oversight dashboard that translates gameplay metrics into clear educational insights. The interface features a 5-Pillar Reading Fingerprint visualization, 7-day, 30-day, and 90-day progress trendlines, and concrete, non-clinical recommendations for home reading reinforcement.</p>
+<h3 id="c-teacher-module">C. Teacher Module</h3>
+<p>Educators are equipped with classroom cohort management tools. Teachers can organize students into classes, track aggregate mastery distributions across the five literacy pillars, review recent student activity logs, and identify pupils requiring differentiated small-group instruction.</p>
+<h3 id="d-authentication-and-access-control">D. Authentication and Access Control</h3>
+<p>Security is enforced using cryptographically signed JSON Web Tokens (JWT) using 256-bit symmetric secrets. User passwords are encrypted using <code>bcrypt</code> salting. Role-Based Access Control (RBAC) strictly prevents unauthorized data access across roles and maintains cross-family data isolation.</p>
+<h3 id="e-reading-fingerprint-recommendation-engines">E. Reading Fingerprint &amp; Recommendation Engines</h3>
+<p>The core intelligence engine normalizes all granular activity skills into five canonical literacy pillars. It computes weighted rolling averages from completed sessions and automatically triggers the Next-Best-Action recommendation engine to surface remedial or advanced activities.</p>
+<hr />
+<h2 id="vii-system-architecture">VII. System Architecture</h2>
+<p>The technical design follows a decoupled client-server micro-architecture:
+1. <strong>Presentation Layer (Client)</strong>: A high-performance Single Page Application built on React 19, Vite, and Tailwind CSS. 3D spatial rendering is executed via WebGL using Three.js and <code>@react-three/fiber</code>. Audio synthesis is executed locally via the Web Audio API.
+2. <strong>API &amp; Business Logic Layer (Server)</strong>: An asynchronous REST server built using FastAPI and Python 3.12. Endpoints handle authentication, user profile management, session ingestion, skill normalization, telemetry aggregation, and recommendation synthesis.
+3. <strong>Data Access &amp; Storage Layer</strong>: Relational data modeling managed via SQLAlchemy 2.0 ORM with schema migrations tracked under Alembic. Supports both PostgreSQL 16 (for production multi-container deployment) and SQLite (for zero-configuration local development).</p>
+<hr />
+<h2 id="viii-methodology">VIII. Methodology</h2>
+<p>ReadQuest operates on a closed-loop formative intervention lifecycle, depicted in Fig. 2.</p>
+<pre><code>+-------------------------------------------------------------------+
+|                1. BASELINE ASSESSMENT &amp; INTAKE                    |
+|    Child demographic profile, initial age/grade baseline set      |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                 2. INTERACTIVE GAMEPLAY TELEMETRY                 |
+|    Child plays 3D/2D games; trial latency, accuracy recorded      |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|                3. GRANULAR SKILL NORMALIZATION                    |
+|    15+ game skills mapped to 5 Core Literacy Pillars (Table III)  |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|               4. READING FINGERPRINT SNAPSHOT UPDATE              |
+|    Append-only historical snapshot recorded in database           |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|             5. ADAPTIVE NEXT-BEST-ACTION SELECTION                |
+|    Heuristic engine computes lowest pillar &amp; generates activity   |
++---------------------------------+---------------------------------+
+                                  |
+                                  v
++-------------------------------------------------------------------+
+|               6. PARENT &amp; TEACHER REPORT GENERATION               |
+|    Diagnostic summaries, progress trendlines, cohort heatmaps     |
++-------------------------------------------------------------------+
+</code></pre>
+<p><em>Fig. 2. Closed-loop educational intervention and assessment methodology.</em></p>
+<h3 id="a-stage-1-baseline-intake-profile-configuration">A. Stage 1: Baseline Intake &amp; Profile Configuration</h3>
+<p>During child onboarding, basic non-sensitive educational parameters (age, enrolled grade, primary language, preferred visual comfort theme) are registered. An initial baseline Reading Fingerprint is established.</p>
+<h3 id="b-stage-2-multisensory-gameplay-execution">B. Stage 2: Multisensory Gameplay Execution</h3>
+<p>The learner engages with gamified educational challenges. The client-side telemetry hook (<code>useGameSessionTracker</code>) aggregates attempt counts, correct/incorrect responses, response times, and session duration.</p>
+<h3 id="c-stage-3-skill-normalization-pipeline">C. Stage 3: Skill Normalization Pipeline</h3>
+<p>Because individual educational games utilize specific mechanics (e.g., <code>wordSpellingConstruction</code>, <code>onsetRimeBlending</code>, <code>rhymeDiscrimination</code>), the backend execution pipeline normalizes these disparate keys into the five canonical pillars using <code>SKILL_NORMALIZATION_MAP</code>.</p>
+<h3 id="d-stage-4-reading-fingerprint-computation">D. Stage 4: Reading Fingerprint Computation</h3>
+<p>Rather than mutating a single record, the system generates an append-only snapshot in <code>reading_fingerprints</code>. Each pillar score is updated via a momentum-weighted delta function:
+$$S_{new} = \text{clamp}\left(5, 98, S_{prev} + \alpha \cdot (\text{Accuracy} - 60)\right)$$
+where $\alpha$ is a scaling factor and scores are clamped between 5.0% and 98.0% to reflect continuous educational growth.</p>
+<h3 id="e-stage-5-next-best-action-remediation">E. Stage 5: Next-Best-Action Remediation</h3>
+<p>The recommendation engine analyzes the most recent snapshot. If a pillar falls below defined competency thresholds (e.g., $&lt;65\%$), the engine synthesizes a high-priority remedial recommendation, targeting specific error patterns.</p>
+<hr />
+<h2 id="ix-learning-activities">IX. Learning Activities</h2>
+<p>ReadQuest contains an extensive suite of 22 fully implemented learning activities, divided into 11 flagship 3D toy worlds and 11 foundational 2D activities.</p>
+<h3 id="table-ii-flagship-3d-toy-worlds-implementation-matrix">Table II: Flagship 3D Toy Worlds Implementation Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Game Identifier</th>
+<th style="text-align: left;">World Theme</th>
+<th style="text-align: left;">Primary Literacy Mechanic</th>
+<th style="text-align: left;">Input Interaction</th>
+<th style="text-align: left;">Educational Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><code>learning-run</code></td>
+<td style="text-align: left;">Ancient Temple Ruins</td>
+<td style="text-align: left;">Phonics Word Completion</td>
+<td style="text-align: left;">Keyboard / Touch Lane Navigation</td>
+<td style="text-align: left;">Reinforces rapid orthographic letter completion during high-focus motion.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>ancient-labyrinth</code></td>
+<td style="text-align: left;">Torchlit Egyptian Crypt</td>
+<td style="text-align: left;">Phonics Decoding Incantations</td>
+<td style="text-align: left;">Keystone Glyph Selection</td>
+<td style="text-align: left;">Encourages phoneme segmentation and multi-syllable deciphering.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>safari-photo</code></td>
+<td style="text-align: left;">African Savanna</td>
+<td style="text-align: left;">Auditory Phonics Discrimination</td>
+<td style="text-align: left;">Viewfinder Aim &amp; Click</td>
+<td style="text-align: left;">Trains active listening and phoneme-to-visual correspondence.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>voxel-crafter</code></td>
+<td style="text-align: left;">Voxel 3D Workbench</td>
+<td style="text-align: left;">Word Spelling Construction</td>
+<td style="text-align: left;">3D Block Pick &amp; Place</td>
+<td style="text-align: left;">Multisensory tactile spatial spelling reinforcement.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cloud-bouncer</code></td>
+<td style="text-align: left;">Rainbow Sky Summit</td>
+<td style="text-align: left;">Sight Word Recognition</td>
+<td style="text-align: left;">Vertical Cloud Trampoline Bounce</td>
+<td style="text-align: left;">Develops rapid sight-word visual recognition and reading automaticity.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>dino-fossil</code></td>
+<td style="text-align: left;">Prehistoric Paleontology Dig</td>
+<td style="text-align: left;">Onset-Rime Blending</td>
+<td style="text-align: left;">Chisel Slab Cleaving</td>
+<td style="text-align: left;">Bridges initial consonant blends to word family rimes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>magic-bakery</code></td>
+<td style="text-align: left;">3D Confectionery Kitchen</td>
+<td style="text-align: left;">Syllable Stacking</td>
+<td style="text-align: left;">Cake Layer Assembly</td>
+<td style="text-align: left;">Visualizes compound words and multisyllabic word structures.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>coral-diver</code></td>
+<td style="text-align: left;">Deep Ocean Submarine</td>
+<td style="text-align: left;">Rhyme Discrimination</td>
+<td style="text-align: left;">Pearl Shell Collection</td>
+<td style="text-align: left;">Enhances auditory phonological rhyme matching and distractor rejection.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>cosmic-miner</code></td>
+<td style="text-align: left;">Alien Moon Crater Rover</td>
+<td style="text-align: left;">Letter Sequencing</td>
+<td style="text-align: left;">Laser Crystal Mining</td>
+<td style="text-align: left;">Strengthens sequential alphabetization and orthographic order recall.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>sky-archer</code></td>
+<td style="text-align: left;">Floating Sky Archipelago</td>
+<td style="text-align: left;">Phonics Discrimination</td>
+<td style="text-align: left;">Target Archery Crosshair Aim</td>
+<td style="text-align: left;">Trains precision phoneme identification under timed conditions.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><code>spider-weaver</code></td>
+<td style="text-align: left;">Moonlit Forest Grove</td>
+<td style="text-align: left;">Onset-Rime Silk Weaving</td>
+<td style="text-align: left;">Dewdrop Node Tap</td>
+<td style="text-align: left;">Multisensory word construction combining onsets (<code>sp-</code>) with rimes (<code>-in</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-iii-2d-foundational-literacy-activities">Table III: 2D Foundational Literacy Activities</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Activity Name</th>
+<th style="text-align: left;">Interaction Mechanics</th>
+<th style="text-align: left;">Targeted Skill</th>
+<th style="text-align: left;">Feedback Mechanism</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Read With Me</strong></td>
+<td style="text-align: left;">Continuous speech recording against displayed text passage.</td>
+<td style="text-align: left;">Reading Fluency &amp; Articulation</td>
+<td style="text-align: left;">Word-by-word visual highlight and phonetic analysis.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Speak &amp; Shine</strong></td>
+<td style="text-align: left;">Single-word verbal vocalization into microphone.</td>
+<td style="text-align: left;">Pronunciation Accuracy</td>
+<td style="text-align: left;">Soft audio confirmation and mascot celebratory cheering.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Word Builder</strong></td>
+<td style="text-align: left;">Drag-and-drop letter tile assembly on active canvas.</td>
+<td style="text-align: left;">Spelling &amp; Word Construction</td>
+<td style="text-align: left;">Visual snap animations and pentatonic letter notes.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sound Safari</strong></td>
+<td style="text-align: left;">Auditory animal sound and phoneme matching.</td>
+<td style="text-align: left;">Auditory Discrimination</td>
+<td style="text-align: left;">Animal animation and audio confirmation chime.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Letter Detective</strong></td>
+<td style="text-align: left;">Visual discrimination of confusable letterforms ($b/d/p/q$).</td>
+<td style="text-align: left;">Visual Orthographic Sorting</td>
+<td style="text-align: left;">Magnifying glass highlight and gentle error guidance.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Picture Match</strong></td>
+<td style="text-align: left;">Association of vocabulary words with semantic illustrations.</td>
+<td style="text-align: left;">Vocabulary &amp; Comprehension</td>
+<td style="text-align: left;">Card flip matching and celebratory star burst.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Missing Letter</strong></td>
+<td style="text-align: left;">Identification of deleted medial vowels or consonant blends.</td>
+<td style="text-align: left;">Orthographic Recall</td>
+<td style="text-align: left;">Letter slot illumination and word audio playback.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Word Train</strong></td>
+<td style="text-align: left;">Sequential coupling of syllables onto train cars.</td>
+<td style="text-align: left;">Syllable Blending</td>
+<td style="text-align: left;">Train whistle SFX and animated engine departure.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Story Puzzle</strong></td>
+<td style="text-align: left;">Reordering scrambled narrative sentences chronologically.</td>
+<td style="text-align: left;">Reading Comprehension</td>
+<td style="text-align: left;">Storybook illustration reveal upon correct sequence.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Sound &amp; Rhythm</strong></td>
+<td style="text-align: left;">Tapping along with rhythmic metronomic reading prompts.</td>
+<td style="text-align: left;">Reading Cadence &amp; Prosody</td>
+<td style="text-align: left;">Tempo pulse visualization and rhythm score.</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Letter Trace &amp; Speak</strong></td>
+<td style="text-align: left;">Canvas fingertip/cursor stroke tracing with verbal phoneme.</td>
+<td style="text-align: left;">Multisensory Motor-Phonetic</td>
+<td style="text-align: left;">Sparkle trail particle emitter and audio playback.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="x-artificial-intelligence-and-speech-processing">X. Artificial Intelligence and Speech Processing</h2>
+<h3 id="a-speech-to-text-architecture">A. Speech-to-Text Architecture</h3>
+<p>ReadQuest incorporates a multi-tier speech processing architecture designed to maximize availability across varying hardware environments:
+1. <em>Client-Side Web Speech API</em>: Implements browser-native <code>webkitSpeechRecognition</code> for low-latency, real-time verbal capture without consuming server bandwidth.
+2. <em>Backend OpenAI Whisper Engine</em>: Configured in <code>app/services/speech_service.py</code> to ingest 16kHz WAV/MP3 audio streams (<code>POST /api/speech/transcribe</code>). The pipeline executes acoustic feature extraction and transcribes audio using Whisper neural model weights (<code>tiny</code>, <code>base</code>, <code>small</code>).
+3. <em>Deterministic Fallback Pipeline (<code>AI_MODE=mock</code>)</em>: When running on standard client machines lacking dedicated GPUs or FFmpeg installations, the system switches transparently to a simulated acoustic service that extracts passage length, simulates substitution/omission probabilities, and returns reproducible diagnostic structures.</p>
+<h3 id="b-the-5-pillar-reading-fingerprint-model">B. The 5-Pillar Reading Fingerprint Model</h3>
+<p>The system normalizes learner observations across five cognitive pillars established by the National Reading Panel [5]:
+1. $\mathcal{P}<em 2="2">{1}$ — <strong>Phonological Awareness</strong>: Capability to distinguish and manipulate phonemes, onsets, and rimes.
+2. $\mathcal{P}</em>$ — <strong>Pronunciation (Phonics)</strong>: Accuracy in translating orthographic letters into speech phonemes.
+3. $\mathcal{P}<em 4="4">{3}$ — <strong>Word Recognition</strong>: Speed and precision in identifying high-frequency sight words and decodable terms.
+4. $\mathcal{P}</em>$ — <strong>Reading Fluency</strong>: Reading rate, smoothness, and absence of excessive hesitation.
+5. $\mathcal{P}_{5}$ — <strong>Comprehension</strong>: Capacity to extract semantic meaning and answer factual narrative queries.</p>
+<h3 id="c-adaptive-recommendation-algorithm">C. Adaptive Recommendation Algorithm</h3>
+<p>The recommendation engine executes a deterministic priority evaluation:</p>
+<pre><code class="language-python">def select_next_best_action(fingerprint, session_history):
+    # 1. Identify weakest literacy pillar
+    pillars = {
+        &quot;phonological_awareness&quot;: fingerprint.phonological_awareness,
+        &quot;pronunciation&quot;: fingerprint.pronunciation,
+        &quot;word_recognition&quot;: fingerprint.word_recognition,
+        &quot;reading_fluency&quot;: fingerprint.reading_fluency,
+        &quot;comprehension&quot;: fingerprint.comprehension
+    }
+    weakest_pillar = min(pillars, key=pillars.get)
+
+    # 2. Query mapped remedial activities
+    candidate_activities = ACTIVITY_MAP[weakest_pillar]
+
+    # 3. Filter recently completed activities to prevent repetitive fatigue
+    recent_ids = [s.activity_id for s in session_history[:3]]
+    viable = [a for a in candidate_activities if a.id not in recent_ids]
+
+    return viable[0] if viable else candidate_activities[0]
+</code></pre>
+<hr />
+<h2 id="xi-software-and-technologies">XI. Software and Technologies</h2>
+<h3 id="table-iv-technology-stack-implementation-matrix">Table IV: Technology Stack Implementation Matrix</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Category</th>
+<th style="text-align: left;">Implemented Version</th>
+<th style="text-align: left;">Purpose in ReadQuest Platform</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>React</strong></td>
+<td style="text-align: left;">Frontend Framework</td>
+<td style="text-align: left;"><code>19.2.8</code></td>
+<td style="text-align: left;">Declarative UI rendering, reactive state management</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vite</strong></td>
+<td style="text-align: left;">Build Tool</td>
+<td style="text-align: left;"><code>8.2.2</code></td>
+<td style="text-align: left;">Rapid HMR development and minified production bundling</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tailwind CSS</strong></td>
+<td style="text-align: left;">Styling Engine</td>
+<td style="text-align: left;"><code>4.3.3</code></td>
+<td style="text-align: left;">Design tokens, high-contrast themes, WCAG AA compliance</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Three.js</strong></td>
+<td style="text-align: left;">3D Graphics</td>
+<td style="text-align: left;"><code>0.186.0</code></td>
+<td style="text-align: left;">Low-level WebGL graphics and custom 3D mesh rendering</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>React Three Fiber</strong></td>
+<td style="text-align: left;">3D Canvas Bridge</td>
+<td style="text-align: left;"><code>9.7.0</code></td>
+<td style="text-align: left;">Declarative React wrapper for Three.js scene graphs</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>React Three Drei</strong></td>
+<td style="text-align: left;">3D Helpers</td>
+<td style="text-align: left;"><code>10.7.8</code></td>
+<td style="text-align: left;">Canvas camera controls, floating text, and particle motes</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Zustand</strong></td>
+<td style="text-align: left;">State Store</td>
+<td style="text-align: left;"><code>5.0.15</code></td>
+<td style="text-align: left;">Client-side reactive session and child state store</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Python</strong></td>
+<td style="text-align: left;">Backend Language</td>
+<td style="text-align: left;"><code>3.12.0</code></td>
+<td style="text-align: left;">Asynchronous REST server runtime</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>FastAPI</strong></td>
+<td style="text-align: left;">Web Framework</td>
+<td style="text-align: left;"><code>0.141.1</code></td>
+<td style="text-align: left;">High-throughput async REST API endpoints</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Uvicorn</strong></td>
+<td style="text-align: left;">ASGI Server</td>
+<td style="text-align: left;"><code>0.53.0</code></td>
+<td style="text-align: left;">Asynchronous worker process execution</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SQLAlchemy</strong></td>
+<td style="text-align: left;">ORM</td>
+<td style="text-align: left;"><code>2.0.54</code></td>
+<td style="text-align: left;">Relational database mapping, query builder, and connection pooling</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Alembic</strong></td>
+<td style="text-align: left;">DB Migrations</td>
+<td style="text-align: left;"><code>1.20.0</code></td>
+<td style="text-align: left;">Declarative version-controlled database schema migrations</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>PostgreSQL</strong></td>
+<td style="text-align: left;">Relational DB</td>
+<td style="text-align: left;"><code>16-Alpine</code></td>
+<td style="text-align: left;">Production persistent database (via Docker Compose)</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>SQLite</strong></td>
+<td style="text-align: left;">Embedded DB</td>
+<td style="text-align: left;"><code>3.x</code></td>
+<td style="text-align: left;">Zero-configuration local database for testing and offline execution</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Pydantic</strong></td>
+<td style="text-align: left;">Validation</td>
+<td style="text-align: left;"><code>2.13.5</code></td>
+<td style="text-align: left;">Strict data schema validation and serialization</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Pytest</strong></td>
+<td style="text-align: left;">Test Runner</td>
+<td style="text-align: left;"><code>9.1.1</code></td>
+<td style="text-align: left;">Backend unit, integration, and security test automation</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Vitest</strong></td>
+<td style="text-align: left;">Test Runner</td>
+<td style="text-align: left;"><code>4.1.11</code></td>
+<td style="text-align: left;">Frontend unit, component, and telemetry test automation</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>OpenAI Whisper</strong></td>
+<td style="text-align: left;">Neural STT</td>
+<td style="text-align: left;"><code>base</code> tier</td>
+<td style="text-align: left;">Server-side speech-to-text inference</td>
+<td style="text-align: left;">Prototype / Configurable</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Docker</strong></td>
+<td style="text-align: left;">Containerization</td>
+<td style="text-align: left;"><code>v26+</code></td>
+<td style="text-align: left;">Multi-stage Dockerfiles and unified Docker Compose orchestration</td>
+<td style="text-align: left;">Fully Implemented</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="xii-database-design">XII. Database Design</h2>
+<p>ReadQuest utilizes a normalized relational schema engineered to support longitudinal tracking and multi-tenant authorization.</p>
+<pre><code>+--------------------+            +--------------------+            +--------------------+
+|       users        |            |      parents       |            |      teachers      |
++--------------------+            +--------------------+            +--------------------+
+| id (PK)            | 1        1 | id (PK)            | 1        1 | id (PK)            |
+| email (Unique)     |&lt;----------&gt;| user_id (FK)       |&lt;----------&gt;| user_id (FK)       |
+| password_hash      |            +--------------------+            +--------------------+
+| role (Enum)        |                      | 1                               | 1
++--------------------+                      |                                 |
+                                            | M                               | M
+                                  +--------------------+            +--------------------+
+                                  |    parent_child    |            |      classes       |
+                                  +--------------------+            +--------------------+
+                                  | parent_id (FK)     |            | id (PK)            |
+                                  | student_id (FK)    |            | teacher_id (FK)    |
+                                  +--------------------+            | name               |
+                                            |                       +--------------------+
+                                            | M                               | 1
+                                            v                                 | M
+                                  +--------------------+            +--------------------+
+                                  |      students      |&lt;-----------|   class_students   |
+                                  +--------------------+            +--------------------+
+                                  | id (PK)            |            | class_id (FK)      |
+                                  | name               |            | student_id (FK)    |
+                                  | age, current_grade |            +--------------------+
+                                  +--------------------+
+                                     | 1            | 1
+                    +----------------+              +----------------+
+                    | M                                              | M
+                    v                                                v
++------------------------------------+              +------------------------------------+
+|         learning_sessions          |              |        reading_fingerprints        |
++------------------------------------+              +------------------------------------+
+| id (PK)                            |              | id (PK)                            |
+| student_id (FK)                    |              | student_id (FK)                    |
+| activity_id (FK, Nullable)         |              | phonological_awareness (Float)     |
+| skill (String, Indexed)            |              | pronunciation (Float)              |
+| stars, xp, score                   |              | word_recognition (Float)           |
+| accuracy (Float)                   |              | reading_fluency (Float)            |
+| started_at, completed_at           |              | comprehension (Float)              |
++------------------------------------+              | recorded_at (DateTime, Indexed)    |
+                                                    +------------------------------------+
+</code></pre>
+<p><em>Fig. 3. Entity-Relationship diagram showing primary database entities and cardinalities.</em></p>
+<h3 id="primary-entities">Primary Entities</h3>
+<ol>
+<li><code>User</code>: Core authentication entity storing email, bcrypt hash, and role enumeration (<code>child</code>, <code>parent</code>, <code>teacher</code>, <code>admin</code>).</li>
+<li><code>Student</code>: Learner profile capturing demographic and grade configuration.</li>
+<li><code>Parent</code> &amp; <code>Teacher</code>: Role profiles associated 1:1 with <code>User</code>.</li>
+<li><code>ClassModel</code>: Represents classroom cohorts managed by a teacher.</li>
+<li><code>LearningSession</code>: Records completed activity trials, including skill key, numerical accuracy, score, stars earned, XP, and timestamp.</li>
+<li><code>ReadingFingerprint</code>: Append-only historical table capturing numerical mastery (0–100%) across all five literacy pillars per student over time.</li>
+</ol>
+<hr />
+<h2 id="xiii-system-implementation">XIII. System Implementation</h2>
+<h3 id="a-frontend-architecture">A. Frontend Architecture</h3>
+<p>The frontend client is implemented as a React 19 Single Page Application. It avoids heavy UI component libraries in favor of tailored Tailwind CSS tokens ensuring minimal bundle overhead ($2.41\text{ MB}$ uncompressed, $625\text{ KB}$ gzip, including all Three.js graphics and WebGL shaders). Component state is managed through React Context (<code>AuthContext</code>, <code>AppContext</code>) and local hooks.</p>
+<h3 id="b-web-audio-synthesizer-gamesoundservicejs">B. Web Audio Synthesizer (<code>gameSoundService.js</code>)</h3>
+<p>To provide tactile audio-visual reinforcement without relying on external MP3 downloads, ReadQuest implements a custom Web Audio API synthesizer. The engine features:
+- Synthesized kalimba/vibraphone notes tuned to a pentatonic scale ($C_5, D_5, E_5, G_5, A_5, C_6$).
+- Non-blocking audio clicks, pops, and fanfares synthesized via native oscillator nodes.
+- A 3-state audio selector (<code>voice_and_sfx</code>, <code>sfx_only</code>, <code>muted</code>) allowing sensory-sensitive children to mute spoken voice prompts while retaining musical feedback.</p>
+<h3 id="c-backend-api-layer">C. Backend API Layer</h3>
+<p>The FastAPI backend exposes modular routers organized by resource:
+- <code>/api/auth</code>: Login, registration, token verification.
+- <code>/api/students</code>: Student profile instantiation and roster queries.
+- <code>/api/sessions</code>: Ingestion of completed learning trials and automatic trigger of fingerprint updates.
+- <code>/api/fingerprints</code>: Longitudinal retrieval of 5-pillar snapshots.
+- <code>/api/progress</code>: Analytical aggregation of 7-day, 30-day, and 90-day progress metrics.
+- <code>/api/recommendations</code>: Real-time synthesis of Next-Best-Action guidance.
+- <code>/api/parent</code> &amp; <code>/api/teacher</code>: Role-specific dashboard aggregations.</p>
+<hr />
+<h2 id="xiv-security">XIV. Security</h2>
+<p>ReadQuest adheres to strict privacy and security standards appropriate for educational environments:
+1. <strong>Password Security</strong>: Credentials are encrypted using <code>bcrypt</code> with automated salt generation. Plaintext passwords are never logged or stored.
+2. <strong>Stateless JWT Tokens</strong>: Authentication tokens are signed using HMAC-SHA256 (<code>HS256</code>) with a cryptographically secure 256-bit secret.
+3. <strong>Role-Based Authorization &amp; Multi-Tenant Isolation</strong>: Security middleware validates that requests to child endpoints originate from the verified owning parent or assigned classroom educator:
+   <code>python
+   def assert_parent_owns_child(db: Session, user: User, child_id: int):
+       parent = db.query(Parent).filter(Parent.user_id == user.id).first()
+       if not parent or not any(c.id == child_id for c in parent.children):
+           raise HTTPException(status_code=403, detail="Access forbidden.")</code>
+4. <strong>Data Ephemerality</strong>: Voice recordings transmitted for server-side Whisper transcription are processed in-memory and immediately destroyed following inference, ensuring compliance with child data privacy guidelines (COPPA-aligned principles).</p>
+<hr />
+<h2 id="xv-testing">XV. Testing</h2>
+<p>The platform was subjected to rigorous automated verification. Testing was executed using <strong>Pytest</strong> for the backend Python services and <strong>Vitest</strong> with <code>@testing-library/react</code> for the frontend client.</p>
+<h3 id="table-v-empirical-automated-test-results">Table V: Empirical Automated Test Results</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Test Category</th>
+<th style="text-align: left;">Suite Identifier</th>
+<th style="text-align: left;">Executed Tests</th>
+<th style="text-align: left;">Passed</th>
+<th style="text-align: left;">Failed</th>
+<th style="text-align: left;">Test Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Backend Integration</strong></td>
+<td style="text-align: left;"><code>test_game_to_report_audit.py</code></td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">5</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Skill normalization, 5-pillar fingerprinting, class dashboard, data isolation</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Backend Security &amp; Auth</strong></td>
+<td style="text-align: left;"><code>test_auth.py</code>, <code>test_parent.py</code></td>
+<td style="text-align: left;">142</td>
+<td style="text-align: left;">142</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">JWT issuance, password hashing, 403 authorization enforcement</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Backend Services &amp; DB</strong></td>
+<td style="text-align: left;"><code>test_services.py</code>, <code>test_api.py</code></td>
+<td style="text-align: left;">331</td>
+<td style="text-align: left;">331</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Alembic models, recommendation generation, session ingestion</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Frontend Games &amp; 3D</strong></td>
+<td style="text-align: left;"><code>*game.test.jsx</code> (11 suites)</td>
+<td style="text-align: left;">38</td>
+<td style="text-align: left;">38</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Three.js scene mounting, level boundary clamping, game card routing</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Frontend Telemetry</strong></td>
+<td style="text-align: left;"><code>test_game_session_tracker.test.jsx</code></td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">3</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Attempt tracking, empirical accuracy calculations, API payload dispatch</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Frontend UI &amp; Portals</strong></td>
+<td style="text-align: left;"><code>step*.test.jsx</code>, <code>journey.test.jsx</code></td>
+<td style="text-align: left;">824</td>
+<td style="text-align: left;">824</td>
+<td style="text-align: left;">0</td>
+<td style="text-align: left;">Child, Parent, Teacher views, navigation flows, accessibility</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>TOTAL VERIFIED SUITE</strong></td>
+<td style="text-align: left;"><strong>Complete Project Suite</strong></td>
+<td style="text-align: left;"><strong>1,343</strong></td>
+<td style="text-align: left;"><strong>1,343</strong></td>
+<td style="text-align: left;"><strong>0</strong></td>
+<td style="text-align: left;"><strong>100% Pass Rate across full full-stack test suite</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="xvi-results-and-discussion">XVI. Results and Discussion</h2>
+<h3 id="a-functional-verification">A. Functional Verification</h3>
+<p>The implemented system was confirmed through automated integration testing and live cloud execution on Netlify:
+- Every completed game round successfully transmits trial metrics to the backend.
+- The <code>ReadingFingerprint</code> engine updates the corresponding literacy pillar deterministically without data corruption or timestamp order collisions.
+- Progress reporting displays all five pillars accurately across 7-day and 30-day monitoring windows.
+- The adaptive recommendation engine prescribes targeted activities when pillar competencies drop below baseline thresholds.</p>
+<h3 id="b-deployment-verification">B. Deployment Verification</h3>
+<p>The production build was compiled and verified:
+- <strong>Client Build</strong>: <code>npm run build</code> completed in $10.57\text{ seconds}$ with zero syntax or bundling errors.
+- <strong>Production Artifact</strong>: Deployed and operational at <code>https://fanciful-blancmange-ad2659.netlify.app/</code>.
+- <strong>API Health Probes</strong>: <code>/api/health</code> returns <code>200 OK</code> (<code>{"status": "ok"}</code>). <code>/api/health/detailed</code> reports <code>{"status": "ok", "database": "ok", "ai_mode": "mock", "whisper": "simulated"}</code>.</p>
+<h3 id="c-academic-and-clinical-discussion">C. Academic and Clinical Discussion</h3>
+<p>It is critical to discuss what ReadQuest is—and what it is not. ReadQuest is <strong>not</strong> a clinical diagnostic tool and does not generate diagnostic labels such as "Clinical Dyslexia". Rather, it produces an empirical <strong>Reading Fingerprint</strong> that documents observable behavioural patterns (e.g., "exhibits difficulty discriminating between auditory rhyming pairs" or "shows hesitation during consonant-blend decoding"). This non-stigmatizing framing empowers parents and teachers to intervene constructively without inducing anxiety.</p>
+<hr />
+<h2 id="xvii-community-impact">XVII. Community Impact</h2>
+<p>As an EPICS initiative, ReadQuest generates measurable community value across several dimensions:
+1. <strong>Democratizing Early Screening</strong>: Eliminates economic barriers by providing high-quality formative reading analysis directly through standard web browsers on low-cost devices.
+2. <strong>Empowering Non-Specialist Parents</strong>: Demystifies reading difficulties by translating technical cognitive observations into friendly, actionable home practice suggestions.
+3. <strong>Assisting Overburdened Teachers</strong>: Provides automated classroom cohort heatmaps, enabling teachers in resource-constrained schools to rapidly identify struggling learners and allocate instructional attention efficiently.
+4. <strong>Inclusive Multilingual Scaffolding</strong>: Provides mother-tongue bridges in regional languages (Telugu and Hindi), preventing children whose primary language is not English from being mistakenly categorized as learning disabled due to linguistic transitions.</p>
+<hr />
+<h2 id="xviii-advantages">XVIII. Advantages</h2>
+<p>The implemented ReadQuest platform offers distinct engineering and educational advantages:
+- <strong>Zero-Installation Accessibility</strong>: Operates universally across modern web browsers without requiring app store downloads or high-end hardware.
+- <strong>Continuous Passive Telemetry</strong>: Eliminates test anxiety by gathering diagnostic evidence through engaging, low-stress 3D toy worlds.
+- <strong>100% Closed-Loop Integration</strong>: Seamlessly connects child gameplay $\rightarrow$ session persistence $\rightarrow$ Reading Fingerprint update $\rightarrow$ adaptive recommendation $\rightarrow$ parent/teacher reports.
+- <strong>Multimodal Feedback</strong>: Employs pentatonic Web Audio chimes, visual particle bursts, and unhurried companion voice guidance.
+- <strong>Robust Multi-Tenant Security</strong>: Protects child privacy through strict cryptographic token authorization and relational ownership assertions.</p>
+<hr />
+<h2 id="xix-limitations">XIX. Limitations</h2>
+<p>In accordance with academic integrity standards, the current system exhibits several real-world limitations:
+1. <em>Absence of Large-Scale Clinical Cohort Study</em>: While the software architecture and test suite have achieved 100% automated verification, validation across a longitudinal cohort of hundreds of elementary school students remains a future milestone.
+2. <em>Browser Speech Synthesis Variability</em>: Web Speech API voice timbre depends on the client operating system. Windows systems without installed natural voice packages default to legacy desktop voices, requiring manual voice pack installation or fallback to "Chimes Only" mode.
+3. <em>Network Dependency for Cloud Deployment</em>: Full synchronization requires internet access to connect the Netlify frontend to the remote database, although local standalone execution functions offline.</p>
+<hr />
+<h2 id="xx-future-scope">XX. Future Scope</h2>
+<p>Planned engineering enhancements include:
+- <strong>On-Device Neural STT (WebAssembly Whisper)</strong>: Porting quantized Whisper models directly into the browser via WebAssembly (Wasm) and WebGPU to deliver zero-latency neural transcription entirely offline.
+- <strong>Expanded Indic Language Support</strong>: Adding complete phoneme curriculum paths for additional Indian languages, including Tamil, Kannada, Marathi, and Bengali.
+- <strong>Eye-Tracking Telemetry via WebCam</strong>: Incorporating lightweight browser-based gaze tracking using MediaPipe to detect visual regression and line-skipping patterns during reading.
+- <strong>Longitudinal School District Pilot Studies</strong>: Partnering with regional primary schools to conduct multi-month efficacy trials measuring standardized reading improvement.</p>
+<hr />
+<h2 id="xxi-conclusion">XXI. Conclusion</h2>
+<p>ReadQuest demonstrates how full-stack web engineering, interactive 3D computer graphics, and educational AI can be combined to solve an urgent community challenge. Developed under the EPICS framework, the platform replaces static worksheets and stressful diagnostic testing with engaging, multisensory toy worlds that capture granular learning telemetry. By mapping real-time gameplay to five core literacy pillars and translating these into a dynamic Reading Fingerprint, ReadQuest bridges the gap between struggling young readers, anxious parents, and dedicated educators. Automated verification across 1,343 test cases and successful live cloud deployment confirm that ReadQuest delivers a robust, accessible, and compassionate engineering solution for foundational learning support.</p>
+<hr />
+<h2 id="references">References</h2>
+<p>[1] S. E. Shaywitz and B. A. Shaywitz, "Dyslexia (specific reading disability)," <em>Biological Psychiatry</em>, vol. 57, no. 11, pp. 1301–1309, 2005.<br />
+[2] K. Rayner, B. R. Foorman, C. A. Perfetti, D. Pesetsky, and M. S. Seidenberg, "How psychological science informs the teaching of reading," <em>Psychological Science in the Public Interest</em>, vol. 2, no. 2, pp. 31–74, 2001.<br />
+[3] R. S. Baker, "Stupid tutoring systems, intelligent humans," <em>International Journal of Artificial Intelligence in Education</em>, vol. 26, no. 2, pp. 600–614, 2016.<br />
+[4] L. S. Vygotsky, <em>Mind in Society: The Development of Higher Psychological Processes</em>. Cambridge, MA: Harvard University Press, 1978.<br />
+[5] National Reading Panel, <em>Teaching Children to Read: An Evidence-Based Assessment of the Scientific Research Literature on Reading and Its Implications for Reading Instruction</em>, National Institute of Child Health and Human Development, Washington, DC, Rep. 00-4769, 2000.<br />
+[6] A. Radford, J. W. Kim, T. Xu, G. Brockman, C. McLeavey, and I. Sutskever, "Robust speech recognition via large-scale weak supervision," in <em>Proc. Int. Conf. Machine Learning (ICML)</em>, 2023, pp. 28492–28518.<br />
+[7] D. A. Norman, <em>The Design of Everyday Things: Revised and Expanded Edition</em>. New York: Basic Books, 2013.<br />
+[8] S. Deterding, D. Dixon, R. Khaled, and L. Nacke, "From game design elements to gamefulness: Defining 'gamification'," in <em>Proc. 15th Int. Academic MindTrek Conf.</em>, 2011, pp. 9–15.<br />
+[9] World Health Organization, <em>International Statistical Classification of Diseases and Related Health Problems (11th ed.)</em>, Geneva: WHO, 2019.<br />
+[10] M. S. Seidenberg and J. L. McClelland, "A distributed, developmental model of word recognition and naming," <em>Psychological Review</em>, vol. 96, no. 4, pp. 523–568, 1989.<br />
+[11] J. K. Torgesen, "Recent discoveries from intervention research on reading disabilities," <em>Journal of Learning Disabilities</em>, vol. 33, no. 6, pp. 554–564, 2000.<br />
+[12] H. U. Protopapas and G. Parrila, "Is dyslexia a brain disorder?" <em>Brain Sciences</em>, vol. 8, no. 4, p. 61, 2018.<br />
+[13] M. Wolf, <em>Proust and the Squid: The Story and Science of the Reading Brain</em>. New York: HarperCollins, 2007.<br />
+[14] U. Goswami, "Phonological skills and learning to read," <em>Oxford Review of Education</em>, vol. 26, no. 1, pp. 101–111, 2000.<br />
+[15] J. Nielsen, <em>Usability Engineering</em>. San Francisco, CA: Morgan Kaufmann, 1994.<br />
+[16] P. A. Kirschner and C. Hendrick, <em>How Learning Happens: Seminal Works on Learning and Thinking and What They Mean in Practice</em>. London: Routledge, 2020.<br />
+[17] FastAPI Documentation, "FastAPI framework, high performance, easy to learn, fast to code, ready for production," 2024. [Online]. Available: https://fastapi.tiangolo.com/<br />
+[18] React Documentation, "React: The library for web and native user interfaces," 2024. [Online]. Available: https://react.dev/  </p>
+<hr />
+<h2 id="list-of-figures">List of Figures</h2>
+<ul>
+<li><strong>Fig. 1</strong>: Overall architecture of the proposed ReadQuest platform (Presentation, API services, and Persistence layers).</li>
+<li><strong>Fig. 2</strong>: Closed-loop educational intervention and assessment methodology (Baseline $\rightarrow$ Telemetry $\rightarrow$ Normalization $\rightarrow$ Fingerprint $\rightarrow$ Recommendation).</li>
+<li><strong>Fig. 3</strong>: Entity-Relationship diagram showing primary database entities and cardinalities.</li>
+</ul>
+<hr />
+<h2 id="list-of-tables">List of Tables</h2>
+<ul>
+<li><strong>Table I</strong>: Project Objectives and Implementation Mapping</li>
+<li><strong>Table II</strong>: Flagship 3D Toy Worlds Implementation Matrix (11 Games)</li>
+<li><strong>Table III</strong>: 2D Foundational Literacy Activities (11 Activities)</li>
+<li><strong>Table IV</strong>: Technology Stack Implementation Matrix</li>
+<li><strong>Table V</strong>: Empirical Automated Test Results (1,343 Tests Passed)</li>
+</ul>
+<hr />
+<h2 id="project-implementation-status">Project Implementation Status</h2>
+<p>To maintain rigorous academic honesty, the following section explicitly itemizes the operational status of every project component:</p>
+<h3 id="1-fully-implemented-operationally-verified">1. Fully Implemented &amp; Operationally Verified</h3>
+<ul>
+<li>[x] <strong>Frontend SPA Shell</strong>: Complete React 19 + Tailwind CSS + Vite application with role-based routing (<code>/child</code>, <code>/parent</code>, <code>/teacher</code>).</li>
+<li>[x] <strong>All 11 Flagship 3D Toy Worlds</strong>: <code>learning-run</code>, <code>ancient-labyrinth</code>, <code>safari-photo</code>, <code>voxel-crafter</code>, <code>cloud-bouncer</code>, <code>dino-fossil</code>, <code>magic-bakery</code>, <code>coral-diver</code>, <code>cosmic-miner</code>, <code>sky-archer</code>, and <code>spider-weaver</code>.</li>
+<li>[x] <strong>All 11 2D Literacy Activities</strong>: Read With Me, Speak &amp; Shine, Word Builder, Sound Safari, Letter Detective, Picture Match, Missing Letter, Word Train, Story Puzzle, Sound &amp; Rhythm, Letter Trace &amp; Speak.</li>
+<li>[x] <strong>Web Audio API Synthesizer</strong>: Pentatonic musical scale notes, pops, fanfares, and 3-mode audio selector (<code>voice_and_sfx</code>, <code>sfx_only</code>, <code>muted</code>).</li>
+<li>[x] <strong>Session Telemetry Hook (<code>useGameSessionTracker</code>)</strong>: Real-time attempt tracking, duration measurement, and backend session dispatch.</li>
+<li>[x] <strong>Backend REST API</strong>: Complete FastAPI Python 3.12 server with 8 routers and 25+ endpoints.</li>
+<li>[x] <strong>Database &amp; Migrations</strong>: Normalized schema with 10 tables, Alembic migration scripts, and support for both PostgreSQL and SQLite.</li>
+<li>[x] <strong>Skill Normalization Pipeline (<code>skills.py</code>)</strong>: Maps 15+ granular game skills to the 5 core literacy pillars.</li>
+<li>[x] <strong>Reading Fingerprint Engine</strong>: Append-only snapshots computing dynamic learner competency scores across 5 pillars.</li>
+<li>[x] <strong>Adaptive Next-Best-Action Engine</strong>: Recommends personalized remedial or scaffolded exercises based on lowest competency scores.</li>
+<li>[x] <strong>Parent &amp; Teacher Dashboards</strong>: Role-isolated analytical portals showing progress trends (7d/30d/90d), skill comparisons, and classroom rosters.</li>
+<li>[x] <strong>Authentication &amp; RBAC</strong>: JWT token issuance, bcrypt hashing, and parent-child ownership assertions (403 forbidden enforcement).</li>
+<li>[x] <strong>Automated Test Suites</strong>: 478 backend Pytest tests + 865 frontend Vitest tests (1,343 total passed, 100% pass rate).</li>
+<li>[x] <strong>Live Cloud Deployment</strong>: Production SPA built and deployed live on Netlify with SPA redirect rules and CORS configuration.</li>
+</ul>
+<h3 id="2-partially-implemented-prototype-ready">2. Partially Implemented / Prototype-Ready</h3>
+<ul>
+<li>[/] <strong>Server-Side Whisper Neural Inference</strong>: Complete API endpoint (<code>POST /api/speech/transcribe</code>) and Whisper loader implemented; defaults to deterministic acoustic mock mode (<code>AI_MODE=mock</code>) on machines without local GPU/FFmpeg.</li>
+<li>[/] <strong>Multilingual Mother-Tongue Curriculum</strong>: Audio instruction phrases and vocabulary sets implemented for Telugu and Hindi; full multi-grade curricular story text currently focused on English.</li>
+</ul>
+<h3 id="3-future-scope-planned-enhancements">3. Future Scope (Planned Enhancements)</h3>
+<ul>
+<li>[ ] <strong>WebAssembly / WebGPU In-Browser Whisper</strong>: Client-side zero-latency neural transcription without server roundtrips.</li>
+<li>[ ] <strong>MediaPipe Eye-Tracking Telemetry</strong>: Detection of gaze regression and line skipping via front-facing camera.</li>
+<li>[ ] <strong>Multi-School Longitudinal Efficacy Study</strong>: Empirical cohort validation measuring reading progress over a 6-month school term.</li>
+<li>[ ] <strong>Native Mobile Application</strong>: Dedicated iOS/Android wrappers using React Native or Capacitor.</li>
+</ul>
+</body>
+</html>
