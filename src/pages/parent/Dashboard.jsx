@@ -27,7 +27,7 @@ export default function ParentDashboard() {
   const { auth } = useAuth()
   const navigate = useNavigate()
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token && !auth.token.includes('test'))
+  const isReal = Boolean(auth?.isAuthenticated && auth?.token && !auth.token.includes('test') && !auth.token.includes('demo'))
 
   const [loading, setLoading] = useState(isReal)
   const [error, setError] = useState(null)

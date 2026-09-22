@@ -12,7 +12,7 @@ export default function TeacherLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginDemo } = useAuth()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -77,14 +77,25 @@ export default function TeacherLogin() {
           {error && <p className="text-[#D95C5C] text-xs font-bold text-center bg-rose-50 border border-rose-200 py-2 px-3 rounded-xl">{error}</p>}
           <Button
             type="submit"
-            className="mt-2 bg-[#08233A] hover:bg-[#0B5264] text-white font-display font-black py-3.5 rounded-2xl shadow-md transition-all"
+            className="mt-2 bg-[#08233A] hover:bg-[#0B5264] text-white font-display font-black py-3.5 rounded-2xl shadow-md transition-all cursor-pointer"
             disabled={loading}
           >
             {loading ? 'Signing in…' : 'Sign In'}
           </Button>
+
+          <button
+            type="button"
+            onClick={() => {
+              loginDemo('teacher')
+              navigate('/teacher/dashboard')
+            }}
+            className="w-full py-3 px-4 rounded-2xl bg-[#E6F8FA] hover:bg-[#D4F4F7] text-[#0899AA] border border-[#A5E7EE] font-display font-extrabold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-2xs"
+          >
+            ⚡ Instant Educator Demo Access (No Password Needed)
+          </button>
         </form>
 
-        <div className="text-center mt-5 pt-4 border-t border-[#D7EEF1]">
+        <div className="text-center mt-4 pt-4 border-t border-[#D7EEF1]">
           <p className="text-xs text-[#527080]">
             Don't have an account?{' '}
             <Link to="/teacher/register" className="text-[#0899AA] hover:underline font-bold ml-1">
@@ -93,9 +104,18 @@ export default function TeacherLogin() {
           </p>
         </div>
 
-        <p className="text-[11px] text-[#527080] text-center mt-4">
-          Demo account: <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">teacher@readquest.demo</code> / <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">demo1234</code>
-        </p>
+        <div className="text-center mt-3">
+          <button
+            type="button"
+            onClick={() => {
+              setEmail('teacher@readquest.demo')
+              setPassword('demo1234')
+            }}
+            className="text-[11px] text-[#527080] hover:text-[#08233A] inline-flex items-center gap-1 cursor-pointer"
+          >
+            Demo account: <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">teacher@readquest.demo</code> / <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">demo1234</code>
+          </button>
+        </div>
       </Card>
     </div>
   )

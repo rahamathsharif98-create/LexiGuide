@@ -327,7 +327,14 @@ class GameSoundService {
         }
       };
 
-      window.speechSynthesis.speak(utterance);
+      try {
+        if (window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+        window.speechSynthesis.speak(utterance);
+      } catch {
+        /* handled */
+      }
     } catch {
       /* speech error handled */
     }

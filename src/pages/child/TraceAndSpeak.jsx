@@ -50,7 +50,7 @@ function useSafeApp() {
   }
 }
 
-export default function TraceAndSpeak({ initialLanguage = 'te', onFinish }) {
+export default function TraceAndSpeak({ initialLanguage = 'en', onFinish }) {
   const navigate = useSafeNavigate()
   const { activeChild } = useSafeApp()
 
@@ -65,7 +65,7 @@ export default function TraceAndSpeak({ initialLanguage = 'te', onFinish }) {
   )
 
   // Game State
-  const [lang, setLang] = useState(initialLanguage)
+  const [lang, setLang] = useState(activeChild?.language || initialLanguage || 'en')
   const [stage, setStage] = useState('trace') // 'picker' | 'trace' | 'reveal' | 'speak' | 'celebration'
   const [letterIndex, setLetterIndex] = useState(0)
   const [completedLetters, setCompletedLetters] = useState({}) // { 'te-ka': true }
@@ -118,29 +118,33 @@ export default function TraceAndSpeak({ initialLanguage = 'te', onFinish }) {
     }
   }, [quietMode])
 
-  // Canvas DPI Setup and Resizing
+  // Canvas DPI Setup and Resizing (Runs ONLY on mount/resize, never compounding DPR)
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
+    if (!rect.width || !rect.height) return
     const dpr = window.devicePixelRatio || 1
 
-    canvas.width = rect.width * dpr
-    canvas.height = rect.height * dpr
+    canvas.width = Math.round(rect.width * dpr)
+    canvas.height = Math.round(rect.height * dpr)
 
     const ctx = canvas.getContext('2d')
     if (ctx) {
-      ctx.scale(dpr, dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
-      redrawStrokes(strokes, ctx)
     }
-  }, [strokes])
+  }, [])
 
   useEffect(() => {
     setupCanvas()
-    window.addEventListener('resize', setupCanvas)
-    return () => window.removeEventListener('resize', setupCanvas)
+    const handleResize = () => {
+      setupCanvas()
+      redrawStrokes(strokes)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [setupCanvas])
 
   // Redraw all drawn strokes and ghost point on canvas

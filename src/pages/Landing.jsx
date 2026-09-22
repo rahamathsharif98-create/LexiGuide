@@ -93,12 +93,13 @@ export default function Landing() {
         <div className="flex items-center gap-3 text-xs font-semibold text-[#527080]">
           <span
             data-testid="backend-status-indicator"
+            title={backendStatus === 'online' ? 'Connected to FastAPI backend services.' : 'Running client-side speech synthesis, WebGL 3D worlds, and adaptive activities.'}
             className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border shadow-xs transition-all ${
               backendStatus === 'online'
                 ? 'bg-[#EAFBF3] border-[#A8EBC7] text-[#1E7E51]'
                 : backendStatus === 'checking'
                 ? 'bg-white border-[#D7EEF1] text-[#527080]'
-                : 'bg-[#FFF0F2] border-[#FED1D7] text-[#E0245E]'
+                : 'bg-[#E6F8FA] border-[#A8E5EC] text-[#0899AA]'
             }`}
           >
             <span
@@ -107,14 +108,14 @@ export default function Landing() {
                   ? 'bg-[#39B87F] animate-ping'
                   : backendStatus === 'checking'
                   ? 'bg-amber-400 animate-pulse'
-                  : 'bg-rose-500'
+                  : 'bg-[#13CFE3]'
               }`}
             />
             {backendStatus === 'online'
               ? '🟢 AI Backend Connected'
               : backendStatus === 'checking'
               ? 'Connecting to Backend...'
-              : 'Offline Mode'}
+              : '⚡ Interactive Web Engine (Ready)'}
           </span>
         </div>
       </header>

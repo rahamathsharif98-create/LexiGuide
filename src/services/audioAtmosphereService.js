@@ -139,9 +139,9 @@ class AudioAtmosphereService {
     this.voiceGain = null
     this.oscillator = null
     this.isPlayingMusic = false
-    this.musicVolume = 0.45
+    this.musicVolume = 0.60
     this.voiceVolume = 1.0
-    this.sfxVolume = 0.7
+    this.sfxVolume = 0.75
     this.quietMode = false
     this.audioDuckingEnabled = true
     this.musicTimer = null
@@ -157,6 +157,19 @@ class AudioAtmosphereService {
     this.padOsc3 = null
     this.padGain = null
     this.padFilter = null
+
+    // Register one-time user interaction listener to unlock AudioContext
+    if (typeof window !== 'undefined') {
+      const unlock = () => {
+        if (this.audioCtx && this.audioCtx.state === 'suspended') {
+          this.audioCtx.resume().catch(() => {})
+        }
+        window.removeEventListener('click', unlock)
+        window.removeEventListener('touchstart', unlock)
+      }
+      window.addEventListener('click', unlock, { once: true, passive: true })
+      window.addEventListener('touchstart', unlock, { once: true, passive: true })
+    }
   }
 
   subscribe(listener) {
@@ -227,8 +240,8 @@ class AudioAtmosphereService {
 
       this.padGain = this.audioCtx.createGain()
       this.padGain.gain.setValueAtTime(0.001, now)
-      // Gentle 2.0s swell to smooth background volume
-      this.padGain.gain.linearRampToValueAtTime(0.06 * this.musicVolume, now + 2.0)
+      // Gentle 2.0s swell to smooth background volume (warm, audible pad)
+      this.padGain.gain.linearRampToValueAtTime(0.18, now + 2.0)
 
       this.padGain.connect(this.padFilter)
       this.padFilter.connect(this.musicGain || this.audioCtx.destination)
@@ -354,7 +367,7 @@ class AudioAtmosphereService {
       // Note Gain envelope: Gentle swell (0.09s), long singing decay (3.6s)
       const gain = this.audioCtx.createGain()
       const noteDuration = 3.6
-      const peakVolume = 0.12 * this.musicVolume
+      const peakVolume = 0.32
 
       gain.gain.setValueAtTime(0.001, now)
       gain.gain.linearRampToValueAtTime(peakVolume, now + 0.09)
@@ -394,25 +407,24 @@ class AudioAtmosphereService {
     }
 
     if (this.audioCtx) {
-      try {
-        if (this.audioCtx.state === 'suspended') {
-          this.audioCtx.resume()
-        }
-      } catch {}
-
-      const toneConfig = this.getActiveToneConfig()
-
-      // 1. Launch continuous velvet background pad
-      this._startAmbientPad(toneConfig)
-
-      // 2. Play first chime note softly
-      this._scheduleNextAtmosphereNote()
-
-      // 3. Periodic melodic notes with comfortable pacing
-      const pace = toneConfig.paceMs || 2200
-      this.musicTimer = setInterval(() => {
+      const startNodes = () => {
+        if (!this.isPlayingMusic || this.quietMode) return
+        const toneConfig = this.getActiveToneConfig()
+        this._startAmbientPad(toneConfig)
         this._scheduleNextAtmosphereNote()
-      }, pace)
+
+        const pace = toneConfig.paceMs || 2200
+        if (this.musicTimer) clearInterval(this.musicTimer)
+        this.musicTimer = setInterval(() => {
+          this._scheduleNextAtmosphereNote()
+        }, pace)
+      }
+
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume().then(startNodes).catch(startNodes)
+      } else {
+        startNodes()
+      }
     }
 
     this._notify()

@@ -140,29 +140,52 @@ export function speakLanguageAudio({ text, lang = 'en', rate, pitch, onEnd, onEr
   }
 
   try {
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume()
+    }
     window.speechSynthesis.cancel()
+
     const utterance = new SpeechSynthesisUtterance(text)
     const voice = getLanguageAwareVoice(lang)
     if (voice) {
       utterance.voice = voice
+      utterance.lang = voice.lang || 'en-US'
+    } else {
+      if (lang === 'te') utterance.lang = 'te-IN'
+      else if (lang === 'hi') utterance.lang = 'hi-IN'
+      else utterance.lang = navigator?.language || 'en-US'
     }
-    utterance.lang = lang === 'en' ? 'en-IN' : (MULTILINGUAL_VOICE_CONFIG[lang]?.langTag || 'en-IN')
+
     utterance.rate = typeof rate === 'number' ? rate : LEXI_VOICE_SETTINGS.BASE_RATE
     utterance.pitch = typeof pitch === 'number' ? pitch : LEXI_VOICE_SETTINGS.PITCH
+
+    // Retain global reference to prevent Chromium V8 garbage collection dropping speech
+    window._activeMultilingualUtterance = utterance
 
     audioAtmosphere?.duckMusic?.()
     const origOnEnd = onEnd
     utterance.onend = (e) => {
+      window._activeMultilingualUtterance = null
       audioAtmosphere?.restoreMusic?.()
       if (origOnEnd) origOnEnd(e)
     }
     const origOnError = onError
     utterance.onerror = (e) => {
+      window._activeMultilingualUtterance = null
       audioAtmosphere?.restoreMusic?.()
       if (origOnError) origOnError(e)
     }
 
-    window.speechSynthesis.speak(utterance)
+    try {
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume()
+      }
+      window.speechSynthesis.speak(utterance)
+    } catch (err) {
+      audioAtmosphere?.restoreMusic?.()
+      if (onError) onError(err)
+    }
+
     return true
   } catch (err) {
     audioAtmosphere?.restoreMusic?.()

@@ -94,7 +94,17 @@ async function request(path, options = {}) {
     }
     throw new ApiError(detail, res.status)
   }
-  return res.json()
+
+  const contentType = res.headers?.get?.('content-type') || ''
+  if (contentType.includes('text/html')) {
+    throw new ApiError('Backend API endpoint unavailable on this static host.', 503)
+  }
+
+  try {
+    return await res.json()
+  } catch (err) {
+    throw new ApiError('Invalid response format from server.', 502)
+  }
 }
 
 export const api = {
