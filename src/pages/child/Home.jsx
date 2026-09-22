@@ -11,7 +11,7 @@ import { NextBestActionCard } from '../../components/NextBestActionCard'
 import { LearningJourneyPlan } from '../../components/LearningJourneyPlan'
 import { resolveThemePackage, applyThemeToActivity } from '../../services/personalizationService'
 import audioAtmosphereService from '../../services/audioAtmosphereService'
-import { SmoothToneModal } from '../../components/audio/SmoothTonePlayer'
+import { SmoothTonePill, SmoothToneModal } from '../../components/audio/SmoothTonePlayer'
 import { speakLanguageAudio } from '../../services/multilingualVoiceService'
 import {
   ChildWorldCard,
@@ -235,6 +235,9 @@ export default function Home() {
         </button>
 
         <div className="flex items-center gap-2 self-end sm:self-center">
+          {/* Smooth Background Tone Player Pill */}
+          <SmoothTonePill onOpenModal={() => setShowToneModal(true)} />
+
           {/* Quick Stats Pills */}
           <div className="flex items-center gap-1.5 bg-[#E6F8FA] border border-[#D7EEF1] px-3 py-1.5 rounded-2xl text-xs font-bold text-[#08233A]">
             <span className="text-[#FFC857]">⭐</span>

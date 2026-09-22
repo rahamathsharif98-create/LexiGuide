@@ -1,13 +1,26 @@
+import { useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { ChildBottomNav, ChildSidebar } from '../../components/nav/ChildBottomNav'
 import { ChildTopBar } from '../../components/nav/ChildTopBar'
 import { useApp } from '../../context/AppContext'
 import { Toast } from '../../components/ui'
+import { audioAtmosphere } from '../../services/audioAtmosphereService'
 
 export function ChildLayout() {
   const { toast } = useApp()
   const location = useLocation()
   const isHome = location.pathname === '/child/home' || location.pathname === '/child'
+
+  useEffect(() => {
+    // Automatically play calming comfort music at low gentle sound while using the child portal
+    if (!audioAtmosphere.quietMode && !audioAtmosphere.isPlayingMusic) {
+      audioAtmosphere.startAmbientAtmosphere('lullaby')
+    }
+    return () => {
+      // Cleanly stop music when leaving the child portal
+      audioAtmosphere.stopAmbientAtmosphere()
+    }
+  }, [])
 
   return (
     <div className="min-h-screen flex bg-[#F2FBFC]">

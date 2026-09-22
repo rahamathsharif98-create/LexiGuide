@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Music, Volume2, VolumeX, Play, Pause, Sparkles, X, Check, Sliders } from 'lucide-react'
 import audioAtmosphere, { SMOOTH_TONE_STYLES } from '../../services/audioAtmosphereService'
 
@@ -273,9 +273,9 @@ export function SmoothToneModal({ isOpen, onClose }) {
             {/* Quick Preset Pills */}
             <div className="flex items-center gap-1">
               {[
-                { label: 'Whisper', val: 0.2 },
-                { label: 'Smooth', val: 0.45 },
-                { label: 'Comfort', val: 0.7 },
+                { label: 'Whisper', val: 0.10 },
+                { label: 'Gentle', val: 0.18 },
+                { label: 'Comfort', val: 0.30 },
               ].map((p) => (
                 <button
                   key={p.label}

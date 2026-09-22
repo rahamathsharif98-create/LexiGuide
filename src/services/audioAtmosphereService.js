@@ -139,7 +139,7 @@ class AudioAtmosphereService {
     this.voiceGain = null
     this.oscillator = null
     this.isPlayingMusic = false
-    this.musicVolume = 0.60
+    this.musicVolume = 0.18 // Low, comforting background volume as requested
     this.voiceVolume = 1.0
     this.sfxVolume = 0.75
     this.quietMode = false
@@ -151,6 +151,10 @@ class AudioAtmosphereService {
     this.chordIndex = 0
     this.listeners = []
 
+    // Background Comfort Music Audio Element (HTML5 Audio for continuous looping)
+    this.audioElement = null
+    this.comfortAudioSrc = '/audio/comfort_calm_melody.mp3'
+
     // Ambient Pad Drone Nodes
     this.padOsc1 = null
     this.padOsc2 = null
@@ -158,18 +162,62 @@ class AudioAtmosphereService {
     this.padGain = null
     this.padFilter = null
 
-    // Register one-time user interaction listener to unlock AudioContext
+    // Register user interaction listener to unlock AudioContext and resume background melody
     if (typeof window !== 'undefined') {
       const unlock = () => {
         if (this.audioCtx && this.audioCtx.state === 'suspended') {
           this.audioCtx.resume().catch(() => {})
         }
-        window.removeEventListener('click', unlock)
-        window.removeEventListener('touchstart', unlock)
+        if (this.isPlayingMusic && this.audioElement && this.audioElement.paused && !this.quietMode) {
+          this._playAudioElement()
+        }
       }
-      window.addEventListener('click', unlock, { once: true, passive: true })
-      window.addEventListener('touchstart', unlock, { once: true, passive: true })
+      window.addEventListener('click', unlock, { passive: true })
+      window.addEventListener('touchstart', unlock, { passive: true })
     }
+  }
+
+  _getAudioElement() {
+    if (typeof window === 'undefined' || typeof Audio === 'undefined') return null
+    if (!this.audioElement) {
+      try {
+        this.audioElement = new Audio(this.comfortAudioSrc)
+        this.audioElement.loop = true
+        this.audioElement.volume = this.quietMode ? 0 : this.musicVolume
+        this.audioElement.preload = 'auto'
+        if (typeof this.audioElement.addEventListener === 'function') {
+          this.audioElement.addEventListener('ended', () => {
+            if (this.isPlayingMusic && !this.quietMode) {
+              this.audioElement.currentTime = 0
+              this.audioElement.play()?.catch?.(() => {})
+            }
+          })
+        }
+      } catch {
+        this.audioElement = null
+      }
+    }
+    return this.audioElement
+  }
+
+  _playAudioElement() {
+    const el = this._getAudioElement()
+    if (!el || this.quietMode) return
+    try {
+      el.volume = this.quietMode ? 0 : this.musicVolume
+      el.loop = true
+      const p = el.play()
+      if (p && typeof p.catch === 'function') {
+        p.catch(() => {})
+      }
+    } catch {}
+  }
+
+  _pauseAudioElement() {
+    if (!this.audioElement) return
+    try {
+      this.audioElement.pause()
+    } catch {}
   }
 
   subscribe(listener) {
@@ -240,8 +288,8 @@ class AudioAtmosphereService {
 
       this.padGain = this.audioCtx.createGain()
       this.padGain.gain.setValueAtTime(0.001, now)
-      // Gentle 2.0s swell to smooth background volume (warm, audible pad)
-      this.padGain.gain.linearRampToValueAtTime(0.18, now + 2.0)
+      // Gentle 2.0s swell to smooth background volume (warm, calm low-sound pad)
+      this.padGain.gain.linearRampToValueAtTime(0.08, now + 2.0)
 
       this.padGain.connect(this.padFilter)
       this.padFilter.connect(this.musicGain || this.audioCtx.destination)
@@ -367,14 +415,14 @@ class AudioAtmosphereService {
       // Note Gain envelope: Gentle swell (0.09s), long singing decay (3.6s)
       const gain = this.audioCtx.createGain()
       const noteDuration = 3.6
-      const peakVolume = 0.32
+      const peakVolume = 0.12
 
       gain.gain.setValueAtTime(0.001, now)
       gain.gain.linearRampToValueAtTime(peakVolume, now + 0.09)
       gain.gain.exponentialRampToValueAtTime(0.0001, now + noteDuration)
 
       const overtoneGain = this.audioCtx.createGain()
-      overtoneGain.gain.setValueAtTime(0.18, now)
+      overtoneGain.gain.setValueAtTime(0.08, now)
 
       // Connections
       osc1.connect(filter)
@@ -398,6 +446,9 @@ class AudioAtmosphereService {
     const resolved = STYLE_ALIASES[style] || style || 'lullaby'
     this.currentStyle = resolved
     this.isPlayingMusic = true
+
+    // Play repeating comfort audio track
+    this._playAudioElement()
 
     this.initContext()
 
@@ -431,6 +482,7 @@ class AudioAtmosphereService {
   }
 
   stopAmbientAtmosphere() {
+    this._pauseAudioElement()
     if (this.musicTimer) {
       clearInterval(this.musicTimer)
       this.musicTimer = null
@@ -461,6 +513,11 @@ class AudioAtmosphereService {
 
   setMusicVolume(vol) {
     this.musicVolume = Math.max(0, Math.min(1, vol))
+    if (this.audioElement) {
+      try {
+        this.audioElement.volume = this.quietMode ? 0 : this.musicVolume
+      } catch {}
+    }
     if (this.musicGain && this.audioCtx && !this.quietMode) {
       try {
         this.musicGain.gain.setTargetAtTime(this.musicVolume, this.audioCtx.currentTime, 0.05)
@@ -472,7 +529,12 @@ class AudioAtmosphereService {
   }
 
   // Automatic Audio Ducking: Music smoothly dips when voice speaks
-  duckMusic(duckToRatio = 0.15) {
+  duckMusic(duckToRatio = 0.20) {
+    if (this.audioElement && this.audioDuckingEnabled) {
+      try {
+        this.audioElement.volume = this.quietMode ? 0 : this.musicVolume * duckToRatio
+      } catch {}
+    }
     if (!this.audioCtx || !this.musicGain || !this.audioDuckingEnabled) return
     const targetGain = this.quietMode ? 0 : this.musicVolume * duckToRatio
     try {
@@ -483,6 +545,11 @@ class AudioAtmosphereService {
   }
 
   restoreMusic() {
+    if (this.audioElement && !this.quietMode) {
+      try {
+        this.audioElement.volume = this.musicVolume
+      } catch {}
+    }
     if (!this.audioCtx || !this.musicGain) return
     const targetGain = this.quietMode ? 0 : this.musicVolume
     try {
@@ -496,12 +563,24 @@ class AudioAtmosphereService {
     this.quietMode = Boolean(enabled)
     if (this.quietMode) {
       this.stopAmbientAtmosphere()
+      if (this.audioElement) {
+        try {
+          this.audioElement.pause()
+          this.audioElement.volume = 0
+        } catch {}
+      }
       if (this.musicGain && this.audioCtx) {
         try {
           this.musicGain.gain.setValueAtTime(0, this.audioCtx.currentTime)
         } catch {}
       }
     } else {
+      if (this.audioElement && this.isPlayingMusic) {
+        try {
+          this.audioElement.volume = this.musicVolume
+          this.audioElement.play().catch(() => {})
+        } catch {}
+      }
       if (this.musicGain && this.audioCtx) {
         try {
           this.musicGain.gain.setValueAtTime(this.musicVolume, this.audioCtx.currentTime)
