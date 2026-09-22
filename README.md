@@ -1,11 +1,13 @@
 # LexiGuide
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://fanciful-blancmange-ad2659.netlify.app/)
+[![IEEE Documentation](https://img.shields.io/badge/EPICS_Report-IEEE_Paper_Style-blue?style=for-the-badge&logo=readthedocs)](docs/EPICS_ReadQuest_IEEE_Documentation.md)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.12-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Three.js](https://img.shields.io/badge/Three.js-3D_Worlds-black?style=for-the-badge&logo=three.js)](https://threejs.org/)
 
-> 🌐 **Live Production Deployment**: **[https://fanciful-blancmange-ad2659.netlify.app/](https://fanciful-blancmange-ad2659.netlify.app/)**
+> 🌐 **Live Production Deployment**: **[https://fanciful-blancmange-ad2659.netlify.app/](https://fanciful-blancmange-ad2659.netlify.app/)**  
+> 📄 **Academic Documentation**: **[EPICS IEEE Research-Style Project Report](docs/EPICS_ReadQuest_IEEE_Documentation.md)**
 
 **LexiGuide: An AI-Powered Intelligent Learning Support Platform for Children with Reading Difficulties**  
 *EPICS Project — Supporting children aged 4–10 in building strong literacy foundations.*
