@@ -68,7 +68,11 @@ export default function MyJourney() {
       setLoading(false)
     } catch (err) {
       setLoading(false)
-      setError(err.message || 'Could not load Reading Fingerprint from backend')
+      if (err?.status === 503 || err?.message?.includes('static host')) {
+        setError(null)
+      } else {
+        setError(err?.message || 'Could not load Reading Fingerprint')
+      }
     }
   }, [isRealBackend, activeChild.id, refreshProgress])
 

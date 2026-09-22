@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { TeacherShell } from './TeacherShell'
 import { Card, ProgressBar, Skeleton, Button } from '../../components/ui'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -13,7 +13,7 @@ export default function TeacherClassProgress() {
   const { auth } = useAuth()
   const [range, setRange] = useState('7d')
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
 
   const [loading, setLoading] = useState(isReal)
   const [error, setError] = useState(null)

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { ParentShell } from './ParentShell'
 import { Card, Skeleton, Button } from '../../components/ui'
 import { getRecentActivity } from '../../services/parentService'
@@ -29,7 +29,7 @@ export default function ParentActivities() {
   const { auth } = useAuth()
   const [filter, setFilter] = useState('All')
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const childId = activeChild?.id
 
   const [loading, setLoading] = useState(isReal)

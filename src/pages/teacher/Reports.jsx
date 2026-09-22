@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { TeacherShell } from './TeacherShell'
 import { CLASS_STUDENTS, SKILL_KEYS, SKILL_LABELS, ERROR_PATTERNS } from '../../data/demoData'
 import { Card, Button, Skeleton } from '../../components/ui'
@@ -8,7 +8,7 @@ import { FileDown } from 'lucide-react'
 
 export default function TeacherReports() {
   const { auth } = useAuth()
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
 
   const [studentId, setStudentId] = useState(CLASS_STUDENTS[0].id)
   const [generating, setGenerating] = useState(false)

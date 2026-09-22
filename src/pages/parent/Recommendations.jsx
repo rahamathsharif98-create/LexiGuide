@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { ParentShell } from './ParentShell'
 import { Card, Button, Skeleton } from '../../components/ui'
 import { getRecommendationsForParent, getAreasToPractice } from '../../services/parentService'
@@ -12,7 +12,7 @@ export default function ParentRecommendations() {
   const { auth } = useAuth()
   const navigate = useNavigate()
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const childId = activeChild?.id
 
   const [loading, setLoading] = useState(isReal)

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { TeacherShell } from './TeacherShell'
 import { StatCard, Card, ProgressBar, Button, Skeleton } from '../../components/ui'
 import { ProfileAvatar } from '../../components/ProfileAvatar'
@@ -10,14 +10,14 @@ import {
   getClassStrengths, getClassSkillsToPractice, getWeeklyClassSummary,
 } from '../../services/teacherService'
 
-const TREND_LABEL = { improving: '📈 Improving', steady: '➡️ Steady', 'needs practice': '💪 Needs practice' }
-const TREND_FOR = { sounds: 'improving', reading: 'steady', speaking: 'improving', understanding: 'needs practice' }
+const TREND_LABEL = { growing: '📈 Growing', steady: '➡️ Steady', 'needs practice': '💪 Needs practice' }
+const TREND_FOR = { sounds: 'growing', reading: 'steady', speaking: 'growing', understanding: 'needs practice' }
 
 export default function TeacherDashboard() {
   const { auth } = useAuth()
   const navigate = useNavigate()
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token && !auth.token.includes('test') && !auth.token.includes('demo'))
+  const isReal = isRealBackendAuth(auth)
 
   const [loading, setLoading] = useState(isReal)
   const [error, setError] = useState(null)

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { TeacherShell } from './TeacherShell'
 import { Card, Button, Skeleton } from '../../components/ui'
 import { ProfileAvatar } from '../../components/ProfileAvatar'
@@ -17,7 +17,7 @@ export default function TeacherRecommendations() {
   const { auth } = useAuth()
   const navigate = useNavigate()
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
 
   const [loading, setLoading] = useState(isReal)
   const [error, setError] = useState(null)

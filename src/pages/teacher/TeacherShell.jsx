@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { LayoutDashboard, Users, TrendingUp, Sparkles, Settings, FileText, User, LogOut } from 'lucide-react'
 import { DashboardShell } from '../../components/nav/DashboardShell'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { Toast } from '../../components/ui'
 import { getTeacherClasses } from '../../services/teacherService'
 import { endpoints } from '../../services/api'
@@ -24,7 +24,7 @@ export function TeacherShell({ title, subtitle, children }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const [realClasses, setRealClasses] = useState(null)
 
   useEffect(() => {

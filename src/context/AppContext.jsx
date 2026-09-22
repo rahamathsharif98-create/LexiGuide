@@ -19,7 +19,13 @@ export function AppProvider({ children }) {
     auth = null
   }
 
-  const isRealBackend = Boolean(auth?.isAuthenticated && auth?.token)
+  const isRealBackend = Boolean(
+    auth?.isAuthenticated &&
+    auth?.token &&
+    !String(auth.token).toLowerCase().includes('demo') &&
+    !String(auth.token).toLowerCase().includes('test') &&
+    !String(auth.token).toLowerCase().includes('local-session')
+  )
   const [childrenState, setChildrenState] = useState(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {

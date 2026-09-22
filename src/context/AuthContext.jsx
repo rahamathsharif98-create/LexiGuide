@@ -86,8 +86,7 @@ export function AuthProvider({ children, initialAuth = null }) {
   }, [])
 
   const login = useCallback(async (email, password, expectedRole = null) => {
-    try {
-      const res = await endpoints.login(email, password)
+    const res = await endpoints.login(email, password)
       if (!res || !res.access_token) {
         throw new Error('Authentication response did not contain an access token.')
       }
@@ -116,20 +115,7 @@ export function AuthProvider({ children, initialAuth = null }) {
       } catch {}
 
       return newAuthState
-    } catch (err) {
-      // If server is unreachable or offline, check if user is signing in with demo account
-      const lowerEmail = (email || '').toLowerCase()
-      const isDemoAccount = lowerEmail.includes('demo') || lowerEmail.includes('readquest')
-      const isNetUnavailable = err.status === 503 || err.status === 502 || err.message?.includes('fetch') || err.message?.includes('Failed to fetch') || err.message?.includes('unavailable')
-
-      if (isDemoAccount || isNetUnavailable) {
-        const role = expectedRole || (lowerEmail.includes('teacher') ? 'teacher' : 'parent')
-        return loginDemo(role)
-      }
-
-      throw err
-    }
-  }, [loginDemo])
+  }, [])
 
   const register = useCallback(async (name, email, password, role) => {
     try {
@@ -187,9 +173,12 @@ export function AuthProvider({ children, initialAuth = null }) {
     role: authState?.user?.role || null,
   }
 
+  const isReal = isRealBackendAuth(authObj)
+
   const value = {
     ...authObj,
     auth: authObj,
+    isRealBackend: isReal,
     login,
     loginDemo,
     register,
@@ -201,6 +190,12 @@ export function AuthProvider({ children, initialAuth = null }) {
       {children}
     </AuthContext.Provider>
   )
+}
+
+export function isRealBackendAuth(auth) {
+  if (!auth?.isAuthenticated || !auth?.token) return false
+  const t = String(auth.token).toLowerCase()
+  return !t.includes('demo') && !t.includes('test') && !t.includes('local-session')
 }
 
 export function useAuth() {

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { LayoutDashboard, TrendingUp, Fingerprint, BookOpen, Sparkles, Settings, FileText, ChevronDown, User, LogOut } from 'lucide-react'
 import { DashboardShell } from '../../components/nav/DashboardShell'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { Toast } from '../../components/ui'
 import { useNavigate } from 'react-router-dom'
 import { endpoints } from '../../services/api'
@@ -24,10 +24,11 @@ export function ParentShell({ title, subtitle, children }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
   const [realChildren, setRealChildren] = useState(null)
+  const isReal = isRealBackendAuth(auth)
 
   useEffect(() => {
     let active = true
-    if (auth?.isAuthenticated && auth?.token) {
+    if (isReal) {
       endpoints.parentChildren()
         .then((res) => {
           if (active && Array.isArray(res)) {
@@ -42,7 +43,7 @@ export function ParentShell({ title, subtitle, children }) {
       setRealChildren(null)
     }
     return () => { active = false }
-  }, [auth?.isAuthenticated, auth?.token])
+  }, [isReal])
 
   useEffect(() => {
     const onClick = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false) }

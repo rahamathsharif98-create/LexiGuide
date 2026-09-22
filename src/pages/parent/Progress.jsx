@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { ParentShell } from './ParentShell'
 import { Card, Skeleton, Button } from '../../components/ui'
 import { FingerprintTrend } from '../../components/FingerprintChart'
@@ -21,7 +21,7 @@ export default function ParentProgress() {
   const { auth } = useAuth()
   const [range, setRange] = useState('7d')
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const childId = activeChild?.id
 
   const [loading, setLoading] = useState(isReal)

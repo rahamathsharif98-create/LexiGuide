@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { TeacherShell } from './TeacherShell'
 import { ERROR_PATTERNS, RECOMMENDED_SUPPORT, SKILL_KEYS, SKILL_LABELS, SKILL_COLORS, getFriendlySkills } from '../../data/demoData'
 import { Card, ProgressBar, ProgressRing, Button, Skeleton } from '../../components/ui'
@@ -23,7 +23,7 @@ export default function TeacherStudentProfile() {
   const navigate = useNavigate()
   const [range, setRange] = useState('7d')
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const numericId = Number(studentId)
 
   const [loading, setLoading] = useState(isReal)

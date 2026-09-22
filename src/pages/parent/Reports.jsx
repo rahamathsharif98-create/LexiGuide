@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { ParentShell } from './ParentShell'
 import { Card, Button, Skeleton } from '../../components/ui'
 import { SKILL_KEYS, SKILL_LABELS } from '../../data/demoData'
@@ -12,7 +12,7 @@ export default function ParentReports() {
   const { auth } = useAuth()
   const [generating, setGenerating] = useState(false)
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token)
+  const isReal = isRealBackendAuth(auth)
   const childId = activeChild?.id
 
   const [loading, setLoading] = useState(isReal)

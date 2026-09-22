@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, isRealBackendAuth } from '../../context/AuthContext'
 import { ParentShell } from './ParentShell'
 import { StatCard, Card, ProgressBar, Button, Skeleton } from '../../components/ui'
 import { ProfileAvatar } from '../../components/ProfileAvatar'
@@ -27,7 +27,7 @@ export default function ParentDashboard() {
   const { auth } = useAuth()
   const navigate = useNavigate()
 
-  const isReal = Boolean(auth?.isAuthenticated && auth?.token && !auth.token.includes('test') && !auth.token.includes('demo'))
+  const isReal = isRealBackendAuth(auth)
 
   const [loading, setLoading] = useState(isReal)
   const [error, setError] = useState(null)
