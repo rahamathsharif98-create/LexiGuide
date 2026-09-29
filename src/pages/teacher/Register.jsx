@@ -14,7 +14,7 @@ export default function TeacherRegister() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const { register, loginDemo } = useAuth()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -42,6 +42,15 @@ export default function TeacherRegister() {
       await register(name.trim(), email.trim(), password, 'teacher')
       navigate('/teacher/dashboard')
     } catch (err) {
+      const isStaticHost = err?.status === 503 || err?.message?.includes('static host')
+      const isNetlify = typeof window !== 'undefined' && window.location?.hostname?.includes('netlify.app')
+
+      if (isStaticHost || isNetlify) {
+        loginDemo('teacher', { id: 2, name: name.trim(), email: email.trim(), role: 'teacher' })
+        navigate('/teacher/dashboard')
+        return
+      }
+
       if (err instanceof ApiError && err.status === 400) {
         setError(err.message || 'An account with this email already exists.')
       } else {

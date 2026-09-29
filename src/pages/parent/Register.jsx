@@ -14,7 +14,7 @@ export default function ParentRegister() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
-  const { register } = useAuth()
+  const { register, loginDemo } = useAuth()
 
   const submit = async (e) => {
     e.preventDefault()
@@ -42,6 +42,15 @@ export default function ParentRegister() {
       await register(name.trim(), email.trim(), password, 'parent')
       navigate('/parent/dashboard')
     } catch (err) {
+      const isStaticHost = err?.status === 503 || err?.message?.includes('static host')
+      const isNetlify = typeof window !== 'undefined' && window.location?.hostname?.includes('netlify.app')
+
+      if (isStaticHost || isNetlify) {
+        loginDemo('parent', { id: 1, name: name.trim(), email: email.trim(), role: 'parent' })
+        navigate('/parent/dashboard')
+        return
+      }
+
       if (err instanceof ApiError && err.status === 400) {
         setError(err.message || 'An account with this email already exists.')
       } else {

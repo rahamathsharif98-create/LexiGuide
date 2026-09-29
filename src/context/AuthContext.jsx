@@ -64,14 +64,14 @@ export function AuthProvider({ children, initialAuth = null }) {
     }
   }, [logout])
 
-  const loginDemo = useCallback((role = 'parent') => {
+  const loginDemo = useCallback((role = 'parent', customUser = null) => {
     const isTeacher = role === 'teacher'
     const newAuthState = {
       token: isTeacher ? 'demo-teacher-token' : 'demo-parent-token',
       user: {
         id: isTeacher ? 2 : 1,
-        name: isTeacher ? 'Demo Educator' : 'Demo Parent',
-        email: isTeacher ? 'teacher@readquest.demo' : 'parent@readquest.demo',
+        name: customUser?.name || (isTeacher ? 'Demo Educator' : 'Demo Parent'),
+        email: customUser?.email || (isTeacher ? 'teacher@readquest.demo' : 'parent@readquest.demo'),
         role: isTeacher ? 'teacher' : 'parent',
       },
     }

@@ -60,8 +60,16 @@ export default function StudentRegister() {
 
     setLoading(true)
     try {
-      // 1. Real account registration via /api/auth/register
-      await register(name.trim(), studentEmail, studentPassword, 'child')
+      // 1. Real account registration via /api/auth/register (or graceful local creation on static host)
+      try {
+        await register(name.trim(), studentEmail, studentPassword, 'child')
+      } catch (authErr) {
+        const isStaticHost = authErr?.status === 503 || authErr?.message?.includes('static host')
+        const isNetlify = typeof window !== 'undefined' && window.location?.hostname?.includes('netlify.app')
+        if (!isStaticHost && !isNetlify) {
+          throw authErr
+        }
+      }
 
       // 2. Set up learner profile
       if (registerNewChild) {
