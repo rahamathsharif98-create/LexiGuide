@@ -2,6 +2,12 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict
 
 
+class StudentCreate(BaseModel):
+    name: str
+    age: int | None = None
+    avatar: str | None = None
+
+
 class StudentOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -15,3 +21,4 @@ class StudentOut(BaseModel):
 class StudentDetailOut(StudentOut):
     class_id: int | None = None
     class_name: str | None = None
+

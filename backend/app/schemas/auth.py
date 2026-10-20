@@ -20,6 +20,7 @@ class TokenResponse(BaseModel):
     role: UserRole
     user_id: int
     name: str
+    student_id: int | None = None
 
 
 class MeResponse(BaseModel):
@@ -28,3 +29,4 @@ class MeResponse(BaseModel):
     name: str
     email: str
     role: UserRole
+    student_id: int | None = None

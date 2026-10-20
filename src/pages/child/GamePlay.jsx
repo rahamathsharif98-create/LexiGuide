@@ -54,6 +54,8 @@ export default function GamePlay() {
   const [roundIdx, setRoundIdx] = useState(0)
   const [score, setScore] = useState(0)
   const [feedback, setFeedback] = useState(null) // 'correct' | 'wrong' | null
+  const [hintsCount, setHintsCount] = useState(0)
+  const [retriesCount, setRetriesCount] = useState(0)
   const [builtWord, setBuiltWord] = useState([])
   const [selectedWords, setSelectedWords] = useState([])
   const [showHint, setShowHint] = useState(false)
@@ -82,13 +84,22 @@ export default function GamePlay() {
 
   const finishGame = async (finalScore) => {
     if (saving) return
-    const pct = Math.round((finalScore / total) * 100)
+    const pct = total > 0 ? Math.round((finalScore / total) * 100) : 0
+    const supportLevel = hintsCount > 1 ? 'assisted' : 'independent'
     const outcome = {
       type: 'game',
+      gameId: resolvedGameId,
       skill: game.skill,
       title: game.title,
       score: pct,
       accuracy: pct,
+      roundsAttempted: total,
+      roundsCorrect: finalScore,
+      hintsUsed: hintsCount,
+      retriesCount: retriesCount,
+      supportLevel,
+      is_completed: true,
+      completion_status: 'completed',
       xpGain: 15 + finalScore * 3,
       starsGain: finalScore,
       _savedToBackend: isRealBackend,
@@ -115,6 +126,9 @@ export default function GamePlay() {
   }
 
   const nextRound = (wasCorrect) => {
+    if (!wasCorrect) {
+      setRetriesCount((r) => r + 1)
+    }
     const newScore = score + (wasCorrect ? 1 : 0)
     setScore(newScore)
     setFeedback(wasCorrect ? 'correct' : 'wrong')
@@ -144,6 +158,8 @@ export default function GamePlay() {
     setRoundIdx(0)
     setScore(0)
     setFeedback(null)
+    setHintsCount(0)
+    setRetriesCount(0)
     setBuiltWord([])
     setSelectedWords([])
     setShowHint(false)
@@ -160,10 +176,16 @@ export default function GamePlay() {
       {/* Top bar with back and voice indicator */}
       <div className="flex items-center justify-between mb-4">
         <button
-          onClick={() => navigate('/child/games')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-slate-600 font-display font-bold text-xs hover:bg-slate-50 min-h-[40px] shadow-xs"
+          onClick={() => {
+            if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+              navigate(-1)
+            } else {
+              navigate('/child/games')
+            }
+          }}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-white border border-slate-200 text-slate-600 font-display font-bold text-xs hover:bg-slate-50 min-h-[40px] shadow-xs cursor-pointer"
         >
-          <ChevronLeft size={16} /> Back to games
+          <ChevronLeft size={16} /> Back
         </button>
         <VoiceModeIndicator />
       </div>
@@ -239,7 +261,10 @@ export default function GamePlay() {
             ) : (
               <button
                 type="button"
-                onClick={() => setShowHint(true)}
+                onClick={() => {
+                  setHintsCount((h) => h + 1)
+                  setShowHint(true)
+                }}
                 className="flex items-center gap-1.5 text-xs font-bold text-[#527080] hover:text-[#08233A] py-2 px-3 rounded-xl hover:bg-[#E6F8FA] min-h-[44px] transition-colors cursor-pointer"
               >
                 <Lightbulb size={16} className="text-[#FFC857]" /> Need a hint?

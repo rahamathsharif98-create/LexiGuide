@@ -35,7 +35,11 @@ export default function CosmicMinerGame() {
 
   const handleBack = useCallback(() => {
     tracker.saveCompletedSession();
-    navigate('/child/games');
+    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/child/games');
+    }
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {

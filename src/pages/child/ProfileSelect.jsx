@@ -6,19 +6,16 @@ import { Card } from '../../components/ui'
 import ChildSetupFlow from '../../components/ChildSetupFlow'
 
 export default function ProfileSelect() {
-  const { childrenState, setActiveChildId, registerNewChild, showToast } = useApp()
+  const { childrenState, setActiveChildId, registerNewChild, showToast, isRealBackend } = useApp()
   const { login, isAuthenticated } = useAuth()
   const [isSettingUp, setIsSettingUp] = useState(false)
   const navigate = useNavigate()
 
   const choose = async (id) => {
     setActiveChildId(id)
-    if (!isAuthenticated) {
-      try {
-        await login('child.aarav@readquest.demo', 'demo1234', 'child')
-      } catch {
-        // Gracefully continue in offline mode if backend is unreachable
-      }
+    if (isRealBackend && !isAuthenticated) {
+      navigate('/child/login')
+      return
     }
     navigate('/child/home')
   }

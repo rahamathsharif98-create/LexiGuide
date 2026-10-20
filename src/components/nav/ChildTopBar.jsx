@@ -1,19 +1,28 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useApp } from '../../context/AppContext'
 import { ProfileAvatar } from '../ProfileAvatar'
 import { LANGUAGES } from '../../i18n/translations'
-import { Users, Volume2, VolumeX, Sparkles } from 'lucide-react'
+import { ArrowLeft, Users, Volume2, VolumeX, Sparkles } from 'lucide-react'
 import { audioAtmosphere } from '../../services/audioAtmosphereService'
 import { SmoothTonePill, SmoothToneModal } from '../audio/SmoothTonePlayer'
 
 export function ChildTopBar() {
   const { activeChild, language, setLanguage, showToast } = useApp()
   const navigate = useNavigate()
+  const location = useLocation()
   const [isQuiet, setIsQuiet] = useState(audioAtmosphere?.quietMode || false)
   const [showToneModal, setShowToneModal] = useState(false)
 
   if (!activeChild) return null
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/child/home')
+    }
+  }
 
   const toggleQuiet = () => {
     const next = !isQuiet
@@ -27,14 +36,26 @@ export function ChildTopBar() {
   return (
     <header className="sticky top-0 z-30 bg-[#FFFFFF]/95 backdrop-blur-md border-b border-[#D7EEF1] px-4 md:px-8 py-3 transition-all shadow-2xs">
       <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
-        {/* Left: Avatar button linking directly to "My Space" */}
-        <button
-          type="button"
-          onClick={() => navigate('/child/profile')}
-          className="flex items-center gap-3 text-left group p-1 -ml-1 rounded-2xl hover:bg-[#F2FBFC] transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#13CFE3]"
-          title="Open My Space & Profile"
-          aria-label="Open My Space & Profile"
-        >
+        {/* Left: Back button + Avatar button linking directly to "My Space" */}
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="flex items-center gap-1 px-3 py-2 rounded-2xl bg-[#F2FBFC] hover:bg-[#DDF9FC] text-[#08233A] hover:text-[#0899AA] border border-[#D7EEF1] text-xs font-black transition-all cursor-pointer shadow-2xs active:scale-95"
+            aria-label="Go back"
+            title="Go back"
+          >
+            <ArrowLeft size={16} />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => navigate('/child/profile')}
+            className="flex items-center gap-3 text-left group p-1 rounded-2xl hover:bg-[#F2FBFC] transition-all cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#13CFE3]"
+            title="Open My Space & Profile"
+            aria-label="Open My Space & Profile"
+          >
           <div className="relative">
             <ProfileAvatar emoji={activeChild.avatar} colorName={activeChild.color} size={42} ring />
             <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-[#39B87F] border-2 border-white flex items-center justify-center text-[8px] text-white font-black">
@@ -55,6 +76,7 @@ export function ChildTopBar() {
             </span>
           </div>
         </button>
+      </div>
 
         {/* Center/Right: Child Stats (Stars, Streak), Quiet Mode, and Language Switcher */}
         <div className="flex items-center gap-2">

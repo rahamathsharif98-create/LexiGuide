@@ -46,13 +46,18 @@ function useSafeApp() {
   try {
     return useApp()
   } catch {
-    return { activeChild: null }
+    return {
+      activeChild: null,
+      saveLearningSession: async () => {},
+      applySessionOutcome: () => {},
+      isRealBackend: false,
+    }
   }
 }
 
 export default function TraceAndSpeak({ initialLanguage = 'en', onFinish }) {
   const navigate = useSafeNavigate()
-  const { activeChild } = useSafeApp()
+  const { activeChild, saveLearningSession, applySessionOutcome, isRealBackend } = useSafeApp()
 
   // Resolve Child's Interest Theme (Cosmetics ONLY - Never pedagogy)
   const theme = resolveThemePackage(activeChild?.interests)
@@ -440,6 +445,44 @@ export default function TraceAndSpeak({ initialLanguage = 'en', onFinish }) {
     }
   }
 
+  // Proceed to Celebration & Persist Learning Session
+  const handleProceedToCelebration = async () => {
+    setStage('celebration')
+    const finalScore = lastEvalScore || 85
+    const starsEarned = finalScore >= 80 ? 3 : 2
+    const xpEarned = starsEarned * 10
+    const outcome = {
+      type: 'game',
+      gameId: 'trace-and-speak',
+      title: 'Trace & Speak',
+      score: finalScore,
+      accuracy: finalScore,
+      letter: currentItem.letter,
+      word: currentItem.word,
+      roundsAttempted: 1,
+      roundsCorrect: 1,
+      is_completed: true,
+      completion_status: 'completed',
+      starsGain: starsEarned,
+      xpGain: xpEarned,
+      _savedToBackend: isRealBackend,
+    }
+    if (isRealBackend && typeof saveLearningSession === 'function') {
+      try {
+        await saveLearningSession({
+          skill: 'phonologicalAwareness',
+          outcome,
+          stars: starsEarned,
+          xp: xpEarned,
+        })
+      } catch (err) {
+        console.error('Failed to save TraceAndSpeak session:', err)
+      }
+    } else if (typeof applySessionOutcome === 'function') {
+      applySessionOutcome(outcome)
+    }
+  }
+
   // Advance to Next Letter
   const handleNextLetter = () => {
     handleClear()
@@ -666,7 +709,7 @@ export default function TraceAndSpeak({ initialLanguage = 'en', onFinish }) {
             </button>
             <button
               type="button"
-              onClick={() => setStage('celebration')}
+              onClick={handleProceedToCelebration}
               className="flex-1 py-3 px-4 rounded-2xl bg-brand-500 border-b-4 border-brand-700 text-white font-display font-extrabold text-sm flex items-center justify-center gap-1.5 hover:bg-brand-600 min-h-[48px] active:border-b-0 active:translate-y-1 shadow-md"
             >
               <Sparkles className="w-4 h-4" /> Continue &rarr;

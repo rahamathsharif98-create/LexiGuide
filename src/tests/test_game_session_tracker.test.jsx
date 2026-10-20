@@ -1,4 +1,4 @@
-﻿import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 import { useGameSessionTracker } from '../hooks/useGameSessionTracker'
 import { updateFingerprint, normalizeSkillToPillar, GRANULAR_SKILL_TO_PILLAR } from '../services/mockAiService'
@@ -102,5 +102,61 @@ describe('Game Session Evidence Tracking and Normalization Audit', () => {
     expect(payload.xp).toBe(40)
     expect(payload.outcome.accuracy).toBe(67) // 2/3 = 67%
     expect(mockShowToast).toHaveBeenCalledTimes(1)
+  })
+
+  it('Scenario C: accurately tracks hints, retries, and assisted support level', async () => {
+    mockSaveLearningSession.mockClear()
+
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'ancient-labyrinth',
+        gameTitle: 'Ancient Phonics Labyrinth',
+        skill: 'phonicsDecodingIncantation',
+      })
+    )
+
+    // Child completes with 2 hints and 1 retry
+    act(() => {
+      result.current.recordAttempt(true, { hintUsed: true })
+      result.current.recordAttempt(false, { retry: true })
+      result.current.recordAttempt(true, { hintUsed: true })
+    })
+
+    expect(result.current.stats.hintsUsed).toBe(2)
+    expect(result.current.stats.retriesCount).toBe(1)
+
+    await act(async () => {
+      await result.current.saveCompletedSession({
+        stars: 2,
+        xp: 30,
+      })
+    })
+
+    expect(mockSaveLearningSession).toHaveBeenCalledTimes(1)
+    const payload = mockSaveLearningSession.mock.calls[0][0]
+    expect(payload.outcome.hintsUsed).toBe(2)
+    expect(payload.outcome.retriesCount).toBe(1)
+    expect(payload.outcome.support_level).toBe('assisted')
+  })
+
+  it('Scenario D: exits with 0 attempts do not save false sessions', async () => {
+    mockSaveLearningSession.mockClear()
+
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'cosmic-miner',
+        gameTitle: 'Cosmic Letter Miner',
+        skill: 'letterSequencing',
+      })
+    )
+
+    // User navigates away immediately without any attempt
+    let outcome = null
+    await act(async () => {
+      outcome = await result.current.saveCompletedSession()
+    })
+
+    expect(outcome).toBeNull()
+    expect(mockSaveLearningSession).not.toHaveBeenCalled()
   })
 })

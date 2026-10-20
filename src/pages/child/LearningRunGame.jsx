@@ -53,10 +53,21 @@ export default function LearningRunGame() {
 
     setHostSessionHandler(async (finalResult) => {
       setLastResult(finalResult)
-      const starsEarned = finalResult.starsEarned ?? 3
-      const xpEarned = starsEarned * 10
-      const lettersCount = finalResult.lettersCollected?.length || 0
-      const wordsCount = finalResult.wordsCompleted?.length || 0
+      const challengesCompleted = Number(finalResult.challengesCompleted || 0);
+      const challengesCorrect = Number(finalResult.challengesCorrect || 0);
+      const distance = Math.round(finalResult.distance || 0);
+
+      // Guard: Do not save false successful sessions if user backed out immediately with 0 challenges and negligible distance
+      if (challengesCompleted === 0 && distance < 30) {
+        return;
+      }
+
+      const calculatedAccuracy = challengesCompleted > 0
+        ? Math.round((challengesCorrect / challengesCompleted) * 100)
+        : (distance > 100 ? 70 : 0);
+      const isCompleted = challengesCompleted > 0 || distance >= 100;
+      const actualStars = isCompleted ? (finalResult.starsEarned ?? 1) : 0;
+      const actualXp = isCompleted ? actualStars * 10 : 0;
 
       try {
         if (typeof saveLearningSession === 'function') {
@@ -67,29 +78,31 @@ export default function LearningRunGame() {
               type: 'game',
               gameId: 'learning-run',
               title: 'LexiGuide Learning Run',
-              score: Math.round(finalResult.distance || 0),
-              starsGain: starsEarned,
-              xpGain: xpEarned,
-              accuracy: finalResult.challengesCompleted > 0
-                ? Math.round(((finalResult.challengesCorrect || 0) / finalResult.challengesCompleted) * 100)
-                : 92,
+              score: distance,
+              starsGain: actualStars,
+              xpGain: actualXp,
+              accuracy: calculatedAccuracy,
+              roundsAttempted: challengesCompleted,
+              roundsCorrect: challengesCorrect,
+              is_completed: isCompleted,
+              completion_status: isCompleted ? 'completed' : 'incomplete',
               duration: finalResult.duration || 60,
               lettersCount,
               wordsCount,
               details: {
-                distance: finalResult.distance,
+                distance,
                 lettersCollected: finalResult.lettersCollected,
                 wordsCompleted: finalResult.wordsCompleted,
                 observedPatterns: finalResult.observedPatterns,
                 difficultLetters: finalResult.difficultLetters,
               },
             },
-            stars: starsEarned,
-            xp: xpEarned,
+            stars: actualStars,
+            xp: actualXp,
           })
         }
-        if (typeof showToast === 'function') {
-          showToast(`🏃‍♂️ Amazing run! +${starsEarned} ⭐ & +${xpEarned} XP saved!`, 'success')
+        if (typeof showToast === 'function' && isCompleted) {
+          showToast(`🏃‍♂️ Amazing run! +${actualStars} ⭐ & +${actualXp} XP saved!`, 'success')
         }
       } catch (err) {
         console.error('Failed to persist learning run session to LexiGuide:', err)
@@ -108,12 +121,18 @@ export default function LearningRunGame() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => navigate('/child/games')}
+            onClick={() => {
+              if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+                navigate(-1)
+              } else {
+                navigate('/child/games')
+              }
+            }}
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#F2FBFC] hover:bg-[#DDF9FC] text-[#08233A] hover:text-[#0899AA] font-bold text-sm border border-[#D7EEF1] transition-all cursor-pointer shadow-2xs active:scale-95"
             aria-label="Back to Gaming Zone"
           >
             <ArrowLeft size={16} />
-            <span>Games</span>
+            <span>Back</span>
           </button>
 
           <div className="hidden sm:flex items-center gap-2">

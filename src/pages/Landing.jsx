@@ -5,7 +5,7 @@ import { Sparkles, Compass, ShieldCheck, HeartHandshake, GraduationCap, ArrowRig
 
 const roles = [
   {
-    to: '/select-profile',
+    to: '/child/login',
     badge: 'Child & Learner',
     title: "I'm a Learner",
     desc: "Start your magical learning adventure with games, stories, voice companions, and fun challenges!",

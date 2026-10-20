@@ -140,15 +140,24 @@ export default function SpeakPlay() {
 
   const handleFinish = async (resultsToSave) => {
     if (saving) return
-    const avgAccuracy = Math.round(resultsToSave.reduce((a, b) => a + b, 0) / (resultsToSave.length || 1))
+    const isCompleted = (resultsToSave || []).length > 0
+    const avgAccuracy = isCompleted
+      ? Math.round(resultsToSave.reduce((a, b) => a + b, 0) / resultsToSave.length)
+      : 0
+    const starsEarned = isCompleted ? (avgAccuracy >= 80 ? 3 : (avgAccuracy >= 50 ? 2 : 1)) : 0
+    const xpEarned = isCompleted ? starsEarned * 10 : 0
+
     const outcome = {
       type: 'reading',
       skill: 'pronunciation',
       title: 'Speak & Shine',
       accuracy: avgAccuracy,
+      roundsAttempted: (resultsToSave || []).length,
+      is_completed: isCompleted,
+      completion_status: isCompleted ? 'completed' : 'incomplete',
       metrics: { accuracy: avgAccuracy, hesitations: 0 },
-      xpGain: 22,
-      starsGain: 5,
+      xpGain: xpEarned,
+      starsGain: starsEarned,
       _savedToBackend: isRealBackend,
     }
     if (isRealBackend) {
@@ -158,8 +167,8 @@ export default function SpeakPlay() {
         await saveLearningSession({
           skill: 'pronunciation',
           outcome,
-          stars: 5,
-          xp: 22,
+          stars: starsEarned,
+          xp: xpEarned,
         })
       } catch (err) {
         setSaveError(err.message || 'Could not save your speaking adventure.')

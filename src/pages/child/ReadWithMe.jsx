@@ -73,6 +73,7 @@ export default function ReadWithMe() {
 }
 
 function SelectStory({ onPick, theme }) {
+  const navigate = useNavigate()
   return (
     <div className="max-w-2xl mx-auto" data-testid="select-story-container">
       <div className="flex items-center justify-between mb-4">
@@ -277,6 +278,10 @@ function ReadingSession({ passage, onBack, activeChild, errorPatterns, theme }) 
 
   const handleSaveAndReveal = async (results, m) => {
     const expectedText = passage.words.join(' ')
+    const correctCount = results.filter((r) => r.status === 'correct').length
+    const calculatedAcc = m?.accuracy ?? (results.length > 0 ? Math.round((correctCount / results.length) * 100) : 0)
+    const starsEarned = calculatedAcc >= 80 ? 4 : (calculatedAcc >= 50 ? 2 : 1)
+    const xpEarned = starsEarned * 10
     const recognizedWords = results.filter((r) => r.status !== 'error').map((r) => r.word).join(' ') || expectedText
     setSaveError(null)
     try {
@@ -285,9 +290,20 @@ function ReadingSession({ passage, onBack, activeChild, errorPatterns, theme }) 
         expected_text: expectedText,
         recognized_text: recognizedWords,
         duration_seconds: 15,
-        stars: 4,
-        xp: 20,
-        outcome: { type: 'reading', title: 'Read With Me', metrics: m, xpGain: 20, starsGain: 4 },
+        stars: starsEarned,
+        xp: xpEarned,
+        outcome: {
+          type: 'reading',
+          title: 'Read With Me',
+          metrics: { ...m, accuracy: calculatedAcc },
+          accuracy: calculatedAcc,
+          xpGain: xpEarned,
+          starsGain: starsEarned,
+          roundsAttempted: results.length,
+          roundsCorrect: correctCount,
+          is_completed: true,
+          completion_status: 'completed',
+        },
       })
       setMetrics(m)
       revealWordByWord(results)
@@ -336,9 +352,11 @@ function ReadingSession({ passage, onBack, activeChild, errorPatterns, theme }) 
           }
         })
 
-        const accuracy = res.words_attempted > 0
-          ? Math.round(((res.words_correct || 0) / res.words_attempted) * 100)
-          : 85
+        const wordsAttempted = res.words_attempted || passage.words.length
+        const wordsCorrect = res.words_correct || wordResults.filter(w => w.status === 'correct').length
+        const accuracy = wordsAttempted > 0
+          ? Math.round((wordsCorrect / wordsAttempted) * 100)
+          : (res.accuracy != null ? Math.round(res.accuracy) : 0)
 
         const m = {
           wordsRead: res.words_attempted || passage.words.length,

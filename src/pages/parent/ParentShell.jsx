@@ -18,32 +18,18 @@ const navItems = [
 ]
 
 export function ParentShell({ title, subtitle, children }) {
-  const { childrenState, activeChildId, setActiveChildId, toast } = useApp()
+  const { childrenState, activeChildId, setActiveChildId, refreshChildren, toast } = useApp()
   const { auth, logout } = useAuth()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef(null)
-  const [realChildren, setRealChildren] = useState(null)
   const isReal = isRealBackendAuth(auth)
 
   useEffect(() => {
-    let active = true
-    if (isReal) {
-      endpoints.parentChildren()
-        .then((res) => {
-          if (active && Array.isArray(res)) {
-            setRealChildren(res)
-            if (res.length > 0 && !res.some((c) => String(c.id) === String(activeChildId))) {
-              setActiveChildId(res[0].id)
-            }
-          }
-        })
-        .catch(() => {})
-    } else {
-      setRealChildren(null)
+    if (isReal && typeof refreshChildren === 'function') {
+      refreshChildren().catch(() => {})
     }
-    return () => { active = false }
-  }, [isReal])
+  }, [isReal, refreshChildren])
 
   useEffect(() => {
     const onClick = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false) }
@@ -51,7 +37,7 @@ export function ParentShell({ title, subtitle, children }) {
     return () => document.removeEventListener('mousedown', onClick)
   }, [])
 
-  const effectiveChildren = realChildren !== null ? realChildren : childrenState
+  const effectiveChildren = childrenState || []
 
   return (
     <DashboardShell
