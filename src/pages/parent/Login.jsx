@@ -13,7 +13,12 @@ export default function ParentLogin() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginDemo } = useAuth()
+
+  const handleDemoSignIn = () => {
+    loginDemo('parent', { id: 1, name: 'Demo Parent', email: email.trim() || 'parent@readquest.demo', role: 'parent' })
+    navigate('/parent/dashboard')
+  }
 
   const submit = async (e) => {
     e.preventDefault()
@@ -31,6 +36,14 @@ export default function ParentLogin() {
       await login(email.trim(), password, 'parent')
       navigate('/parent/dashboard')
     } catch (err) {
+      const isNetlify = typeof window !== 'undefined' && Boolean(window.location?.hostname?.includes('netlify.app'))
+      const isStaticHost = err?.status === 503 || Boolean(err?.message?.includes('static host'))
+
+      if (isStaticHost || isNetlify) {
+        handleDemoSignIn()
+        return
+      }
+
       if (err instanceof ApiError && err.status === 401) {
         setError('Incorrect email or password.')
       } else if (err.message && err.message.includes('required for this portal')) {
@@ -119,7 +132,15 @@ export default function ParentLogin() {
           </p>
         </div>
 
-        <div className="text-center mt-3">
+        <div className="text-center mt-3 flex flex-col items-center gap-2">
+          <Button
+            type="button"
+            onClick={handleDemoSignIn}
+            className="w-full bg-[#E6F8FA] hover:bg-[#DDF9FC] text-[#08233A] border border-[#D7EEF1] font-display font-extrabold py-2.5 rounded-2xl shadow-xs transition-all cursor-pointer text-xs flex items-center justify-center gap-1.5"
+          >
+            ⚡ One-Click Instant Demo Parent Access
+          </Button>
+
           <button
             type="button"
             onClick={() => {
@@ -128,7 +149,7 @@ export default function ParentLogin() {
             }}
             className="text-[11px] text-[#527080] hover:text-[#08233A] inline-flex items-center gap-1 cursor-pointer"
           >
-            Demo account: <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">parent@readquest.demo</code> / <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">demo1234</code>
+            Fill credentials: <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">parent@readquest.demo</code> / <code className="text-[#08233A] bg-[#E6F8FA] px-2 py-0.5 rounded-md border border-[#D7EEF1] font-mono">demo1234</code>
           </button>
         </div>
       </Card>

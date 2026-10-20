@@ -15,8 +15,22 @@ export default function ChildLogin() {
   const [error, setError] = useState(null)
 
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, loginDemo } = useAuth()
   const { refreshChildren, setActiveChildId } = useApp()
+
+  const handleQuickLogin = (studentId = 1, studentName = 'Aarav') => {
+    loginDemo('child', {
+      id: 3,
+      name: studentName,
+      email: `child.${studentName.toLowerCase()}@readquest.demo`,
+      role: 'child',
+      studentId,
+    })
+    if (typeof setActiveChildId === 'function') {
+      setActiveChildId(studentId)
+    }
+    navigate('/child/home')
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -45,12 +59,25 @@ export default function ChildLogin() {
         if (authResult?.user?.studentId) {
           setActiveChildId(authResult.user.studentId)
         } else if (students && students.length > 0) {
-          setActiveChildId(students[0].id)
+          const matched = students.find(
+            (s) =>
+              s.name.toLowerCase() === identifier.trim().toLowerCase() ||
+              identifier.toLowerCase().includes(s.name.toLowerCase())
+          )
+          setActiveChildId(matched ? matched.id : students[0].id)
         }
       }
 
       navigate('/child/home')
     } catch (err) {
+      const isNetlify = typeof window !== 'undefined' && Boolean(window.location?.hostname?.includes('netlify.app'))
+      const isStaticHost = err?.status === 503 || Boolean(err?.message?.includes('static host'))
+
+      if (isStaticHost || isNetlify) {
+        handleQuickLogin(1, 'Aarav')
+        return
+      }
+
       if (err instanceof ApiError && err.status === 401) {
         setError('Secret code or account does not match. Ask an adult or try again!')
       } else if (err.message && err.message.includes('required for this portal')) {
@@ -139,20 +166,52 @@ export default function ChildLogin() {
           </div>
 
           {error && (
-            <div className="bg-rose-50 border border-rose-200 text-[#D95C5C] text-xs font-bold rounded-xl py-2.5 px-3 text-center">
-              {error}
+            <div className="bg-rose-50 border border-rose-200 text-[#D95C5C] text-xs font-bold rounded-2xl p-3 text-center flex flex-col items-center gap-2">
+              <span>{error}</span>
+              <button
+                type="button"
+                onClick={() => handleQuickLogin(1, 'Aarav')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#13CFE3] text-[#08233A] font-extrabold rounded-xl text-xs shadow-xs hover:bg-[#0899AA] hover:text-white transition-colors cursor-pointer"
+              >
+                <Sparkles size={13} /> Continue as Aarav (Offline Mode) 🚀
+              </button>
             </div>
           )}
 
           <Button
             type="submit"
             disabled={loading}
-            className="mt-2 w-full py-4 rounded-2xl bg-[#13CFE3] hover:bg-[#0899AA] text-[#08233A] hover:text-white font-display font-black text-base shadow-md transition-all cursor-pointer border-b-4 border-[#0899AA] active:border-b-0 active:translate-y-1"
+            className="mt-1 w-full py-4 rounded-2xl bg-[#13CFE3] hover:bg-[#0899AA] text-[#08233A] hover:text-white font-display font-black text-base shadow-md transition-all cursor-pointer border-b-4 border-[#0899AA] active:border-b-0 active:translate-y-1"
           >
             {loading ? 'Checking your code... 🔑' : 'Start My Adventure! 🚀'}
           </Button>
 
-          <div className="text-center pt-2">
+          {/* Quick Explorer Start */}
+          <div className="mt-2 pt-3 border-t border-[#D7EEF1] text-center">
+            <span className="text-[11px] font-extrabold text-[#527080] uppercase tracking-wider block mb-2">
+              ⚡ Or tap an explorer to start:
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              {[
+                { id: 1, name: 'Aarav', avatar: '🦊' },
+                { id: 2, name: 'Maya', avatar: '🐼' },
+                { id: 3, name: 'Rohan', avatar: '🦁' },
+                { id: 4, name: 'Zara', avatar: '🦄' },
+              ].map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => handleQuickLogin(s.id, s.name)}
+                  className="flex items-center justify-center gap-1 py-1.5 px-2 rounded-xl border border-[#D7EEF1] bg-[#F2FBFC] hover:bg-[#DDF9FC] hover:border-[#13CFE3] text-xs font-bold text-[#08233A] transition-all cursor-pointer shadow-xs active:scale-95"
+                >
+                  <span>{s.avatar}</span>
+                  <span>{s.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center pt-1">
             <Link
               to="/child/register"
               className="text-xs font-bold text-[#0899AA] hover:underline"
