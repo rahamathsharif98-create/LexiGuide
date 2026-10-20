@@ -379,3 +379,209 @@ def test_scenario_g_evidence_to_recommendation_flow(db_session):
     for r in recs:
         assert r.student_id == student.id
         assert "needs a little more practice" in r.reason or "Doing great" in r.reason
+
+
+# ---------------------------------------------------------------------------
+# Explicit End-to-End Test Scenarios 1 to 10
+# ---------------------------------------------------------------------------
+
+def test_scenario_1_eight_of_ten_correct(db_session):
+    """1. A student answers 8 of 10 questions correctly."""
+    st = Student(name="Scenario1 Student", age=7)
+    db_session.add(st)
+    db_session.commit()
+
+    outcome = {
+        "type": "game",
+        "gameId": "sound-safari",
+        "skill": "phonologicalAwareness",
+        "roundsAttempted": 10,
+        "roundsCorrect": 8,
+        "accuracy": 80,
+        "is_completed": True,
+        "completion_status": "completed",
+    }
+    s = create_session(db_session, student_id=st.id, activity_id=None, skill="phonologicalAwareness", outcome=outcome, stars=3, xp=30)
+    assert s.outcome["roundsAttempted"] == 10
+    assert s.outcome["roundsCorrect"] == 8
+    assert s.outcome["accuracy"] == 80
+    assert s.stars == 3
+
+
+def test_scenario_2_retry_incorrect_answer(db_session):
+    """2. The student retries an incorrect answer."""
+    st = Student(name="Scenario2 Student", age=7)
+    db_session.add(st)
+    db_session.commit()
+
+    outcome = {
+        "type": "game",
+        "gameId": "word-builder",
+        "skill": "wordRecognition",
+        "roundsAttempted": 5,
+        "roundsCorrect": 5,
+        "retriesCount": 2,
+        "hintsUsed": 0,
+        "accuracy": 100,
+        "is_completed": True,
+    }
+    s = create_session(db_session, student_id=st.id, activity_id=None, skill="wordRecognition", outcome=outcome, stars=2, xp=20)
+    assert s.outcome["retriesCount"] == 2
+    assert s.outcome["roundsCorrect"] == 5
+
+
+def test_scenario_3_uses_a_hint(db_session):
+    """3. The student uses a hint."""
+    st = Student(name="Scenario3 Student", age=6)
+    db_session.add(st)
+    db_session.commit()
+
+    outcome = {
+        "type": "game",
+        "gameId": "ancient-labyrinth",
+        "skill": "phonologicalAwareness",
+        "roundsAttempted": 6,
+        "roundsCorrect": 6,
+        "hintsUsed": 3,
+        "supportLevel": "assisted",
+        "accuracy": 100,
+        "is_completed": True,
+    }
+    s = create_session(db_session, student_id=st.id, activity_id=None, skill="phonologicalAwareness", outcome=outcome, stars=2, xp=20)
+    assert s.outcome["hintsUsed"] == 3
+    assert s.outcome["supportLevel"] == "assisted"
+
+
+def test_scenario_4_exits_before_completing(db_session):
+    """4. The student exits before completing a game."""
+    st = Student(name="Scenario4 Student", age=8)
+    db_session.add(st)
+    db_session.commit()
+
+    outcome = {
+        "type": "game",
+        "gameId": "learning-run",
+        "roundsAttempted": 0,
+        "roundsCorrect": 0,
+        "is_completed": False,
+        "completion_status": "incomplete",
+    }
+    s = create_session(db_session, student_id=st.id, activity_id=None, skill="readingFluency", outcome=outcome, stars=0, xp=0)
+    assert s.completed_at is None
+    assert s.stars == 0
+    assert s.xp == 0
+    assert s.outcome["is_completed"] is False
+
+
+def test_scenario_5_second_session_completion(db_session):
+    """5. The same student completes a second session."""
+    st = Student(name="Scenario5 Student", age=7)
+    db_session.add(st)
+    db_session.commit()
+
+    s1 = create_session(db_session, student_id=st.id, activity_id=None, skill="phonologicalAwareness", outcome={"accuracy": 70, "roundsAttempted": 10, "roundsCorrect": 7, "is_completed": True}, stars=2, xp=20)
+    s2 = create_session(db_session, student_id=st.id, activity_id=None, skill="phonologicalAwareness", outcome={"accuracy": 90, "roundsAttempted": 10, "roundsCorrect": 9, "is_completed": True}, stars=3, xp=30)
+    
+    sessions = list_sessions_for_student(db_session, st.id)
+    assert len(sessions) == 2
+    progress = get_progress(db_session, st.id, "7d")
+    assert progress["recent_comparison"] is not None
+    assert progress["recent_comparison"]["current_accuracy"] == 90.0
+    assert progress["recent_comparison"]["previous_accuracy"] == 70.0
+
+
+def test_scenario_6_two_students_different_results(db_session):
+    """6. Two students complete the same activity with different results."""
+    st1 = Student(name="Student One", age=7)
+    st2 = Student(name="Student Two", age=7)
+    db_session.add_all([st1, st2])
+    db_session.commit()
+
+    s1 = create_session(db_session, student_id=st1.id, activity_id=None, skill="phonologicalAwareness", outcome={"accuracy": 95, "roundsAttempted": 10, "roundsCorrect": 9, "is_completed": True}, stars=3, xp=35)
+    s2 = create_session(db_session, student_id=st2.id, activity_id=None, skill="phonologicalAwareness", outcome={"accuracy": 40, "roundsAttempted": 10, "roundsCorrect": 4, "is_completed": True}, stars=1, xp=10)
+
+    fp1 = get_latest_fingerprint(db_session, st1.id)
+    fp2 = get_latest_fingerprint(db_session, st2.id)
+
+    assert fp1.phonological_awareness > fp2.phonological_awareness
+    assert s1.stars == 3
+    assert s2.stars == 1
+
+
+def test_scenario_7_parent_views_correct_child_report(db_session):
+    """7. A parent views the correct child's report."""
+    parent_u = User(name="Parent P7", email="p7@test.demo", role=UserRole.parent, password_hash="hash")
+    db_session.add(parent_u)
+    db_session.commit()
+
+    child = Student(name="Child P7", age=7)
+    db_session.add(child)
+    db_session.commit()
+
+    parent = Parent(user_id=parent_u.id)
+    parent.children.append(child)
+    db_session.add(parent)
+    db_session.commit()
+
+    create_session(db_session, student_id=child.id, activity_id=None, skill="wordRecognition", outcome={"accuracy": 85, "roundsAttempted": 10, "roundsCorrect": 8, "is_completed": True}, stars=3, xp=30)
+
+    assert_parent_owns_child(db_session, parent_u, child.id)
+    summary = get_child_summary(db_session, child.id)
+    assert summary["child_id"] == child.id
+    assert summary["total_stars"] == 3
+
+
+def test_scenario_8_teacher_views_authorized_student(db_session):
+    """8. A teacher views an authorized student's progress."""
+    teacher_u = User(name="Teacher T8", email="t8@test.demo", role=UserRole.teacher, password_hash="hash")
+    db_session.add(teacher_u)
+    db_session.commit()
+
+    teacher = Teacher(user_id=teacher_u.id)
+    db_session.add(teacher)
+    db_session.commit()
+
+    cls = ClassModel(teacher_id=teacher.id, name="Classroom 8")
+    child = Student(name="Student T8", age=8)
+    cls.students.append(child)
+    db_session.add(cls)
+    db_session.commit()
+
+    create_session(db_session, student_id=child.id, activity_id=None, skill="readingFluency", outcome={"accuracy": 90, "roundsAttempted": 10, "roundsCorrect": 9, "is_completed": True}, stars=3, xp=30)
+
+    assert_can_access_child(db_session, teacher_u, child.id)
+    students = get_class_students(db_session, cls.id)
+    assert any(s.id == child.id for s in students)
+
+
+def test_scenario_9_recommendation_after_valid_evidence(db_session):
+    """9. A recommendation is generated after valid evidence is saved."""
+    st = Student(name="Student Rec9", age=7)
+    db_session.add(st)
+    db_session.commit()
+
+    create_session(db_session, student_id=st.id, activity_id=None, skill="phonologicalAwareness", outcome={"accuracy": 90, "roundsAttempted": 10, "roundsCorrect": 9, "is_completed": True}, stars=3, xp=30)
+
+    recs = list_recommendations_for_student(db_session, st.id)
+    assert len(recs) > 0
+    assert all(r.student_id == st.id for r in recs)
+
+
+def test_scenario_10_refresh_persisted_results_verified(db_session):
+    """10. The application is refreshed and the persisted results are checked again."""
+    st = Student(name="Student Refresh10", age=7)
+    db_session.add(st)
+    db_session.commit()
+
+    s = create_session(db_session, student_id=st.id, activity_id=None, skill="comprehension", outcome={"type": "story", "accuracy": 85, "roundsAttempted": 5, "roundsCorrect": 4, "is_completed": True}, stars=3, xp=25)
+
+    # Simulate database reconnect / refresh by querying fresh from DB
+    reloaded_sessions = db_session.query(LearningSession).filter(LearningSession.student_id == st.id).all()
+    assert len(reloaded_sessions) == 1
+    assert reloaded_sessions[0].id == s.id
+    assert reloaded_sessions[0].stars == 3
+    assert reloaded_sessions[0].outcome["accuracy"] == 85
+
+    reloaded_fp = get_latest_fingerprint(db_session, st.id)
+    assert reloaded_fp is not None
+    assert reloaded_fp.comprehension > 55.0

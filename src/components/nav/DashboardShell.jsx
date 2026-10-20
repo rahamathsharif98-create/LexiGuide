@@ -1,5 +1,18 @@
+import { useNavigate } from 'react-router-dom'
 import { AppLink as Link, AppNavLink as NavLink } from './AppLink'
+import { ArrowLeft } from 'lucide-react'
+
 export function DashboardShell({ role, navItems, title, subtitle, right, children }) {
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
+      navigate(-1)
+    } else {
+      navigate('/')
+    }
+  }
+
   return (
     <div className="min-h-screen flex bg-[#F2FBFC]">
       <aside className="hidden lg:flex flex-col w-64 shrink-0 bg-white border-r border-[#D7EEF1] h-screen sticky top-0 py-6 px-4 shadow-[0_8px_30px_rgba(8,35,58,0.04)]">
@@ -30,9 +43,29 @@ export function DashboardShell({ role, navItems, title, subtitle, right, childre
 
       <div className="flex-1 min-w-0">
         <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#D7EEF1] px-5 lg:px-8 py-4 flex items-center justify-between shadow-[0_2px_10px_rgba(8,35,58,0.03)]">
-          <div>
-            <h1 className="font-display font-extrabold text-xl text-[#08233A]">{title}</h1>
-            {subtitle && <p className="text-sm font-medium text-[#527080]">{subtitle}</p>}
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleBack}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-[#D7EEF1] bg-[#F2FBFC] hover:bg-[#DDF9FC] text-[#08233A] hover:text-[#0899AA] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+              title="Go back to previous page"
+              aria-label="Go back to previous page"
+            >
+              <ArrowLeft size={15} />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+            <Link
+              to="/"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-[#D7EEF1] bg-[#F2FBFC] hover:bg-[#DDF9FC] text-[#08233A] hover:text-[#0899AA] text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+              title="Return to Main Portals Landing"
+              aria-label="Return to Main Portals Landing"
+            >
+              🏠 <span className="hidden sm:inline">Home</span>
+            </Link>
+            <div className="ml-1">
+              <h1 className="font-display font-extrabold text-xl text-[#08233A]">{title}</h1>
+              {subtitle && <p className="text-sm font-medium text-[#527080]">{subtitle}</p>}
+            </div>
           </div>
           <div className="flex items-center gap-3">{right}</div>
         </header>

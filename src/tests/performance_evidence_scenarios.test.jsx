@@ -156,4 +156,108 @@ describe('End-to-End Scenarios A-G: Performance Evidence & Learning Pipeline', (
     expect(soundRec).toBeDefined()
     expect(soundRec.reason).toContain('Phonological Awareness')
   })
+
+  // ---------------------------------------------------------------------------
+  // Explicit Verification Scenarios 1 to 10
+  // ---------------------------------------------------------------------------
+
+  it('Scenario 1: student answers 8 of 10 questions correctly with exact empirical calculation', async () => {
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'sound-safari',
+        gameTitle: 'Sound Safari',
+        skill: 'phonologicalAwareness',
+        initialTarget: 10,
+      })
+    )
+    await act(async () => {
+      for (let i = 0; i < 8; i++) result.current.recordAttempt(true)
+      for (let i = 0; i < 2; i++) result.current.recordAttempt(false)
+    })
+    let outcome = null
+    await act(async () => {
+      outcome = await result.current.saveCompletedSession({ isCompleted: true })
+    })
+    expect(outcome.roundsAttempted).toBe(10)
+    expect(outcome.roundsCorrect).toBe(8)
+    expect(outcome.accuracy).toBe(80)
+  })
+
+  it('Scenario 2: student retries an incorrect answer', async () => {
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'word-builder',
+        gameTitle: 'Word Builder',
+        skill: 'wordRecognition',
+        initialTarget: 5,
+      })
+    )
+    await act(async () => {
+      result.current.recordAttempt(false)
+      result.current.recordAttempt(true, { retry: true })
+    })
+    expect(result.current.stats.retriesCount).toBe(1)
+  })
+
+  it('Scenario 3: student uses a hint during activity', async () => {
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'ancient-labyrinth',
+        gameTitle: 'Phonics Labyrinth',
+        skill: 'phonologicalAwareness',
+        initialTarget: 5,
+      })
+    )
+    await act(async () => {
+      result.current.recordAttempt(true, { hintUsed: true })
+      result.current.recordAttempt(true, { hintUsed: true })
+    })
+    let outcome = null
+    await act(async () => {
+      outcome = await result.current.saveCompletedSession({ isCompleted: true })
+    })
+    expect(outcome.hintsUsed).toBe(2)
+    expect(outcome.support_level).toBe('assisted')
+  })
+
+  it('Scenario 4: student exits before completing a game', async () => {
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'learning-run',
+        gameTitle: 'Learning Run',
+        skill: 'readingFluency',
+        initialTarget: 5,
+      })
+    )
+    const outcome = await result.current.saveCompletedSession()
+    expect(outcome).toBeNull()
+  })
+
+  it('Scenario 5: same student completes a second session and history compares properly', () => {
+    const fp0 = { phonologicalAwareness: 55, wordRecognition: 55, readingFluency: 55, pronunciation: 55, comprehension: 55 }
+    const fp1 = updateFingerprint(fp0, { type: 'game', skill: 'phonologicalAwareness', score: 85, accuracy: 85 })
+    const fp2 = updateFingerprint(fp1, { type: 'game', skill: 'phonologicalAwareness', score: 95, accuracy: 95 })
+    expect(fp2.phonologicalAwareness).toBeGreaterThan(fp1.phonologicalAwareness)
+  })
+
+  it('Scenario 6: two students complete same activity with different results', () => {
+    const fpBase = { phonologicalAwareness: 55, wordRecognition: 55, readingFluency: 55, pronunciation: 55, comprehension: 55 }
+    const st1Fp = updateFingerprint(fpBase, { type: 'game', skill: 'phonologicalAwareness', score: 90, accuracy: 90 })
+    const st2Fp = updateFingerprint(fpBase, { type: 'game', skill: 'phonologicalAwareness', score: 40, accuracy: 40 })
+    expect(st1Fp.phonologicalAwareness).toBeGreaterThan(st2Fp.phonologicalAwareness)
+  })
+
+  it('Scenario 7 & 8: recommendation engine selects appropriate practice based on student need', () => {
+    const strugglingPhonics = { phonologicalAwareness: 45, wordRecognition: 80, readingFluency: 80, pronunciation: 80, comprehension: 80 }
+    const recs = generateRecommendations(strugglingPhonics, [])
+    expect(recs[0].reason).toContain('Phonological Awareness')
+    expect(recs[0].route).toBe('/child/games/match-sound')
+  })
+
+  it('Scenario 9 & 10: spaced practice and recommendations adapt as skills improve', () => {
+    const masteredFingerprint = { phonologicalAwareness: 85, wordRecognition: 85, readingFluency: 85, pronunciation: 85, comprehension: 85 }
+    const recs = generateRecommendations(masteredFingerprint, [])
+    expect(recs.length).toBeGreaterThan(0)
+    expect(recs[0].title).toBe('Story Time')
+  })
 })

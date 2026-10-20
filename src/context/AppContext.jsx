@@ -149,25 +149,50 @@ export function AppProvider({ children }) {
     if (isRealBackend) {
       refreshChildren()
     } else {
-      setChildrenState(CHILDREN)
-      setActiveChildIdState((prev) => {
+      if (auth?.role === 'parent') {
+        let parentChildren = [CHILDREN[0]] // Aarav (id 1) is the linked child for Demo Parent
         try {
-          const stored = typeof window !== 'undefined' && window.localStorage
-            ? (window.localStorage.getItem('readquest_active_child_id') || window.localStorage.getItem('lexiguide_active_child_id'))
-            : null
-          let candidate = prev
+          const parentKey = lexiguide_parent_children_
+          const stored = typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem(parentKey) : null
           if (stored) {
             const parsed = JSON.parse(stored)
-            candidate = typeof parsed === 'string' && /^\d+$/.test(parsed) ? parseInt(parsed, 10) : parsed
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              parentChildren = parsed
+            }
           }
-          const exists = CHILDREN.some((c) => String(c.id) === String(candidate))
-          return exists ? candidate : (CHILDREN[0]?.id || 1)
-        } catch {
-          return prev || CHILDREN[0]?.id || 1
-        }
-      })
+        } catch {}
+        setChildrenState(parentChildren)
+        setActiveChildIdState((prev) => {
+          const exists = parentChildren.some((c) => String(c.id) === String(prev))
+          return exists ? prev : parentChildren[0].id
+        })
+      } else if (auth?.role === 'child') {
+        const studentId = auth?.user?.studentId || 1
+        const matched = CHILDREN.find((c) => String(c.id) === String(studentId)) || CHILDREN[0]
+        setChildrenState([matched])
+        setActiveChildIdState(matched.id)
+      } else {
+        // Teacher and general explorer modes see ALL students in the class roster
+        setChildrenState(CHILDREN)
+        setActiveChildIdState((prev) => {
+          try {
+            const stored = typeof window !== 'undefined' && window.localStorage
+              ? (window.localStorage.getItem('readquest_active_child_id') || window.localStorage.getItem('lexiguide_active_child_id'))
+              : null
+            let candidate = prev
+            if (stored) {
+              const parsed = JSON.parse(stored)
+              candidate = typeof parsed === 'string' && /^\d+$/.test(parsed) ? parseInt(parsed, 10) : parsed
+            }
+            const exists = CHILDREN.some((c) => String(c.id) === String(candidate))
+            return exists ? candidate : (CHILDREN[0]?.id || 1)
+          } catch {
+            return prev || CHILDREN[0]?.id || 1
+          }
+        })
+      }
     }
-  }, [isRealBackend, auth?.user?.id, refreshChildren])
+  }, [isRealBackend, auth?.role, auth?.user?.id, auth?.user?.studentId, refreshChildren])
 
 
 
