@@ -6,7 +6,7 @@ import { ProfileAvatar } from '../../components/ProfileAvatar'
 import { generateRecommendations, detectSkillPattern, childFriendlyPatternText } from '../../services/adaptiveEngine'
 import { LANGUAGES } from '../../i18n/translations'
 import { SearchModal } from '../../components/SearchModal'
-import { Search, Volume2, Sparkles, BookOpen, Gamepad2, Library, Mic } from 'lucide-react'
+import { Search, Volume2, Sparkles, BookOpen, Gamepad2, Library, Mic, Heart, Smile, Wind, Check, X } from 'lucide-react'
 import { NextBestActionCard } from '../../components/NextBestActionCard'
 import { LearningJourneyPlan } from '../../components/LearningJourneyPlan'
 import { resolveThemePackage, applyThemeToActivity } from '../../services/personalizationService'
@@ -101,6 +101,28 @@ export default function Home() {
   const [isQuiet, setIsQuiet] = useState(Boolean(audioAtmosphereService?.quietMode))
   const [isMusicPlaying, setIsMusicPlaying] = useState(Boolean(audioAtmosphereService?.isPlayingMusic))
   const [showToneModal, setShowToneModal] = useState(false)
+  const [comfortMood, setComfortMood] = useState('cozy')
+  const [showBreathingModal, setShowBreathingModal] = useState(false)
+
+  const handleComfortMoodChange = (mood) => {
+    setComfortMood(mood)
+    let speech = ''
+    if (mood === 'cozy') {
+      speech = `Take your time, ${activeChild?.name || 'friend'}! Today we go at whatever speed feels cozy for you.`
+    } else if (mood === 'calm') {
+      speech = `Quiet and peaceful mode on. You are doing wonderfully.`
+    } else {
+      speech = `Awesome, ${activeChild?.name || 'friend'}! Let's explore together and find magical stars!`
+    }
+    try {
+      speakLanguageAudio({
+        text: speech,
+        lang: language || 'en',
+        rate: 0.88,
+        pitch: 1.05,
+      })
+    } catch {}
+  }
 
   useEffect(() => {
     const unsub = audioAtmosphereService?.subscribe?.((state) => {
@@ -188,9 +210,30 @@ export default function Home() {
     ? detectSkillPattern(history, primary.skill)
     : (primary?.pattern || null)
 
-  const heroTitle = primary?.themedTitle || primary?.title || primary?.activity || "Sound Safari"
-  const heroRoute = primary?.route || '/child/read'
-  const heroReason = primary?.reason || (primaryPattern ? childFriendlyPatternText(primaryPattern) : "Listen, look, and find the friendly sounds!")
+  let baseTitle = primary?.themedTitle || primary?.title || primary?.activity || "Sound Safari"
+  let baseRoute = primary?.route || '/child/games/match-sound'
+  let baseReason = primary?.reason || (primaryPattern ? childFriendlyPatternText(primaryPattern) : "Listen, look, and explore friendly sounds at your own pace!")
+
+  // Guarantee Letter Detective and clinical diagnostic text are completely removed from Child Home starting view
+  if (baseTitle.toLowerCase().includes('detective') || baseRoute.includes('find-sound')) {
+    baseTitle = `${currentEnv?.name || 'Magical'} Sound Safari 🦁`
+    baseRoute = '/child/games/match-sound'
+    baseReason = "Listen to friendly sounds, explore cheerful animal friends, and collect glowing stars! Zero timers, zero pressure — just joyful exploration."
+  }
+
+  if (
+    baseReason.toLowerCase().includes('confusion') ||
+    baseReason.toLowerCase().includes('focused attention') ||
+    baseReason.toLowerCase().includes('needs a little more practice') ||
+    baseReason.toLowerCase().includes('weak') ||
+    baseReason.toLowerCase().includes('detective')
+  ) {
+    baseReason = "Take all the time you need to explore friendly sounds — zero rush, zero timers, just pure fun!"
+  }
+
+  const heroTitle = baseTitle
+  const heroRoute = baseRoute
+  const heroReason = baseReason
 
   // Section 4: Continue Learning Activity check
   // "If there is no previous activity, hide this section. Do not create empty placeholder cards."
@@ -202,7 +245,7 @@ export default function Home() {
     ? { title: recentActivityTitles[0], route: '/child/games/build-word' }
     : null
 
-  const recentItem = (recentHistoryItem && recentHistoryItem.title !== heroTitle)
+  const recentItem = (recentHistoryItem && recentHistoryItem.title !== heroTitle && !recentHistoryItem.title?.toLowerCase().includes('detective'))
     ? recentHistoryItem
     : null
 
@@ -333,6 +376,81 @@ export default function Home() {
         />
       )}
 
+      {/* 3.5. COMFORT & WELLBEING STATION — Calm, Zero-Pressure Learning */}
+      <div className="bg-gradient-to-r from-[#EBF9FA] via-white to-[#F2FCFD] p-4 sm:p-5 rounded-3xl border-2 border-[#C5EEF3] shadow-[0_6px_24px_rgba(8,35,58,0.05)]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-2xl bg-[#DDF9FC] flex items-center justify-center text-2xl shrink-0 shadow-xs">
+              🧸
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display font-extrabold text-sm text-[#08233A]">
+                  Comfort &amp; Pacing Station
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-wider bg-[#39B87F]/15 text-[#2E8C61] px-2.5 py-0.5 rounded-full border border-[#39B87F]/30">
+                  Zero Pressure 🌿
+                </span>
+              </div>
+              <p className="text-xs text-[#527080] font-medium mt-0.5">
+                How do you want to play today, {activeChild?.name}? Choose what feels right:
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleComfortMoodChange('cozy')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                comfortMood === 'cozy'
+                  ? 'bg-[#13CFE3] text-[#08233A] shadow-md border-b-2 border-[#0899AA]'
+                  : 'bg-white text-[#527080] border border-[#D7EEF1] hover:bg-[#E6F8FA]'
+              }`}
+            >
+              <span>🍵</span>
+              <span>Cozy &amp; Calm</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleComfortMoodChange('explore')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                comfortMood === 'explore'
+                  ? 'bg-[#FFC857] text-[#08233A] shadow-md border-b-2 border-[#E0A838]'
+                  : 'bg-white text-[#527080] border border-[#D7EEF1] hover:bg-[#FFF9E6]'
+              }`}
+            >
+              <span>🌟</span>
+              <span>Star Quest</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleComfortMoodChange('calm')}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                comfortMood === 'calm'
+                  ? 'bg-[#A78BFA] text-white shadow-md border-b-2 border-[#7C3AED]'
+                  : 'bg-white text-[#527080] border border-[#D7EEF1] hover:bg-[#F3E8FF]'
+              }`}
+            >
+              <span>🎧</span>
+              <span>Quiet Focus</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowBreathingModal(true)}
+              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-[#FCE7F3] text-[#BE185D] hover:bg-[#FBCFE8] border border-[#F472B6]/30 transition-all flex items-center gap-1.5 cursor-pointer ml-auto sm:ml-0"
+              title="Calm breathing bubble"
+            >
+              <span>🌸</span>
+              <span>Breathe With Me</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* 4. TODAY'S ADVENTURE — ONE PRIMARY HERO ACTIVITY (Section 2) */}
       {nextBestAction?.best_action ? (
         <NextBestActionCard
@@ -358,15 +476,15 @@ export default function Home() {
 
           {!recommendationsLoading && primary && (
             <div
-              className="relative rounded-[28px] bg-[linear-gradient(135deg,#08233A_0%,#0B5264_55%,#13CFE3_100%)] text-white p-7 sm:p-9 overflow-hidden shadow-[0_12px_40px_rgba(8,35,58,0.12)] border-b-4 border-[#08233A]"
+              className="relative rounded-[32px] bg-[linear-gradient(135deg,#09374C_0%,#0D5E75_55%,#12A8BD_100%)] text-white p-7 sm:p-9 overflow-hidden shadow-[0_14px_45px_rgba(8,35,58,0.16)] border-2 border-white/20"
             >
               <div className="absolute -right-6 -bottom-6 text-9xl opacity-20 select-none pointer-events-none">
-                {primary.themedIcon || primary.icon || '🦊'}
+                {primary.themedIcon || primary.icon || '🦁'}
               </div>
 
               <div className="relative z-10 max-w-xl">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-xs text-white text-xs font-bold uppercase tracking-wider mb-3">
-                  <Sparkles size={13} />
+                  <Sparkles size={13} className="text-[#FFC857]" />
                   <span>Today's Adventure</span>
                   <span className="mx-1">·</span>
                   <span className="font-semibold text-[#DDF9FC]">Continue Learning</span>
@@ -376,15 +494,27 @@ export default function Home() {
                   {heroTitle}
                 </h2>
 
-                <p className="text-xs sm:text-sm font-bold text-[#DDF9FC] mb-3">
-                  Listen • Look • Find
-                </p>
-
-                <div className="mb-4 flex items-start gap-2 bg-black/20 p-3.5 rounded-2xl border border-white/15">
-                  <span className="inline-block bg-white/25 text-white text-[10px] font-black px-2 py-0.5 rounded-md shrink-0 mt-0.5">
-                    WHY?
+                {/* Comfort Assurance Badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-[#DDF9FC] border border-white/20 flex items-center gap-1">
+                    <span>🐢</span>
+                    <span>No Rush · Unlimited Time</span>
                   </span>
-                  <span className="text-white/90 text-xs sm:text-sm font-medium leading-relaxed">
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-white/20 text-[#DDF9FC] border border-white/20 flex items-center gap-1">
+                    <span>🌈</span>
+                    <span>Mistakes Are Welcome</span>
+                  </span>
+                  <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#FFC857]/30 text-[#FFF2B2] border border-[#FFC857]/40 flex items-center gap-1">
+                    <span>⭐</span>
+                    <span>Earn Glow Stars</span>
+                  </span>
+                </div>
+
+                <div className="mb-4 flex items-start gap-2.5 bg-black/25 backdrop-blur-xs p-3.5 rounded-2xl border border-white/15">
+                  <span className="inline-block bg-[#13CFE3] text-[#08233A] text-[10px] font-black px-2 py-0.5 rounded-md shrink-0 mt-0.5">
+                    COZY GUIDE ✨
+                  </span>
+                  <span className="text-white/95 text-xs sm:text-sm font-medium leading-relaxed">
                     {heroReason}
                   </span>
                 </div>
@@ -399,7 +529,7 @@ export default function Home() {
                     className="text-white"
                   />
                   <ChildAudioGuideBadge
-                    text={`Today's adventure is ${heroTitle}. Listen, look, and find the sounds!`}
+                    text={`Today's adventure is ${heroTitle}. ${heroReason}`}
                     lang={language || 'en'}
                     label="Hear Instructions"
                     className="bg-white/20 text-white border-white/25 hover:bg-white/30"
@@ -409,7 +539,7 @@ export default function Home() {
                 <button
                   onClick={() => navigate(heroRoute)}
                   data-testid="hero-activity-btn"
-                  className="inline-flex items-center gap-2.5 bg-[#13CFE3] text-[#08233A] hover:bg-white active:scale-95 font-display font-black px-8 py-4 rounded-2xl shadow-lg text-base border-b-4 border-[#0899AA] transition-all cursor-pointer"
+                  className="inline-flex items-center gap-2.5 bg-[#FFC857] hover:bg-[#FFD16E] text-[#08233A] active:scale-95 font-display font-black px-8 py-4 rounded-2xl shadow-xl text-base border-b-4 border-[#E0A838] transition-all cursor-pointer"
                 >
                   START ADVENTURE · PLAY <span className="text-lg">▶</span>
                 </button>
@@ -699,6 +829,45 @@ export default function Home() {
       </div>
 
       <SmoothToneModal isOpen={showToneModal} onClose={() => setShowToneModal(false)} />
+
+      {/* Calm Corner Breathing Modal */}
+      {showBreathingModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-[#08233A]/70 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in"
+        >
+          <div className="bg-gradient-to-b from-[#F0FDF4] to-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border-2 border-[#86EFAC] text-center shadow-2xl relative">
+            <button
+              type="button"
+              onClick={() => setShowBreathingModal(false)}
+              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm cursor-pointer"
+              aria-label="Close breathing modal"
+            >
+              ✕
+            </button>
+            <div className="w-24 h-24 mx-auto rounded-full bg-[#BBF7D0] border-4 border-[#86EFAC] flex items-center justify-center text-4xl mb-4 animate-pulse shadow-inner">
+              🌸
+            </div>
+            <h3 className="font-display font-black text-xl text-[#08233A] mb-1">
+              Cozy Breathing Moment
+            </h3>
+            <p className="text-xs text-[#2E8C61] font-bold uppercase tracking-wider mb-3">
+              Inhale peace • Hold gently • Exhale smiles
+            </p>
+            <p className="text-sm text-[#527080] font-medium leading-relaxed mb-6">
+              You are safe, wonderfully capable, and doing great. Take as much time as you like!
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowBreathingModal(false)}
+              className="w-full py-3.5 rounded-2xl bg-[#39B87F] hover:bg-[#2E8C61] active:scale-95 text-white font-display font-black text-sm shadow-lg shadow-[#39B87F]/30 border-b-4 border-[#1E6B47] transition-all cursor-pointer"
+            >
+              I FEEL CALM &amp; READY! 🌟
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 10. Step 16: Weekly Learning Journey & Target Goals Preview */}
       <LearningJourneyPlan
