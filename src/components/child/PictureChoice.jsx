@@ -17,7 +17,7 @@ export function PictureChoice({
   size = 'md', // 'sm' | 'md' | 'lg'
   className = '',
 }) {
-  const { emoji, label, sublabel } = item
+  const { emoji, label, sublabel, image } = item
 
   const handleClick = () => {
     if (disabled) return
@@ -60,9 +60,17 @@ export function PictureChoice({
       aria-pressed={isSelected}
       className={`group relative rounded-3xl flex flex-col items-center justify-center text-center transition-all cursor-pointer select-none active:border-b-2 active:translate-y-1 outline-none focus-visible:ring-4 focus-visible:ring-[#13CFE3]/50 disabled:opacity-60 disabled:cursor-not-allowed ${sizeStyles} ${stateClasses} ${className}`}
     >
-      <span className={`${emojiSizes} mb-2 select-none group-hover:scale-110 transition-transform`}>
-        {emoji}
-      </span>
+      {image ? (
+        <img
+          src={image}
+          alt={label || ''}
+          className="w-14 h-14 sm:w-16 sm:h-16 object-contain mb-2 select-none group-hover:scale-110 transition-transform pointer-events-none"
+        />
+      ) : (
+        <span className={`${emojiSizes} mb-2 select-none group-hover:scale-110 transition-transform`}>
+          {emoji}
+        </span>
+      )}
 
       {label && (
         <span className="font-display font-black text-sm sm:text-base text-[#08233A] tracking-wide block">

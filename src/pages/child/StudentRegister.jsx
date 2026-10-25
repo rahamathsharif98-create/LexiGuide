@@ -290,11 +290,6 @@ export default function StudentRegister() {
                   {loading ? 'Creating World…' : 'Start My Learning Adventure! ▶'}
                 </Button>
               </div>
-              <div className="text-center pt-2">
-                <Link to="/child/login" className="text-xs font-bold text-[#0899AA] hover:underline">
-                  Already have a profile? Sign in here 🚀
-                </Link>
-              </div>
             </div>
           </form>
         )}

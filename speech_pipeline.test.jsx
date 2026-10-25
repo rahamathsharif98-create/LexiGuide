@@ -362,7 +362,7 @@ describe('Step 5: Real Browser Microphone + Speech Pipeline Test Suite', () => {
     fireEvent.click(await screen.findByRole('button', { name: /start recording/i }))
     fireEvent.click(await screen.findByRole('button', { name: /stop recording/i }))
 
-    await waitFor(() => expect(screen.getByText(/nice try/i)).toBeInTheDocument(), { timeout: 5000 })
+    await waitFor(() => expect(screen.getByTestId('result-heading')).toBeInTheDocument(), { timeout: 5000 })
     fireEvent.click(screen.getByRole('button', { name: /^next$/i }))
     expect(await screen.findByText(/fish/i)).toBeInTheDocument()
   }, 15000)

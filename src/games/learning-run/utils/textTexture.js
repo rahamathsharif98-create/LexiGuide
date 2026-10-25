@@ -29,7 +29,7 @@ export function getLetterTexture(letter, { textColor = '#0b3d5c', size = 128, fo
       ctx.textBaseline = 'middle';
       ctx.fillText('★', size / 2, size / 2 + size * 0.02);
     } else {
-      ctx.font = `${fontWeight} ${Math.floor(size * 0.68)}px "Baloo 2", "Nunito", "Segoe UI", system-ui, sans-serif`;
+      ctx.font = `${fontWeight} ${Math.floor(size * 0.68)}px "Poppins", "Baloo 2", "Nunito", "Segoe UI", system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(safeLetter, size / 2, size / 2 + size * 0.04);

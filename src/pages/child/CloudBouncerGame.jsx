@@ -11,6 +11,8 @@ export default function CloudBouncerGame() {
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const isSavedRef = useRef(false);
+
   const tracker = useGameSessionTracker({
     gameId: 'cloud-bouncer',
     gameTitle: 'Whimsical Cloud Bouncer',
@@ -23,23 +25,26 @@ export default function CloudBouncerGame() {
       starsEarned: result.stars || 1,
       xpEarned: result.xp || 20,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { targetWord: result.level?.targetWord },
-      });
+    // Session is saved once on exit via handleBack or upon completion of the final level
+  }, [tracker]);
+
+  const handleGameComplete = useCallback((finalStats = {}) => {
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession(finalStats);
     }
   }, [tracker]);
 
+  const handleResetSession = useCallback(() => {
+    isSavedRef.current = false;
+  }, []);
+
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {
@@ -108,7 +113,12 @@ export default function CloudBouncerGame() {
             </div>
           }
         >
-          <CloudApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <CloudApp
+            onBack={handleBack}
+            onRoundComplete={handleRoundComplete}
+            onGameComplete={handleGameComplete}
+            onResetSession={handleResetSession}
+          />
         </ErrorBoundary>
       </div>
 

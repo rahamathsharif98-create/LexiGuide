@@ -14,6 +14,7 @@ export default function SpiderWeaverGame() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'spider-weaver',
@@ -28,23 +29,26 @@ export default function SpiderWeaverGame() {
       xpEarned: result.xp || 25,
       targetWord: result.targetWord,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 25,
-        score: result.score || 500,
-        details: { targetWord: result.targetWord },
-      });
+    // Session is saved once on exit via handleBack or upon completion of Level 11
+  }, [tracker]);
+
+  const handleGameComplete = useCallback((finalStats = {}) => {
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession(finalStats);
     }
   }, [tracker]);
 
+  const handleResetSession = useCallback(() => {
+    isSavedRef.current = false;
+  }, []);
+
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {
@@ -113,7 +117,12 @@ export default function SpiderWeaverGame() {
             </div>
           }
         >
-          <SpiderApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <SpiderApp
+            onBack={handleBack}
+            onRoundComplete={handleRoundComplete}
+            onGameComplete={handleGameComplete}
+            onResetSession={handleResetSession}
+          />
         </ErrorBoundary>
       </div>
 

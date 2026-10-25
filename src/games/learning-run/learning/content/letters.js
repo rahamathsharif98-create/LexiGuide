@@ -65,33 +65,36 @@ export function getRandomWord(maxDifficulty = 1) {
 }
 
 export const SAFARI_WORD_QUESTS = [
-  { word: 'APPLE', emoji: '🍎', blankIndex: 3, meaning: 'Crisp and sweet red fruit' }, // APP_E -> L
-  { word: 'LION', emoji: '🦁', blankIndex: 1, meaning: 'King of the safari savanna' }, // L_ON -> I
-  { word: 'ZEBRA', emoji: '🦓', blankIndex: 1, meaning: 'Striped safari runner' }, // Z_BRA -> E
-  { word: 'SUN', emoji: '☀️', blankIndex: 1, meaning: 'Bright morning star' }, // S_N -> U
-  { word: 'TIGER', emoji: '🐯', blankIndex: 1, meaning: 'Majestic jungle cat' }, // T_GER -> I
-  { word: 'MONKEY', emoji: '🐒', blankIndex: 1, meaning: 'Playful tree climber' }, // M_NKEY -> O
-  { word: 'TREE', emoji: '🌳', blankIndex: 1, meaning: 'Tall jungle canopy' }, // T_EE -> R
-  { word: 'FROG', emoji: '🐸', blankIndex: 1, meaning: 'Green lilypad jumper' }, // F_OG -> R
-  { word: 'WATER', emoji: '💧', blankIndex: 2, meaning: 'Cool jungle river' }, // WA_ER -> T
-  { word: 'BIRD', emoji: '🦜', blankIndex: 2, meaning: 'Colorful sky flyer' }, // BI_D -> R
-  { word: 'CAT', emoji: '🐱', blankIndex: 1, meaning: 'Curious friendly pet' }, // C_T -> A
-  { word: 'BOOK', emoji: '📖', blankIndex: 2, meaning: 'Magical story pages' }, // BO_K -> O
+  { word: 'APPLE', emoji: '🍎', blankIndex: 3, meaning: 'Crisp and sweet red fruit', lanes: ['B', 'L', 'S'] }, // APP_E -> L
+  { word: 'LION', emoji: '🦁', blankIndex: 1, meaning: 'King of the safari savanna', lanes: ['E', 'I', 'O'] }, // L_ON -> I
+  { word: 'ZEBRA', emoji: '🦓', blankIndex: 1, meaning: 'Striped safari runner', lanes: ['A', 'E', 'U'] }, // Z_BRA -> E
+  { word: 'SUN', emoji: '☀️', blankIndex: 1, meaning: 'Bright morning star', lanes: ['O', 'U', 'A'] }, // S_N -> U
+  { word: 'TIGER', emoji: '🐯', blankIndex: 1, meaning: 'Majestic jungle cat', lanes: ['I', 'E', 'A'] }, // T_GER -> I
+  { word: 'MONKEY', emoji: '🐒', blankIndex: 1, meaning: 'Playful tree climber', lanes: ['U', 'O', 'A'] }, // M_NKEY -> O
+  { word: 'TREE', emoji: '🌳', blankIndex: 1, meaning: 'Tall jungle canopy', lanes: ['L', 'R', 'T'] }, // T_EE -> R
+  { word: 'FROG', emoji: '🐸', blankIndex: 1, meaning: 'Green lilypad jumper', lanes: ['R', 'L', 'P'] }, // F_OG -> R
+  { word: 'WATER', emoji: '💧', blankIndex: 2, meaning: 'Cool jungle river', lanes: ['D', 'T', 'B'] }, // WA_ER -> T
+  { word: 'BIRD', emoji: '🦜', blankIndex: 2, meaning: 'Colorful sky flyer', lanes: ['N', 'R', 'L'] }, // BI_D -> R
+  { word: 'CAT', emoji: '🐱', blankIndex: 1, meaning: 'Curious friendly pet', lanes: ['O', 'A', 'E'] }, // C_T -> A
+  { word: 'BOOK', emoji: '📖', blankIndex: 2, meaning: 'Magical story pages', lanes: ['U', 'O', 'E'] }, // BO_K -> O
 ];
 
 export function generateFillInBlankQuest(index = 0) {
   const quest = SAFARI_WORD_QUESTS[index % SAFARI_WORD_QUESTS.length];
   const word = quest.word;
-  const blankIndex = quest.blankIndex ?? Math.floor(Math.random() * word.length);
+  const blankIndex = quest.blankIndex ?? 0;
   const missingLetter = word[blankIndex];
   const masked = word.split('').map((char, i) => (i === blankIndex ? '_' : char)).join('');
+  const lanes = quest.lanes || [missingLetter, 'B', 'S'];
   return {
+    index: index % SAFARI_WORD_QUESTS.length,
     word,
     masked,
     missingLetter,
     missingIndex: blankIndex,
     emoji: quest.emoji,
     meaning: quest.meaning,
+    lanes,
   };
 }
 

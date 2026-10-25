@@ -1,15 +1,7 @@
-import React, { useRef } from 'react';
-import { useFrame } from '@react-three/fiber';
+import React from 'react';
+import DinoFossilSpecimen from './DinoFossilSpecimen';
 
-export default function DigSiteEnvironment({ isExcavated = false }) {
-  const skullRef = useRef();
-
-  useFrame((state, delta) => {
-    if (isExcavated && skullRef.current) {
-      skullRef.current.position.y = 1.2 + Math.sin(state.clock.elapsedTime * 3) * 0.15;
-      skullRef.current.rotation.y += delta * 0.8;
-    }
-  });
+export default function DigSiteEnvironment({ target, isExcavated = false }) {
 
   return (
     <group>
@@ -49,58 +41,8 @@ export default function DigSiteEnvironment({ isExcavated = false }) {
         ))
       )}
 
-      {/* 5. Center Ancient T-Rex Fossil Bones in Pit */}
-      <group ref={skullRef} position={[0, 0.8, 0]}>
-        {/* Skull Cranium */}
-        <mesh position={[0, 0.6, 0.3]}>
-          <boxGeometry args={[1.6, 1.2, 2.2]} />
-          <meshStandardMaterial
-            color={isExcavated ? '#fef08a' : '#fed7aa'}
-            emissive={isExcavated ? '#f59e0b' : '#000000'}
-            emissiveIntensity={isExcavated ? 0.6 : 0}
-            roughness={0.7}
-          />
-        </mesh>
-        {/* Snout */}
-        <mesh position={[0, 0.3, 1.7]}>
-          <boxGeometry args={[1.2, 0.8, 1.2]} />
-          <meshStandardMaterial
-            color={isExcavated ? '#fef08a' : '#fed7aa'}
-            emissive={isExcavated ? '#f59e0b' : '#000000'}
-            emissiveIntensity={isExcavated ? 0.6 : 0}
-            roughness={0.7}
-          />
-        </mesh>
-        {/* Lower Jaw */}
-        <mesh position={[0, -0.3, 1.5]}>
-          <boxGeometry args={[1.0, 0.3, 1.4]} />
-          <meshStandardMaterial color="#fed7aa" roughness={0.7} />
-        </mesh>
-        {/* Sharp Fossil Teeth */}
-        {[-0.4, 0, 0.4].map((tx, idx) => (
-          <mesh key={`tooth-${idx}`} position={[tx, -0.05, 1.8]} rotation={[Math.PI, 0, 0]}>
-            <coneGeometry args={[0.08, 0.25, 8]} />
-            <meshStandardMaterial color="#ffffff" roughness={0.3} />
-          </mesh>
-        ))}
-        {/* Eye Sockets */}
-        <mesh position={[-0.7, 0.7, 0.6]}>
-          <sphereGeometry args={[0.25, 8, 8]} />
-          <meshStandardMaterial
-            color={isExcavated ? '#f59e0b' : '#1c1917'}
-            emissive={isExcavated ? '#f59e0b' : '#000000'}
-            emissiveIntensity={isExcavated ? 0.9 : 0}
-          />
-        </mesh>
-        <mesh position={[0.7, 0.7, 0.6]}>
-          <sphereGeometry args={[0.25, 8, 8]} />
-          <meshStandardMaterial
-            color={isExcavated ? '#f59e0b' : '#1c1917'}
-            emissive={isExcavated ? '#f59e0b' : '#000000'}
-            emissiveIntensity={isExcavated ? 0.9 : 0}
-          />
-        </mesh>
-      </group>
+      {/* 5. Center Prehistoric Specimen in Excavation Pit */}
+      <DinoFossilSpecimen target={target} isExcavated={isExcavated} />
 
       {/* 6. Expedition Camp (Left Horizon) */}
       <group position={[-12, 0, -8]}>

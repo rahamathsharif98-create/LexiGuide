@@ -11,7 +11,10 @@ export default function MoonTerrain({ rocketLaunched = false }) {
       radarRef.current.rotation.y = t * 1.2;
     }
     if (beaconRef.current) {
-      beaconRef.current.material.opacity = 0.5 + Math.sin(t * 5) * 0.5;
+      const mat = beaconRef.current.material || beaconRef.current;
+      if (mat && typeof mat.opacity === 'number') {
+        mat.opacity = 0.5 + Math.sin(t * 5) * 0.5;
+      }
     }
   });
 

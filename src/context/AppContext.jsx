@@ -44,7 +44,7 @@ export function AppProvider({ children }) {
   const [activeChildId, setActiveChildIdState] = useState(() => {
     try {
       if (typeof window !== 'undefined' && window.localStorage) {
-        const stored = window.localStorage.getItem('readquest_active_child_id') || window.localStorage.getItem('lexiguide_active_child_id')
+        const stored = window.localStorage.getItem('lexiguide_active_child_id') || window.localStorage.getItem('readquest_active_child_id')
         if (stored) {
           const parsed = JSON.parse(stored)
           const canonical = typeof parsed === 'string' && /^\d+$/.test(parsed) ? parseInt(parsed, 10) : parsed
@@ -92,108 +92,6 @@ export function AppProvider({ children }) {
       })
     )
   }, [activeChildId])
-
-  const refreshChildren = useCallback(async () => {
-    if (!isRealBackend) {
-      return childrenState
-    }
-    try {
-      let res = []
-      if (auth?.role === 'parent') {
-        res = await endpoints.parentChildren()
-      } else if (auth?.role === 'teacher') {
-        res = await endpoints.teacherStudents()
-      } else {
-        res = await endpoints.children()
-      }
-
-      if (Array.isArray(res) && res.length > 0) {
-        const mapped = res.map((s) => ({
-          id: s.id,
-          name: s.name,
-          age: s.age || 7,
-          avatar: s.avatar || '🦊',
-          color: 'brand',
-          level: 1,
-          streak: 1,
-          stars: 0,
-          xp: 0,
-          fingerprint: {
-            phonologicalAwareness: 65,
-            pronunciation: 65,
-            wordRecognition: 65,
-            readingFluency: 65,
-            comprehension: 65,
-          },
-        }))
-        setChildrenState(mapped)
-
-        if (auth?.role === 'child' && auth?.user?.studentId) {
-          setActiveChildId(auth.user.studentId)
-        } else {
-          setActiveChildIdState((prev) => {
-            const exists = mapped.some((c) => String(c.id) === String(prev))
-            return exists ? prev : mapped[0].id
-          })
-        }
-        return mapped
-      }
-      return []
-    } catch (err) {
-      console.warn('Failed to refresh children from backend:', err)
-      return []
-    }
-  }, [isRealBackend, auth?.role, auth?.user?.studentId, setActiveChildId])
-
-  useEffect(() => {
-    if (isRealBackend) {
-      refreshChildren()
-    } else {
-      if (auth?.role === 'parent') {
-        let parentChildren = [CHILDREN[0]] // Aarav (id 1) is the linked child for Demo Parent
-        try {
-          const parentKey = lexiguide_parent_children_
-          const stored = typeof window !== 'undefined' && window.localStorage ? window.localStorage.getItem(parentKey) : null
-          if (stored) {
-            const parsed = JSON.parse(stored)
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              parentChildren = parsed
-            }
-          }
-        } catch {}
-        setChildrenState(parentChildren)
-        setActiveChildIdState((prev) => {
-          const exists = parentChildren.some((c) => String(c.id) === String(prev))
-          return exists ? prev : parentChildren[0].id
-        })
-      } else if (auth?.role === 'child') {
-        const studentId = auth?.user?.studentId || 1
-        const matched = CHILDREN.find((c) => String(c.id) === String(studentId)) || CHILDREN[0]
-        setChildrenState([matched])
-        setActiveChildIdState(matched.id)
-      } else {
-        // Teacher and general explorer modes see ALL students in the class roster
-        setChildrenState(CHILDREN)
-        setActiveChildIdState((prev) => {
-          try {
-            const stored = typeof window !== 'undefined' && window.localStorage
-              ? (window.localStorage.getItem('readquest_active_child_id') || window.localStorage.getItem('lexiguide_active_child_id'))
-              : null
-            let candidate = prev
-            if (stored) {
-              const parsed = JSON.parse(stored)
-              candidate = typeof parsed === 'string' && /^\d+$/.test(parsed) ? parseInt(parsed, 10) : parsed
-            }
-            const exists = CHILDREN.some((c) => String(c.id) === String(candidate))
-            return exists ? candidate : (CHILDREN[0]?.id || 1)
-          } catch {
-            return prev || CHILDREN[0]?.id || 1
-          }
-        })
-      }
-    }
-  }, [isRealBackend, auth?.role, auth?.user?.id, auth?.user?.studentId, refreshChildren])
-
 
 
   const [lastSessionSummary, setLastSessionSummary] = useState(null)
@@ -264,9 +162,7 @@ export function AppProvider({ children }) {
     }
     return learningHistory.map((s, idx) => {
       const outcome = s.outcome || {}
-      const acc = outcome.accuracy != null
-        ? Number(outcome.accuracy)
-        : (outcome.metrics?.accuracy != null ? Number(outcome.metrics.accuracy) : (outcome.score != null ? Number(outcome.score) : 0))
+      const acc = outcome.accuracy != null ? outcome.accuracy : (outcome.metrics?.accuracy ?? 80)
       const skill = s.skill || 'readingFluency'
       return {
         session: `S${idx + 1}`,
@@ -1009,10 +905,8 @@ export function AppProvider({ children }) {
     fetchMultimodalCapabilities,
     fetchMultimodalPresentation,
     registerNewChild,
-    refreshChildren,
   }), [
     registerNewChild,
-    refreshChildren,
     childrenState,
     activeChild, activeChildId, setActiveChildId,
     isRealBackend,

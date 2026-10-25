@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Sky Background Gradient -->
+    <linearGradient id="lhSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E1F5FE"/>
+      <stop offset="60%" stop-color="#B3E5FC"/>
+      <stop offset="100%" stop-color="#81D4FA"/>
+    </linearGradient>
+
+    <!-- Ocean Sea Gradient -->
+    <linearGradient id="lhSea" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0288D1"/>
+      <stop offset="100%" stop-color="#01579B"/>
+    </linearGradient>
+
+    <!-- Golden Light Beam Gradient -->
+    <linearGradient id="lhBeam" x1="0" y1="0" x2="1" y2="0.3">
+      <stop offset="0%" stop-color="#FFF9C4" stop-opacity="0.95"/>
+      <stop offset="35%" stop-color="#FFF59D" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#FFEE58" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#FDD835" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Left Light Beam Gradient -->
+    <linearGradient id="lhBeamLeft" x1="1" y1="0" x2="0" y2="0.3">
+      <stop offset="0%" stop-color="#FFF9C4" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#FFF59D" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FFEE58" stop-opacity="0.0"/>
+    </linearGradient>
+
+    <!-- Red Band Gradient -->
+    <linearGradient id="lhRed" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#E53935"/>
+      <stop offset="50%" stop-color="#EF5350"/>
+      <stop offset="100%" stop-color="#C62828"/>
+    </linearGradient>
+
+    <!-- White Band Gradient -->
+    <linearGradient id="lhWhite" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ECEFF1"/>
+      <stop offset="50%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#CFD8DC"/>
+    </linearGradient>
+
+    <filter id="lhShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#01579B" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Circular Portal Frame -->
+  <circle cx="100" cy="100" r="92" fill="url(#lhSky)"/>
+
+  <!-- Fluffy Cloud -->
+  <path d="M40,50 Q48,38 60,42 Q70,35 80,45 Q90,44 92,54 Z" fill="#FFFFFF" opacity="0.85"/>
+  <path d="M140,70 Q148,62 158,66 Q165,60 172,68 Q180,67 180,75 Z" fill="#FFFFFF" opacity="0.75"/>
+
+  <!-- Coastal Ocean Waves -->
+  <path d="M10,135 Q50,130 90,138 T180,136 L192,192 L8,192 Z" fill="url(#lhSea)"/>
+  <path d="M15,148 Q45,142 80,150 T150,147 L190,190 L10,190 Z" fill="#0277BD" opacity="0.6"/>
+
+  <!-- Wave Crest Foam -->
+  <path d="M20,138 Q35,134 50,138" stroke="#E1F5FE" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M70,144 Q85,140 100,144" stroke="#E1F5FE" stroke-width="2" stroke-linecap="round" fill="none"/>
+
+  <!-- Rocky Cliff Base -->
+  <path d="M70,185 L85,140 L145,138 L165,185 Z" fill="#455A64"/>
+  <path d="M80,142 L150,140 L145,135 L85,136 Z" fill="#66BB6A"/> <!-- Green grass on cliff -->
+
+  <!-- Bright Radiating Light Beams -->
+  <!-- Main Beam to the Left -->
+  <polygon points="106,60 0,25 0,105 106,66" fill="url(#lhBeamLeft)"/>
+  <!-- Main Beam to the Right -->
+  <polygon points="124,60 200,20 200,105 124,66" fill="url(#lhBeam)"/>
+
+  <!-- Lighthouse Structure -->
+  <g filter="url(#lhShadow)">
+    <!-- Tower Body (Tapered from base y=140 to top y=68) -->
+    <!-- Base stripe: Red -->
+    <polygon points="98,140 132,140 130,124 100,124" fill="url(#lhRed)"/>
+    <!-- Stripe 2: White -->
+    <polygon points="100,124 130,124 128,108 102,108" fill="url(#lhWhite)"/>
+    <!-- Small window in white band -->
+    <rect x="112" y="112" width="6" height="8" rx="3" fill="#37474F"/>
+
+    <!-- Stripe 3: Red -->
+    <polygon points="102,108 128,108 126,92 104,92" fill="url(#lhRed)"/>
+    <!-- Stripe 4: White -->
+    <polygon points="104,92 126,92 124,76 106,76" fill="url(#lhWhite)"/>
+    <!-- Small window in upper white band -->
+    <rect x="112" y="80" width="6" height="8" rx="3" fill="#37474F"/>
+
+    <!-- Stripe 5 (Gallery base): Red -->
+    <polygon points="106,76 124,76 123,68 107,68" fill="url(#lhRed)"/>
+
+    <!-- Balcony / Railing Platform -->
+    <rect x="103" y="66" width="24" height="3" rx="1.5" fill="#263238"/>
+    <!-- Railing bars -->
+    <line x1="105" y1="64" x2="125" y2="64" stroke="#263238" stroke-width="1.5"/>
+    <line x1="106" y1="66" x2="106" y2="64" stroke="#263238" stroke-width="1.2"/>
+    <line x1="115" y1="66" x2="115" y2="64" stroke="#263238" stroke-width="1.2"/>
+    <line x1="124" y1="66" x2="124" y2="64" stroke="#263238" stroke-width="1.2"/>
+
+    <!-- Glass Lantern Room -->
+    <rect x="107" y="55" width="16" height="11" fill="#FFF9C4" stroke="#263238" stroke-width="1.5"/>
+    <!-- Lamp core inside glowing -->
+    <circle cx="115" cy="60" r="4" fill="#FFD54F"/>
+    <circle cx="115" cy="60" r="2" fill="#FFFFFF"/>
+
+    <!-- Dome Roof & Spire -->
+    <path d="M106,55 Q115,44 124,55 Z" fill="#D32F2F"/>
+    <circle cx="115" cy="45" r="2.5" fill="#263238"/>
+    <line x1="115" y1="45" x2="115" y2="38" stroke="#263238" stroke-width="1.5" stroke-linecap="round"/>
+
+    <!-- Base Door -->
+    <path d="M112,140 L112,130 Q115,127 118,130 L118,140 Z" fill="#263238"/>
+  </g>
+</svg>

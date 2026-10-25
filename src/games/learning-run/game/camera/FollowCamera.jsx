@@ -9,11 +9,13 @@ export default function FollowCamera({ stateRef, shakeRef }) {
   const { camera } = useThree();
   const target = useRef(new THREE.Vector3(0, 2.6, 6.5));
   const lookAt = useRef(new THREE.Vector3(0, 1.2, -4));
+  const desired = useRef(new THREE.Vector3());
+  const desiredLook = useRef(new THREE.Vector3());
 
   useFrame((_, delta) => {
     const s = stateRef.current;
-    const desired = new THREE.Vector3(s.renderX * 0.4, 2.6 + (s.isSliding ? -0.3 : 0), 6.5);
-    target.current.lerp(desired, Math.min(1, delta * 4));
+    desired.current.set(s.renderX * 0.4, 2.6 + (s.isSliding ? -0.3 : 0), 6.5);
+    target.current.lerp(desired.current, Math.min(1, delta * 4));
 
     let shakeX = 0;
     let shakeY = 0;
@@ -25,8 +27,8 @@ export default function FollowCamera({ stateRef, shakeRef }) {
     }
 
     camera.position.set(target.current.x + shakeX, target.current.y + shakeY, target.current.z);
-    const desiredLook = new THREE.Vector3(s.renderX * 0.6, 1.3, -6);
-    lookAt.current.lerp(desiredLook, Math.min(1, delta * 5));
+    desiredLook.current.set(s.renderX * 0.6, 1.3, -6);
+    lookAt.current.lerp(desiredLook.current, Math.min(1, delta * 5));
     camera.lookAt(lookAt.current);
   });
 

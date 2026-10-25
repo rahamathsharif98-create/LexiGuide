@@ -4,12 +4,24 @@ import { ArrowLeft, Maximize2, Minimize2, Sparkles, Rocket } from 'lucide-react'
 import CosmicMinerApp from '../../games/cosmic-miner/CosmicMinerApp';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import GameSoundToggle from '../../components/games/GameSoundToggle';
+import { gameSound } from '../../services/gameSoundService';
 import { useGameSessionTracker } from '../../hooks/useGameSessionTracker';
+import { useApp } from '../../context/AppContext';
+
+function useSafeApp() {
+  try {
+    return useApp();
+  } catch {
+    return { activeChild: null };
+  }
+}
 
 export default function CosmicMinerGame() {
   const navigate = useNavigate();
+  const { activeChild } = useSafeApp();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'cosmic-miner',
@@ -17,30 +29,53 @@ export default function CosmicMinerGame() {
     skill: 'letterSequencing',
   });
 
-  const handleRoundComplete = useCallback((result) => {
-    tracker.recordAttempt(result.isCorrect, {
-      roundScore: result.score || 150,
-      starsEarned: result.stars || 1,
-      xpEarned: result.xp || 20,
-    });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { word: result.mission?.word },
+  const handleRoundComplete = useCallback(
+    (result) => {
+      tracker.recordAttempt(result.isCorrect, {
+        roundScore: result.score || 150,
+        starsEarned: result.stars || 1,
+        xpEarned: result.xp || 20,
       });
-    }
-  }, [tracker]);
+    },
+    [tracker]
+  );
+
+  const handleGameComplete = useCallback(
+    (finalStats = {}) => {
+      if (!isSavedRef.current) {
+        isSavedRef.current = true;
+        tracker.saveCompletedSession(finalStats);
+      }
+    },
+    [tracker]
+  );
+
+  const handleResetSession = useCallback(() => {
+    isSavedRef.current = false;
+  }, []);
 
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    gameSound.stopSpeech?.();
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
+
+  const trackerRef = useRef(tracker);
+  trackerRef.current = tracker;
+
+  // Unmount safety guard — ensures accumulated session is saved if user navigates away, and stops speech
+  useEffect(() => {
+    return () => {
+      gameSound.stopSpeech?.();
+      if (!isSavedRef.current) {
+        isSavedRef.current = true;
+        trackerRef.current?.saveCompletedSession?.();
+      }
+    };
+  }, []);
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
@@ -58,15 +93,15 @@ export default function CosmicMinerGame() {
   }, []);
 
   return (
-    <div className="max-w-5xl mx-auto pb-10 space-y-4">
+    <div className="w-full flex flex-col h-[calc(100vh-8.2rem)] min-h-[460px] -my-3 pb-0 space-y-2">
       {/* 1. Top Navigation */}
-      <div className="flex items-center justify-between gap-3 px-2">
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-1">
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 hover:bg-white text-[#08233A] font-extrabold text-sm border border-[#D7EEF1] shadow-sm transition-all cursor-pointer active:scale-95"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/90 hover:bg-white text-[#08233A] font-extrabold text-xs sm:text-sm border border-[#D7EEF1] shadow-sm transition-all cursor-pointer active:scale-95"
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={15} />
           <span>Back to Games</span>
         </button>
 
@@ -86,10 +121,10 @@ export default function CosmicMinerGame() {
       {/* 2. 3D Game Canvas Container */}
       <div
         ref={containerRef}
-        className={`relative w-full overflow-hidden bg-[#050814] transition-all duration-300 ${
+        className={`relative w-full flex-1 min-h-[360px] overflow-hidden bg-[#050814] transition-all duration-200 ${
           isFullscreen
-            ? 'fixed inset-0 z-[9999] h-screen w-screen rounded-none border-0'
-            : 'h-[75vh] min-h-[560px] max-h-[800px] rounded-3xl border-4 border-cyan-500/40 shadow-[0_16px_40px_rgba(6,182,212,0.25)]'
+            ? 'fixed inset-0 z-[9999] h-screen w-screen rounded-none border-0 shadow-none'
+            : 'rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-cyan-500/40 shadow-[0_12px_36px_rgba(6,182,212,0.22)]'
         }`}
       >
         <ErrorBoundary
@@ -108,19 +143,25 @@ export default function CosmicMinerGame() {
             </div>
           }
         >
-          <CosmicMinerApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <CosmicMinerApp
+            childId={activeChild?.id}
+            onBack={handleBack}
+            onComplete={handleGameComplete}
+            onResetSession={handleResetSession}
+            onRoundComplete={handleRoundComplete}
+          />
         </ErrorBoundary>
       </div>
 
       {/* 3. Footer Guidance */}
-      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-2xl bg-slate-900 border border-cyan-800/60 text-xs text-cyan-200 font-semibold">
-        <div className="flex items-center gap-2">
-          <Rocket size={16} className="text-cyan-400" />
-          <span className="font-extrabold text-cyan-300">Lunar Mission:</span>
-          <span>Drive rover or click crystals to spell mission words and fuel up the rocket!</span>
+      <div className="flex-shrink-0 flex items-center justify-between gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-cyan-800/60 text-[11px] text-cyan-200 font-semibold overflow-hidden">
+        <div className="flex items-center gap-1.5 min-w-0 truncate">
+          <Rocket size={14} className="text-cyan-400 shrink-0" />
+          <span className="font-extrabold text-cyan-300 shrink-0">Lunar Mission:</span>
+          <span className="truncate">Drive rover or click crystals to spell mission words and fuel up the rocket!</span>
         </div>
-        <div className="flex items-center gap-1.5 text-amber-400 font-bold">
-          <Sparkles size={14} />
+        <div className="flex items-center gap-1 text-amber-400 font-bold text-[10px] sm:text-xs shrink-0">
+          <Sparkles size={12} />
           <span>3D Space Letter Miner</span>
         </div>
       </div>

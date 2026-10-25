@@ -21,7 +21,7 @@ export const SAFARI_TARGETS = [
     fact: 'Zebras have unique black and white stripes like fingerprints!',
     prompt: 'Photograph the animal starting with /z/: ZEBRA!',
     speechText: 'Look near the water! Spot and photograph the animal starting with Z! The ZEBRA!',
-    position: [4.2, 0.8, -3],
+    position: [4.2, 0.0, -3.2],
   },
   {
     id: 'safari-giraffe',
@@ -33,7 +33,7 @@ export const SAFARI_TARGETS = [
     fact: 'Giraffes have extra long necks to eat the highest leaves!',
     prompt: 'Photograph the animal starting with /g/: GIRAFFE!',
     speechText: 'Look up high! Spot and photograph the animal starting with G! The GIRAFFE!',
-    position: [1.2, 2.4, -7],
+    position: [1.4, 0.0, -6.5],
   },
   {
     id: 'safari-monkey',
@@ -45,7 +45,7 @@ export const SAFARI_TARGETS = [
     fact: 'Monkeys love climbing trees and eating fresh fruits!',
     prompt: 'Photograph the animal starting with /m/: MONKEY!',
     speechText: 'Up in the branches! Spot and photograph the animal starting with M! The MONKEY!',
-    position: [-2.0, 3.2, -6],
+    position: [-1.6, 2.35, -4.8],
   },
   {
     id: 'safari-hippo',
@@ -57,7 +57,7 @@ export const SAFARI_TARGETS = [
     fact: 'Hippos love splashing in cool water during sunny days!',
     prompt: 'Photograph the animal starting with /h/: HIPPO!',
     speechText: 'Splashing in the water! Spot and photograph the animal starting with H! The HIPPO!',
-    position: [-0.5, 0.5, -2],
+    position: [-0.6, 0.0, -2.2],
   },
 ];
 

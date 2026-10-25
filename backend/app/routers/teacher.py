@@ -14,27 +14,14 @@ router = APIRouter(prefix="/api/teacher", tags=["teacher"])
 def _get_teacher_and_resolve_class_id(db: Session, current_user: User, class_id: int | None) -> int:
     teacher = db.query(Teacher).filter(Teacher.user_id == current_user.id).first()
     if not teacher:
-        teacher = Teacher(user_id=current_user.id)
-        db.add(teacher)
-        db.commit()
-        db.refresh(teacher)
+        raise HTTPException(status_code=403, detail="Not authorized as a teacher")
     if class_id is not None:
         cls = assert_teacher_owns_class(db, current_user, class_id)
         return cls.id
     cls = teacher_service.get_class_for_teacher(db, teacher.id)
     if not cls:
-        from app.models.class_model import ClassModel
-        cls = ClassModel(
-            teacher_id=teacher.id,
-            name=f"{current_user.name}'s Classroom",
-            grade="2",
-            section="A",
-        )
-        db.add(cls)
-        db.commit()
-        db.refresh(cls)
+        raise HTTPException(status_code=404, detail="No class found for this teacher")
     return cls.id
-
 
 
 @router.get("/dashboard")

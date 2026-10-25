@@ -3,13 +3,24 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Maximize2, Minimize2, Sparkles, Camera } from 'lucide-react';
 import SafariApp from '../../games/safari-photo/SafariApp';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
-import GameSoundToggle from '../../components/games/GameSoundToggle';
+import { gameSound } from '../../services/gameSoundService';
 import { useGameSessionTracker } from '../../hooks/useGameSessionTracker';
+import { useApp } from '../../context/AppContext';
+
+function useSafeApp() {
+  try {
+    return useApp();
+  } catch {
+    return { activeChild: null };
+  }
+}
 
 export default function SafariPhotoGame() {
   const navigate = useNavigate();
+  const { activeChild } = useSafeApp();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'safari-photo',
@@ -23,24 +34,42 @@ export default function SafariPhotoGame() {
       starsEarned: result.stars || 1,
       xpEarned: result.xp || 20,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { animal: result.animal?.animal },
-      });
+    // Session is saved once on victory or exit via handleBack, guarded by isSavedRef
+  }, [tracker]);
+
+  const handleGameComplete = useCallback((finalStats = {}) => {
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession(finalStats);
     }
   }, [tracker]);
 
+  const handleResetSession = useCallback(() => {
+    isSavedRef.current = false;
+  }, []);
+
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    gameSound.stopSpeech?.();
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
+
+  const trackerRef = useRef(tracker);
+  trackerRef.current = tracker;
+
+  // Unmount safety guard — ensures accumulated session is saved if user navigates away, and stops active speech
+  useEffect(() => {
+    return () => {
+      gameSound.stopSpeech?.();
+      if (!isSavedRef.current) {
+        isSavedRef.current = true;
+        trackerRef.current?.saveCompletedSession?.();
+      }
+    };
+  }, []);
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
@@ -63,6 +92,7 @@ export default function SafariPhotoGame() {
       <div className="flex items-center justify-between gap-3 px-2">
         <button
           type="button"
+          data-testid="page-back-btn"
           onClick={handleBack}
           className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/90 hover:bg-white text-[#08233A] font-extrabold text-sm border border-[#D7EEF1] shadow-sm transition-all cursor-pointer active:scale-95"
         >
@@ -71,7 +101,6 @@ export default function SafariPhotoGame() {
         </button>
 
         <div className="flex items-center gap-2">
-          <GameSoundToggle />
           <button
             type="button"
             onClick={toggleFullscreen}
@@ -108,7 +137,13 @@ export default function SafariPhotoGame() {
             </div>
           }
         >
-          <SafariApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <SafariApp
+            childId={activeChild?.id}
+            onBack={handleBack}
+            onComplete={handleGameComplete}
+            onResetSession={handleResetSession}
+            onRoundComplete={handleRoundComplete}
+          />
         </ErrorBoundary>
       </div>
 

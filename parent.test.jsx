@@ -1,7 +1,18 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { render, cleanup, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { render, cleanup, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import App from './src/App'
 import { CHILDREN } from './src/data/demoData'
+
+vi.mock('./src/data/gameContent', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    GAME_CONTENT: {
+      ...actual.GAME_CONTENT,
+      'picture-word': actual.GAME_CONTENT['picture-word'].slice(0, 3),
+    },
+  }
+})
 
 beforeEach(() => {
   localStorage.setItem('readquest_auth', JSON.stringify({
@@ -99,11 +110,13 @@ describe('Phase 3: Child -> Parent data connection', () => {
     // Child and Parent are separate portals with no in-UI navigation between
     // them (by design), so the real "connection" is that both read
     // activeChild from the same AppContext.
-    render(<App initialRoute="/child/games/match-sound" />)
+    render(<App initialRoute="/child/games/picture-word" />)
     fireEvent.click(await screen.findByRole('button', { name: /start game/i }))
-    for (let i = 0; i < 4; i++) {
-      await waitFor(() => expect(document.querySelectorAll('button.w-20.h-20').length).toBeGreaterThan(0))
-      fireEvent.click(document.querySelectorAll('button.w-20.h-20')[0])
+    for (let i = 0; i < 3; i++) {
+      const optionsContainer = await screen.findByTestId('picture-match-options')
+      const optionButtons = within(optionsContainer).getAllByRole('button')
+      expect(optionButtons.length).toBeGreaterThan(0)
+      fireEvent.click(optionButtons[0])
       await new Promise((r) => setTimeout(r, 1000))
     }
     await waitFor(() => expect(screen.getByText(/nice work/i)).toBeInTheDocument(), { timeout: 5000 })

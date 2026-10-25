@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <defs>
+    <!-- Sky Gradient -->
+    <linearGradient id="wfSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#80DEEA"/>
+      <stop offset="100%" stop-color="#E0F7FA"/>
+    </linearGradient>
+
+    <!-- Waterfall Cascade Gradient -->
+    <linearGradient id="wfFlow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4DD0E1"/>
+      <stop offset="25%" stop-color="#E0F7FA"/>
+      <stop offset="50%" stop-color="#00BCD4"/>
+      <stop offset="75%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#0097A7"/>
+    </linearGradient>
+
+    <!-- Pool Water Gradient -->
+    <linearGradient id="wfPool" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#00838F"/>
+      <stop offset="100%" stop-color="#006064"/>
+    </linearGradient>
+
+    <!-- Rock Cliff Gradient -->
+    <linearGradient id="wfRock" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#455A64"/>
+      <stop offset="50%" stop-color="#607D8B"/>
+      <stop offset="100%" stop-color="#37474F"/>
+    </linearGradient>
+
+    <!-- Foam Bubble Glow -->
+    <filter id="wfGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Circular Frame -->
+  <circle cx="100" cy="100" r="92" fill="url(#wfSky)"/>
+
+  <!-- Distant Mountain Peak -->
+  <polygon points="50,60 100,20 150,60" fill="#90A4AE" opacity="0.5"/>
+  <polygon points="85,32 100,20 115,32" fill="#FFFFFF" opacity="0.8"/> <!-- Snow on mountain -->
+
+  <!-- Left Rocky Cliff -->
+  <path d="M8,100 L8,45 Q35,42 68,52 L65,75 Q58,95 62,145 L8,170 Z" fill="url(#wfRock)"/>
+  <!-- Left Cliff Foliage & Trees -->
+  <path d="M12,46 Q35,38 65,48 L62,56 Q35,48 15,55 Z" fill="#4CAF50"/>
+  <polygon points="25,48 35,28 45,48" fill="#2E7D32"/>
+  <polygon points="45,52 55,34 65,52" fill="#388E3C"/>
+
+  <!-- Right Rocky Cliff -->
+  <path d="M192,100 L192,45 Q165,42 132,52 L135,75 Q142,95 138,145 L192,170 Z" fill="url(#wfRock)"/>
+  <!-- Right Cliff Foliage & Trees -->
+  <path d="M188,46 Q165,38 135,48 L138,56 Q165,48 185,55 Z" fill="#4CAF50"/>
+  <polygon points="155,48 165,28 175,48" fill="#2E7D32"/>
+  <polygon points="135,52 145,34 155,52" fill="#388E3C"/>
+
+  <!-- Top River Feeder -->
+  <path d="M68,52 Q100,48 132,52 L128,60 Q100,56 72,60 Z" fill="#4DD0E1"/>
+
+  <!-- Main Waterfall Cascades (Falling Water) -->
+  <path d="M70,58 Q66,95 62,150 L138,150 Q134,95 130,58 Z" fill="url(#wfFlow)"/>
+
+  <!-- White Foamy Vertical Water Flow Streams -->
+  <path d="M78,60 Q75,100 74,148" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+  <path d="M88,58 Q87,100 86,149" stroke="#E0F7FA" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <path d="M100,58 L100,150" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.95"/>
+  <path d="M112,58 Q113,100 114,149" stroke="#E0F7FA" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <path d="M122,60 Q125,100 126,148" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9"/>
+
+  <!-- Mid-fall Rock Ledge (Breaking the flow) -->
+  <path d="M85,96 Q100,92 115,96 L112,102 Q100,98 88,102 Z" fill="#37474F"/>
+  <!-- Foam spray over mid ledge -->
+  <ellipse cx="100" cy="100" rx="18" ry="4" fill="#FFFFFF" opacity="0.85"/>
+
+  <!-- Bottom Turquoise Foaming Splash Pool -->
+  <path d="M10,150 Q100,138 190,150 L190,192 L10,192 Z" fill="url(#wfPool)"/>
+
+  <!-- Energetic White Water Splashes & Billowing Mist at Base -->
+  <ellipse cx="100" cy="150" rx="42" ry="10" fill="#FFFFFF" opacity="0.9" filter="url(#wfGlow)"/>
+  <ellipse cx="80" cy="152" rx="20" ry="7" fill="#E0F7FA" opacity="0.8"/>
+  <ellipse cx="120" cy="152" rx="20" ry="7" fill="#E0F7FA" opacity="0.8"/>
+
+  <!-- Water Spray Droplets bouncing up -->
+  <circle cx="70" cy="138" r="3" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="85" cy="132" r="2.5" fill="#E0F7FA" opacity="0.9"/>
+  <circle cx="100" cy="128" r="3.5" fill="#FFFFFF" opacity="0.95"/>
+  <circle cx="115" cy="132" r="2.5" fill="#E0F7FA" opacity="0.9"/>
+  <circle cx="130" cy="138" r="3" fill="#FFFFFF" opacity="0.9"/>
+  <circle cx="94" cy="135" r="2" fill="#FFFFFF"/>
+  <circle cx="106" cy="136" r="2" fill="#FFFFFF"/>
+
+  <!-- Water Ripple Waves in the Pool -->
+  <path d="M40,165 Q100,160 160,165" stroke="#4DD0E1" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M60,178 Q100,174 140,178" stroke="#4DD0E1" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+</svg>

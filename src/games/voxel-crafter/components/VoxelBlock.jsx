@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { getLetterTexture } from '../../learning-run/utils/textTexture';
@@ -9,10 +9,24 @@ export default function VoxelBlock({
   targetPos = [0, 1.6, 0],
   isPlaced = false,
   slotIndex = 0,
+  totalSlots = 4,
   isNext = false,
   onClick,
 }) {
   const cubeRef = useRef();
+
+  // Restore cursor on unmount and when placed
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'default';
+    };
+  }, []);
+
+  useEffect(() => {
+    if (isPlaced) {
+      document.body.style.cursor = 'default';
+    }
+  }, [isPlaced]);
 
   const texture = useMemo(() => {
     return getLetterTexture(letter, {
@@ -27,8 +41,9 @@ export default function VoxelBlock({
     if (!cubeRef.current) return;
 
     if (isPlaced) {
-      // Snapped into crafting bench row
-      const placedX = -1.05 + slotIndex * 0.7;
+      // Snapped into crafting bench row, dynamically centered based on total word length
+      const slotsCount = totalSlots || 4;
+      const placedX = (slotIndex - (slotsCount - 1) / 2) * 0.7;
       cubeRef.current.position.x = THREE.MathUtils.lerp(cubeRef.current.position.x, placedX, 0.2);
       cubeRef.current.position.y = THREE.MathUtils.lerp(cubeRef.current.position.y, 1.65, 0.2);
       cubeRef.current.position.z = THREE.MathUtils.lerp(cubeRef.current.position.z, 0, 0.2);
@@ -40,6 +55,9 @@ export default function VoxelBlock({
       cubeRef.current.rotation.y += delta * 0.7;
     }
   });
+
+  // Next-letter aura strictly highlights unplaced matching blocks only
+  const shouldShowAura = Boolean(isNext && !isPlaced);
 
   return (
     <group
@@ -60,11 +78,11 @@ export default function VoxelBlock({
       <mesh>
         <boxGeometry args={[0.65, 0.65, 0.65]} />
         <meshStandardMaterial
-          color={isNext ? '#f59e0b' : blockColor}
+          color={shouldShowAura ? '#f59e0b' : blockColor}
           roughness={0.4}
           metalness={0.2}
-          emissive={isNext ? '#f59e0b' : '#000000'}
-          emissiveIntensity={isNext ? 0.35 : 0}
+          emissive={shouldShowAura ? '#f59e0b' : '#000000'}
+          emissiveIntensity={shouldShowAura ? 0.35 : 0}
         />
       </mesh>
 
@@ -80,8 +98,8 @@ export default function VoxelBlock({
         <meshBasicMaterial map={texture} transparent depthWrite={false} />
       </mesh>
 
-      {/* 4. Target Voxel Aura */}
-      {isNext && (
+      {/* 4. Target Voxel Aura (strictly unplaced blocks only) */}
+      {shouldShowAura && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <ringGeometry args={[0.6, 0.72, 16]} />
           <meshBasicMaterial color="#fbbf24" transparent opacity={0.7} side={2} />

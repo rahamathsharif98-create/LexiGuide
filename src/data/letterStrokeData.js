@@ -6,7 +6,9 @@
  * Strokes are ordered sequentially to support the animated "Ghost" guide.
  */
 
-export const LETTER_STROKE_DATA = {
+import { ENGLISH_LETTER_TRACE_CURRICULUM } from '../games/letter-trace/engine/letterTraceCurriculum.js';
+
+export const PRESERVED_LETTER_STROKE_DATA = {
   te: [
     {
       id: 'te-ka',
@@ -19,29 +21,27 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Lotus flower growing in water',
       instructionAudioText: 'ఈ అక్షరం "క". కమలం. మీ వేలితో గీతలను అనుసరించండి.',
       canonicalStrokes: [
-        // Main loop and body curve of Telugu 'ka'
+        // Stroke 1: S-curve body (continuous handwriting from top-right down through crest, waist, and bottom bowl)
         [
-          { x: 0.35, y: 0.32 },
-          { x: 0.28, y: 0.40 },
-          { x: 0.25, y: 0.52 },
-          { x: 0.28, y: 0.65 },
-          { x: 0.38, y: 0.75 },
-          { x: 0.50, y: 0.78 },
-          { x: 0.62, y: 0.75 },
-          { x: 0.72, y: 0.65 },
-          { x: 0.75, y: 0.52 },
-          { x: 0.70, y: 0.40 },
-          { x: 0.60, y: 0.35 },
-          { x: 0.50, y: 0.35 },
-          { x: 0.40, y: 0.45 },
-          { x: 0.42, y: 0.60 },
-          { x: 0.55, y: 0.65 },
+          { x: 0.64, y: 0.38 },
+          { x: 0.58, y: 0.30 },
+          { x: 0.49, y: 0.28 },
+          { x: 0.40, y: 0.33 },
+          { x: 0.35, y: 0.40 },
+          { x: 0.36, y: 0.48 },
+          { x: 0.45, y: 0.53 },
+          { x: 0.55, y: 0.54 },
+          { x: 0.62, y: 0.60 },
+          { x: 0.60, y: 0.68 },
+          { x: 0.50, y: 0.72 },
+          { x: 0.38, y: 0.68 },
+          { x: 0.34, y: 0.58 },
         ],
-        // Top tick/talakattu mark
+        // Stroke 2: Talakattu tick (✓) perfectly resting at top crest
         [
-          { x: 0.42, y: 0.20 },
-          { x: 0.50, y: 0.25 },
-          { x: 0.62, y: 0.18 },
+          { x: 0.40, y: 0.18 },
+          { x: 0.49, y: 0.28 },
+          { x: 0.64, y: 0.16 },
         ],
       ],
     },
@@ -56,22 +56,22 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Temple bell with ringing sound',
       instructionAudioText: 'ఈ అక్షరం "గ". గంట. మీ వేలితో గీతలను అనుసరించండి.',
       canonicalStrokes: [
-        // Main open hook body
+        // Stroke 1: Horseshoe arch from baseline up over crest and down to right baseline
         [
-          { x: 0.30, y: 0.65 },
-          { x: 0.30, y: 0.45 },
-          { x: 0.35, y: 0.35 },
-          { x: 0.45, y: 0.30 },
-          { x: 0.55, y: 0.30 },
-          { x: 0.65, y: 0.35 },
-          { x: 0.70, y: 0.45 },
-          { x: 0.70, y: 0.70 },
+          { x: 0.31, y: 0.83 },
+          { x: 0.32, y: 0.63 },
+          { x: 0.37, y: 0.49 },
+          { x: 0.46, y: 0.43 },
+          { x: 0.56, y: 0.43 },
+          { x: 0.64, y: 0.49 },
+          { x: 0.69, y: 0.63 },
+          { x: 0.70, y: 0.83 },
         ],
-        // Head tick
+        // Stroke 2: Talakattu tick at crest
         [
-          { x: 0.45, y: 0.22 },
-          { x: 0.52, y: 0.26 },
-          { x: 0.62, y: 0.20 },
+          { x: 0.43, y: 0.35 },
+          { x: 0.51, y: 0.42 },
+          { x: 0.67, y: 0.29 },
         ],
       ],
     },
@@ -86,23 +86,25 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Gentle glowing moon in the sky',
       instructionAudioText: 'ఈ అక్షరం "చ". చందమామ. మీ వేలితో గీతలను అనుసరించండి.',
       canonicalStrokes: [
+        // Stroke 1: Left open flag curving into double bottom cradle and rising to right wing crest
         [
-          { x: 0.30, y: 0.55 },
-          { x: 0.25, y: 0.65 },
-          { x: 0.35, y: 0.75 },
-          { x: 0.50, y: 0.75 },
-          { x: 0.65, y: 0.70 },
-          { x: 0.72, y: 0.55 },
-          { x: 0.70, y: 0.40 },
-          { x: 0.55, y: 0.35 },
-          { x: 0.40, y: 0.40 },
-          { x: 0.45, y: 0.55 },
-          { x: 0.60, y: 0.55 },
+          { x: 0.36, y: 0.43 },
+          { x: 0.43, y: 0.42 },
+          { x: 0.38, y: 0.55 },
+          { x: 0.41, y: 0.69 },
+          { x: 0.50, y: 0.71 },
+          { x: 0.55, y: 0.59 },
+          { x: 0.60, y: 0.71 },
+          { x: 0.70, y: 0.70 },
+          { x: 0.74, y: 0.57 },
+          { x: 0.71, y: 0.43 },
+          { x: 0.64, y: 0.35 },
         ],
+        // Stroke 2: Talakattu tick on the right wing crest
         [
-          { x: 0.45, y: 0.24 },
-          { x: 0.52, y: 0.28 },
-          { x: 0.62, y: 0.22 },
+          { x: 0.56, y: 0.28 },
+          { x: 0.64, y: 0.35 },
+          { x: 0.79, y: 0.21 },
         ],
       ],
     },
@@ -117,20 +119,25 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Clever little forest fox',
       instructionAudioText: 'ఈ అక్షరం "న". నక్క. మీ వేలితో గీతలను అనుసరించండి.',
       canonicalStrokes: [
+        // Stroke 1: Open downward hook, arching up and over, dipping into cradle, rising to right wing crest
         [
-          { x: 0.30, y: 0.45 },
-          { x: 0.25, y: 0.55 },
-          { x: 0.32, y: 0.68 },
-          { x: 0.45, y: 0.72 },
-          { x: 0.58, y: 0.65 },
-          { x: 0.62, y: 0.50 },
-          { x: 0.68, y: 0.60 },
-          { x: 0.75, y: 0.72 },
+          { x: 0.36, y: 0.68 },
+          { x: 0.32, y: 0.58 },
+          { x: 0.33, y: 0.46 },
+          { x: 0.41, y: 0.42 },
+          { x: 0.48, y: 0.46 },
+          { x: 0.52, y: 0.58 },
+          { x: 0.60, y: 0.70 },
+          { x: 0.68, y: 0.69 },
+          { x: 0.74, y: 0.58 },
+          { x: 0.70, y: 0.42 },
+          { x: 0.58, y: 0.30 },
         ],
+        // Stroke 2: Talakattu tick (✓) on right wing crest
         [
-          { x: 0.42, y: 0.26 },
-          { x: 0.50, y: 0.30 },
-          { x: 0.60, y: 0.25 },
+          { x: 0.50, y: 0.20 },
+          { x: 0.58, y: 0.30 },
+          { x: 0.72, y: 0.16 },
         ],
       ],
     },
@@ -144,17 +151,32 @@ export const LETTER_STROKE_DATA = {
       phoneme: '/t̪ʌ/',
       meaning: 'Twinkling star in the night',
       instructionAudioText: 'ఈ అక్షరం "త". తార. మీ వేలితో గీతలను అనుసరించండి.',
+      excluded: true,
+      active: false,
+      exclusionReason: 'Temporarily excluded from active curriculum pending accurate tracing guide redesign',
       canonicalStrokes: [
+        // Stroke 1: Left eye, central cleft, right shoulder, and bottom cradle
         [
-          { x: 0.30, y: 0.65 },
-          { x: 0.25, y: 0.50 },
-          { x: 0.35, y: 0.35 },
-          { x: 0.50, y: 0.35 },
-          { x: 0.65, y: 0.45 },
-          { x: 0.70, y: 0.60 },
-          { x: 0.65, y: 0.75 },
-          { x: 0.52, y: 0.75 },
-          { x: 0.45, y: 0.65 },
+          { x: 0.36, y: 0.55 },
+          { x: 0.28, y: 0.57 },
+          { x: 0.22, y: 0.53 },
+          { x: 0.24, y: 0.46 },
+          { x: 0.35, y: 0.46 },
+          { x: 0.50, y: 0.48 },
+          { x: 0.65, y: 0.46 },
+          { x: 0.76, y: 0.52 },
+          { x: 0.78, y: 0.62 },
+          { x: 0.68, y: 0.74 },
+          { x: 0.50, y: 0.77 },
+          { x: 0.30, y: 0.74 },
+          { x: 0.22, y: 0.65 },
+          { x: 0.22, y: 0.53 },
+        ],
+        // Stroke 2: Talakattu tick (✓) at central cleft
+        [
+          { x: 0.38, y: 0.33 },
+          { x: 0.50, y: 0.44 },
+          { x: 0.72, y: 0.25 },
         ],
       ],
     },
@@ -172,25 +194,28 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Beautiful lotus flower',
       instructionAudioText: 'यह अक्षर है "क"। कमल। उंगली से रेखा खींचिए।',
       canonicalStrokes: [
-        // 1. Shirorekha (top horizontal line)
-        [
-          { x: 0.25, y: 0.25 },
-          { x: 0.75, y: 0.25 },
-        ],
-        // 2. Central vertical stem
+        // 1. Central vertical stem
         [
           { x: 0.50, y: 0.25 },
           { x: 0.50, y: 0.80 },
         ],
-        // 3. Left loop and right hook
+        // 2. Continuous left loop and right hook (starts on stem, loops left, crosses stem, hooks right)
         [
-          { x: 0.50, y: 0.45 },
-          { x: 0.35, y: 0.45 },
-          { x: 0.30, y: 0.55 },
-          { x: 0.35, y: 0.65 },
-          { x: 0.50, y: 0.65 },
-          { x: 0.65, y: 0.55 },
-          { x: 0.70, y: 0.70 },
+          { x: 0.50, y: 0.42 },
+          { x: 0.39, y: 0.40 },
+          { x: 0.30, y: 0.48 },
+          { x: 0.30, y: 0.58 },
+          { x: 0.41, y: 0.65 },
+          { x: 0.50, y: 0.57 },
+          { x: 0.61, y: 0.43 },
+          { x: 0.71, y: 0.48 },
+          { x: 0.72, y: 0.62 },
+          { x: 0.67, y: 0.74 },
+        ],
+        // 3. Shirorekha (top headline)
+        [
+          { x: 0.25, y: 0.25 },
+          { x: 0.75, y: 0.25 },
         ],
       ],
     },
@@ -205,22 +230,25 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Clay flowerpot with green plant',
       instructionAudioText: 'यह अक्षर है "ग"। गमला। उंगली से रेखा खींचिए।',
       canonicalStrokes: [
-        // Shirorekha
-        [
-          { x: 0.25, y: 0.25 },
-          { x: 0.75, y: 0.25 },
-        ],
-        // Left loop
+        // 1. Left stem descending with smooth teardrop loop
         [
           { x: 0.40, y: 0.25 },
-          { x: 0.40, y: 0.62 },
-          { x: 0.35, y: 0.68 },
-          { x: 0.45, y: 0.68 },
+          { x: 0.40, y: 0.58 },
+          { x: 0.35, y: 0.65 },
+          { x: 0.31, y: 0.71 },
+          { x: 0.38, y: 0.74 },
+          { x: 0.45, y: 0.70 },
+          { x: 0.45, y: 0.64 },
         ],
-        // Right vertical stem
+        // 2. Right vertical stem
         [
           { x: 0.62, y: 0.25 },
           { x: 0.62, y: 0.80 },
+        ],
+        // 3. Shirorekha
+        [
+          { x: 0.25, y: 0.25 },
+          { x: 0.75, y: 0.25 },
         ],
       ],
     },
@@ -235,23 +263,25 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Shining moon in the night sky',
       instructionAudioText: 'यह अक्षर है "च"। चाँद। उंगली से रेखा खींचिए।',
       canonicalStrokes: [
-        // Shirorekha
+        // 1. Horizontal bar into smooth rounded scoop cradle meeting the stem
         [
-          { x: 0.25, y: 0.25 },
-          { x: 0.75, y: 0.25 },
+          { x: 0.32, y: 0.48 },
+          { x: 0.48, y: 0.48 },
+          { x: 0.38, y: 0.58 },
+          { x: 0.40, y: 0.71 },
+          { x: 0.51, y: 0.74 },
+          { x: 0.60, y: 0.66 },
+          { x: 0.60, y: 0.54 },
         ],
-        // Horizontal bar into loop
-        [
-          { x: 0.32, y: 0.50 },
-          { x: 0.48, y: 0.50 },
-          { x: 0.38, y: 0.65 },
-          { x: 0.50, y: 0.70 },
-          { x: 0.60, y: 0.55 },
-        ],
-        // Right vertical stem
+        // 2. Right vertical stem
         [
           { x: 0.60, y: 0.25 },
           { x: 0.60, y: 0.80 },
+        ],
+        // 3. Shirorekha
+        [
+          { x: 0.25, y: 0.25 },
+          { x: 0.75, y: 0.25 },
         ],
       ],
     },
@@ -266,27 +296,28 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Sweet juicy red apple',
       instructionAudioText: 'यह अक्षर है "स"। सेब। उंगली से रेखा खींचिए।',
       canonicalStrokes: [
-        // Shirorekha
+        // 1. Left Ra (र) head curve and diagonal leg
+        [
+          { x: 0.42, y: 0.25 },
+          { x: 0.42, y: 0.32 },
+          { x: 0.52, y: 0.38 },
+          { x: 0.33, y: 0.48 },
+          { x: 0.54, y: 0.70 },
+        ],
+        // 2. Connecting horizontal waist bar
+        [
+          { x: 0.50, y: 0.48 },
+          { x: 0.73, y: 0.48 },
+        ],
+        // 3. Right vertical stem (Khadi Pai)
+        [
+          { x: 0.73, y: 0.25 },
+          { x: 0.73, y: 0.72 },
+        ],
+        // 4. Shirorekha (Top headline)
         [
           { x: 0.25, y: 0.25 },
-          { x: 0.75, y: 0.25 },
-        ],
-        // Left loop
-        [
-          { x: 0.35, y: 0.35 },
-          { x: 0.45, y: 0.40 },
-          { x: 0.35, y: 0.55 },
-          { x: 0.30, y: 0.75 },
-        ],
-        // Connecting bar
-        [
-          { x: 0.38, y: 0.55 },
-          { x: 0.60, y: 0.55 },
-        ],
-        // Right stem
-        [
-          { x: 0.60, y: 0.25 },
-          { x: 0.60, y: 0.80 },
+          { x: 0.78, y: 0.25 },
         ],
       ],
     },
@@ -301,152 +332,57 @@ export const LETTER_STROKE_DATA = {
       meaning: 'Golden twinkling star',
       instructionAudioText: 'यह अक्षर है "त"। तारा। उंगली से रेखा खींचिए।',
       canonicalStrokes: [
-        // Shirorekha
+        // 1. Right vertical stem
+        [
+          { x: 0.62, y: 0.25 },
+          { x: 0.62, y: 0.80 },
+        ],
+        // 2. Horizontal arm smoothly arching downward like an umbrella hook
+        [
+          { x: 0.62, y: 0.48 },
+          { x: 0.45, y: 0.48 },
+          { x: 0.37, y: 0.54 },
+          { x: 0.36, y: 0.65 },
+          { x: 0.36, y: 0.78 },
+        ],
+        // 3. Shirorekha
         [
           { x: 0.25, y: 0.25 },
           { x: 0.75, y: 0.25 },
-        ],
-        // Vertical stem
-        [
-          { x: 0.60, y: 0.25 },
-          { x: 0.60, y: 0.80 },
-        ],
-        // Left arm and curve
-        [
-          { x: 0.60, y: 0.50 },
-          { x: 0.38, y: 0.50 },
-          { x: 0.38, y: 0.75 },
         ],
       ],
     },
   ],
 
-  en: [
-    {
-      id: 'en-c',
-      letter: 'C',
-      word: 'Cat',
-      english: 'Cat',
-      roman: 'cat',
-      icon: '🐱',
-      phoneme: '/k/',
-      meaning: 'Playful fluffy cat',
-      instructionAudioText: 'This is letter C. C is for Cat. Follow the curve with your finger.',
-      canonicalStrokes: [
-        // Smooth semi-circular curve from top-right to bottom-right
-        [
-          { x: 0.75, y: 0.32 },
-          { x: 0.58, y: 0.22 },
-          { x: 0.40, y: 0.25 },
-          { x: 0.28, y: 0.38 },
-          { x: 0.25, y: 0.52 },
-          { x: 0.28, y: 0.68 },
-          { x: 0.40, y: 0.78 },
-          { x: 0.58, y: 0.80 },
-          { x: 0.75, y: 0.70 },
-        ],
-      ],
-    },
-    {
-      id: 'en-s',
-      letter: 'S',
-      word: 'Sun',
-      english: 'Sun',
-      roman: 'sun',
-      icon: '☀️',
-      phoneme: '/s/',
-      meaning: 'Warm smiling yellow sun',
-      instructionAudioText: 'This is letter S. S is for Sun. Trace the winding snake curve.',
-      canonicalStrokes: [
-        [
-          { x: 0.72, y: 0.32 },
-          { x: 0.55, y: 0.22 },
-          { x: 0.35, y: 0.28 },
-          { x: 0.32, y: 0.42 },
-          { x: 0.50, y: 0.50 },
-          { x: 0.68, y: 0.58 },
-          { x: 0.68, y: 0.72 },
-          { x: 0.50, y: 0.80 },
-          { x: 0.30, y: 0.74 },
-        ],
-      ],
-    },
-    {
-      id: 'en-b',
-      letter: 'B',
-      word: 'Book',
-      english: 'Book',
-      roman: 'book',
-      icon: '📖',
-      phoneme: '/b/',
-      meaning: 'Wonderful picture book to read',
-      instructionAudioText: 'This is letter B. B is for Book. Draw the straight stem, then two round bumps.',
-      canonicalStrokes: [
-        // Stem
-        [
-          { x: 0.30, y: 0.22 },
-          { x: 0.30, y: 0.80 },
-        ],
-        // Top bump
-        [
-          { x: 0.30, y: 0.22 },
-          { x: 0.55, y: 0.22 },
-          { x: 0.68, y: 0.34 },
-          { x: 0.55, y: 0.50 },
-          { x: 0.30, y: 0.50 },
-        ],
-        // Bottom bump
-        [
-          { x: 0.30, y: 0.50 },
-          { x: 0.58, y: 0.50 },
-          { x: 0.72, y: 0.64 },
-          { x: 0.58, y: 0.80 },
-          { x: 0.30, y: 0.80 },
-        ],
-      ],
-    },
-    {
-      id: 'en-m',
-      letter: 'M',
-      word: 'Moon',
-      english: 'Moon',
-      roman: 'moon',
-      icon: '🌙',
-      phoneme: '/m/',
-      meaning: 'Silver glowing moon in the sky',
-      instructionAudioText: 'This is letter M. M is for Moon. Trace the mountain peaks!',
-      canonicalStrokes: [
-        [
-          { x: 0.25, y: 0.80 },
-          { x: 0.25, y: 0.25 },
-          { x: 0.50, y: 0.60 },
-          { x: 0.75, y: 0.25 },
-          { x: 0.75, y: 0.80 },
-        ],
-      ],
-    },
-    {
-      id: 'en-t',
-      letter: 'T',
-      word: 'Tree',
-      english: 'Tree',
-      roman: 'tree',
-      icon: '🌳',
-      phoneme: '/t/',
-      meaning: 'Tall green leafy tree',
-      instructionAudioText: 'This is letter T. T is for Tree. Draw the top branch, then the trunk.',
-      canonicalStrokes: [
-        // Top bar
-        [
-          { x: 0.22, y: 0.24 },
-          { x: 0.78, y: 0.24 },
-        ],
-        // Downward stem
-        [
-          { x: 0.50, y: 0.24 },
-          { x: 0.50, y: 0.80 },
-        ],
-      ],
-    },
-  ],
+  en: ENGLISH_LETTER_TRACE_CURRICULUM,
+};
+
+/**
+ * Active Playable Letter Sets
+ * Excluded letters (such as Telugu 'త') are filtered out from the active curriculum
+ * while preserving complete canonical stroke data in PRESERVED_LETTER_STROKE_DATA.
+ */
+export const LETTER_STROKE_DATA = {
+  te: PRESERVED_LETTER_STROKE_DATA.te.filter((item) => !item.excluded && item.active !== false),
+  hi: PRESERVED_LETTER_STROKE_DATA.hi.filter((item) => !item.excluded && item.active !== false),
+  en: PRESERVED_LETTER_STROKE_DATA.en.filter((item) => !item.excluded && item.active !== false),
+};
+
+/**
+ * Registry of temporarily excluded characters for future restoration
+ */
+export const EXCLUDED_LETTERS = PRESERVED_LETTER_STROKE_DATA.te.filter((item) => item.excluded);
+
+/**
+ * Query whether a character or ID is active in the playable curriculum
+ */
+export function isLetterActive(idOrLetter) {
+  const all = [
+    ...PRESERVED_LETTER_STROKE_DATA.te,
+    ...PRESERVED_LETTER_STROKE_DATA.hi,
+    ...PRESERVED_LETTER_STROKE_DATA.en,
+  ];
+  const found = all.find((item) => item.id === idOrLetter || item.letter === idOrLetter);
+  return found ? !found.excluded && found.active !== false : false;
 }
+

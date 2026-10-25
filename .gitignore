@@ -50,3 +50,18 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# IDE & Editor files
+.vs/
+
+# Temporary glyph calibration & diagnostic HTML tools (one-off test artifacts)
+final_4_overlay.html
+glyph_grid_detailed.html
+glyph_study.html
+glyph_zoom1.html
+glyph_zoom2.html
+ta_candidates.html
+ta_variations.html
+test_precision_overlay.html
+test_refined_4_overlay.html
+zoom_ta.html

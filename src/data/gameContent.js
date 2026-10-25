@@ -1,92 +1,49 @@
+import { WORD_TRAIN_CURRICULUM } from '../games/word-train/engine/wordTrainCurriculum'
+import { SOUND_HUNT_CURRICULUM } from '../games/sound-hunt/engine/soundHuntCurriculum'
+import { COSMIC_SAFARI_CURRICULUM } from '../games/cosmic-safari/engine/cosmicSafariCurriculum'
+import { SOUND_SAFARI_CURRICULUM } from '../games/sound-safari/engine/soundSafariCurriculum'
+import { SOUND_MATCH_CURRICULUM } from '../games/sound-match/engine/soundMatchCurriculum'
+import { SOUND_RHYTHM_CURRICULUM } from '../games/sound-rhythm/engine/soundRhythmCurriculum'
+import { LETTER_DETECTIVE_CURRICULUM } from '../games/letter-detective/engine/letterDetectiveCurriculum'
+import { MISSING_LETTER_CURRICULUM } from '../games/missing-letter/engine/missingLetterCurriculum'
+import { WORD_BUILDER_CURRICULUM } from '../games/word-builder/engine/wordBuilderCurriculum'
+import { PICTURE_MATCH_CURRICULUM } from '../games/picture-match/engine/pictureMatchCurriculum'
+import { STORY_PUZZLE_CURRICULUM } from '../games/story-puzzle/engine/storyPuzzleCurriculum'
+
 // Per-game content banks. Each item is one "round".
 export const GAME_CONTENT = {
-  // 1. SOUND SAFARI (Original)
-  'match-sound': [
-    { sound: '/k/', emoji: '🔊', correct: '🐱', options: ['🐱', '🐶', '🐟'], label: 'cat' },
-    { sound: '/sh/', emoji: '🔊', correct: '🐑', options: ['🐑', '🐮', '🐷'], label: 'sheep' },
-    { sound: '/b/', emoji: '🔊', correct: '🐻', options: ['🐝', '🐻', '🦋'], label: 'bear' },
-    { sound: '/f/', emoji: '🔊', correct: '🐸', options: ['🐸', '🐦', '🐍'], label: 'frog' },
-  ],
+  // 1. SOUND SAFARI (Original 4 Rounds with Educational Prompts)
+  'match-sound': SOUND_SAFARI_CURRICULUM,
 
-  // 2. SOUND HUNT (Section 11)
-  'sound-hunt': [
-    { letter: 'B', sound: '/b/', soundSpoken: 'buh', prompt: 'Which picture starts with B?', correct: '⚽', correctName: 'Ball', options: [{ emoji: '🐱', name: 'Cat' }, { emoji: '⚽', name: 'Ball' }, { emoji: '🍎', name: 'Apple' }] },
-    { letter: 'S', sound: '/s/', soundSpoken: 'sss', prompt: 'Which picture starts with S?', correct: '☀️', correctName: 'Sun', options: [{ emoji: '☀️', name: 'Sun' }, { emoji: '🚗', name: 'Car' }, { emoji: '🐸', name: 'Frog' }] },
-    { letter: 'M', sound: '/m/', soundSpoken: 'mmm', prompt: 'Which picture starts with M?', correct: '🌙', correctName: 'Moon', options: [{ emoji: '🐟', name: 'Fish' }, { emoji: '🌙', name: 'Moon' }, { emoji: '🐶', name: 'Dog' }] },
-  ],
+  // 1b. COSMIC SAFARI (25 Progressive Phonics Levels across 5 Stages)
+  'cosmic-safari': COSMIC_SAFARI_CURRICULUM,
 
-  // 3. SOUND MATCH (Section 16)
-  'sound-match': [
-    { word: 'SUN', spoken: 'Sun', correct: '☀️', options: ['☀️', '🐟', '🚗'] },
-    { word: 'CAT', spoken: 'Cat', correct: '🐱', options: ['🐱', '🐶', '🐻'] },
-    { word: 'FISH', spoken: 'Fish', correct: '🐟', options: ['🍎', '🐟', '⚽'] },
-  ],
+  // 2. SOUND HUNT / SPACE SOUND MISSION (Section 11 - 10 Progressive Phonics Levels)
+  'sound-hunt': SOUND_HUNT_CURRICULUM,
 
-  // 4. SOUND & RHYTHM (Section 19)
-  'sound-rhythm': [
-    { prompt: 'Listen to the rhythm: BA — BA — BA', pattern: 'BA BA BA', correct: 'BA — BA — BA', options: ['BA — BA — BA', 'BA — DI — DA', 'LA — LA — LA'] },
-    { prompt: 'Listen to the rhythm: TI — TI — TA', pattern: 'TI TI TA', correct: 'TI — TI — TA', options: ['TI — TI — TA', 'TA — TA — TA', 'DI — DI — DUM'] },
-  ],
+  // 3. SOUND MATCH (10 Progressive Spoken Word & Picture Matching Levels)
+  'sound-match': SOUND_MATCH_CURRICULUM,
 
-  // 5. WORD BUILDER (Original)
-  'build-word': [
-    { image: '🐱', word: 'CAT', letters: ['T', 'C', 'A'] },
-    { image: '🐶', word: 'DOG', letters: ['G', 'D', 'O'] },
-    { image: '☀️', word: 'SUN', letters: ['N', 'S', 'U'] },
-    { image: '🐟', word: 'FISH', letters: ['S', 'F', 'H', 'I'] },
-  ],
+  // 4. SOUND & RHYTHM (3 Stages — 30 Progressive Levels)
+  'sound-rhythm': SOUND_RHYTHM_CURRICULUM,
 
-  // 6. WORD TRAIN (Section 15)
-  'word-train': [
-    { word: 'CAT', image: '🐱', letters: ['C', 'A', 'T'], scrambled: ['T', 'C', 'A'] },
-    { word: 'BUS', image: '🚌', letters: ['B', 'U', 'S'], scrambled: ['S', 'B', 'U'] },
-    { word: 'SUN', image: '☀️', letters: ['S', 'U', 'N'], scrambled: ['U', 'S', 'N'] },
-  ],
+  // 5. WORD BUILDER (3 Stages — 30 Progressive Levels)
+  'build-word': WORD_BUILDER_CURRICULUM,
 
-  // 7. MISSING LETTER (Section 17)
-  'missing-letter': [
-    { wordDisplay: 'C _ T', fullWord: 'CAT', missing: 'A', image: '🐱', options: ['A', 'O', 'E'] },
-    { wordDisplay: 'D _ G', fullWord: 'DOG', missing: 'O', image: '🐶', options: ['O', 'U', 'I'] },
-    { wordDisplay: 'S _ N', fullWord: 'SUN', missing: 'U', image: '☀️', options: ['U', 'A', 'E'] },
-  ],
+  // 6. WORD TRAIN (Section 15 - 50 Progressive Phonics Levels)
+  'word-train': WORD_TRAIN_CURRICULUM,
 
-  // 8. LETTER DETECTIVE (Original)
-  'find-sound': [
-    { target: 'sh', words: ['ship', 'cat', 'shell', 'dog'], answers: ['ship', 'shell'] },
-    { target: 'ch', words: ['chip', 'ball', 'chair', 'sun'], answers: ['chip', 'chair'] },
-    { target: 'th', words: ['this', 'car', 'that', 'box'], answers: ['this', 'that'] },
-  ],
+  // 7. MISSING LETTER (3 Stages — 30 Progressive Levels)
+  'missing-letter': MISSING_LETTER_CURRICULUM,
 
-  // 9. PICTURE MATCH (Original)
-  'picture-word': [
-    { emoji: '🍎', correct: 'APPLE', options: ['APPLE', 'ORANGE', 'GRAPE'] },
-    { emoji: '🐘', correct: 'ELEPHANT', options: ['ELEPHANT', 'TIGER', 'ZEBRA'] },
-    { emoji: '🚗', correct: 'CAR', options: ['BUS', 'CAR', 'BIKE'] },
-  ],
+  // 8. LETTER DETECTIVE (3 Stages — 30 Progressive Phonics Levels)
+  'find-sound': LETTER_DETECTIVE_CURRICULUM,
 
-  // 10. STORY PUZZLE (Section 18)
-  'story-puzzle': [
-    {
-      title: 'How an Apple Grows',
-      prompt: 'What comes first, next, and last?',
-      items: [
-        { id: '1', emoji: '🌱', label: 'Seed Sprout', step: 1 },
-        { id: '2', emoji: '🌳', label: 'Big Tree', step: 2 },
-        { id: '3', emoji: '🍎', label: 'Ripe Apple', step: 3 },
-      ],
-      correctOrder: ['1', '2', '3'],
-    },
-    {
-      title: 'A Butterfly Adventure',
-      prompt: 'Put the butterfly adventure in order!',
-      items: [
-        { id: '1', emoji: '🐛', label: 'Caterpillar', step: 1 },
-        { id: '2', emoji: '🌿', label: 'Chrysalis', step: 2 },
-        { id: '3', emoji: '🦋', label: 'Butterfly', step: 3 },
-      ],
-      correctOrder: ['1', '2', '3'],
-    },
-  ],
+  // 9. PICTURE MATCH (3 Stages — 30 Progressive Levels)
+  'picture-word': PICTURE_MATCH_CURRICULUM,
+
+  // 10. STORY PUZZLE (3 Stages — 15 Progressive Levels)
+  'story-puzzle': STORY_PUZZLE_CURRICULUM,
 
   // 11. SOUND DETECTIVE (Original)
   'sound-detective': [

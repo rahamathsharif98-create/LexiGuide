@@ -3,7 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Maximize2, Minimize2, Star, Sparkles, Trophy, Gamepad2 } from 'lucide-react'
 import { useApp } from '../../context/AppContext'
 import LearningRunApp from '../../games/learning-run/App'
-import { setHostStudentId, setHostSessionHandler } from '../../games/learning-run/services/integration/gameBridge'
+import { gameBridge, setHostStudentId, setHostSessionHandler } from '../../games/learning-run/services/integration/gameBridge'
+import { storageService } from '../../games/learning-run/services/storage/storageService'
+import { audioService } from '../../games/learning-run/services/audio/audioService'
+import { speechService } from '../../games/learning-run/services/speech/speechService'
+import { useGameStore } from '../../games/learning-run/game/engine/gameStore'
+import { useAppStore } from '../../games/learning-run/game/engine/appStore'
 import GameSoundToggle from '../../components/games/GameSoundToggle'
 
 function useSafeApp() {
@@ -24,6 +29,8 @@ export default function LearningRunGame() {
   const containerRef = useRef(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [lastResult, setLastResult] = useState(null)
+  const savedSessionIdsRef = useRef(new Set())
+  const isExitingRef = useRef(false)
 
   // Fullscreen toggle handler
   const toggleFullscreen = useCallback(() => {
@@ -47,27 +54,25 @@ export default function LearningRunGame() {
     }
   }, [])
 
-  // Connect host AppContext to gameBridge
+  // Connect host AppContext to gameBridge and persist isolated child session
   useEffect(() => {
-    setHostStudentId(activeChild?.id || 'child_1')
+    const studentId = activeChild?.id || 'guest'
+    setHostStudentId(studentId)
+    storageService.setStorageChildId(studentId)
+    useAppStore.getState().refreshSave()
 
     setHostSessionHandler(async (finalResult) => {
-      setLastResult(finalResult)
-      const challengesCompleted = Number(finalResult.challengesCompleted || 0);
-      const challengesCorrect = Number(finalResult.challengesCorrect || 0);
-      const distance = Math.round(finalResult.distance || 0);
-
-      // Guard: Do not save false successful sessions if user backed out immediately with 0 challenges and negligible distance
-      if (challengesCompleted === 0 && distance < 30) {
-        return;
+      const sessionId = finalResult?.sessionId || `session_${Date.now()}`
+      if (savedSessionIdsRef.current.has(sessionId)) {
+        return
       }
+      savedSessionIdsRef.current.add(sessionId)
 
-      const calculatedAccuracy = challengesCompleted > 0
-        ? Math.round((challengesCorrect / challengesCompleted) * 100)
-        : (distance > 100 ? 70 : 0);
-      const isCompleted = challengesCompleted > 0 || distance >= 100;
-      const actualStars = isCompleted ? (finalResult.starsEarned ?? 1) : 0;
-      const actualXp = isCompleted ? actualStars * 10 : 0;
+      setLastResult(finalResult)
+      const starsEarned = typeof finalResult.starsEarned === 'number' ? finalResult.starsEarned : (finalResult.starsEarned ?? 3)
+      const xpEarned = starsEarned * 10
+      const lettersCount = finalResult.lettersCollected?.length || 0
+      const wordsCount = finalResult.wordsCompleted?.length || 0
 
       try {
         if (typeof saveLearningSession === 'function') {
@@ -78,31 +83,29 @@ export default function LearningRunGame() {
               type: 'game',
               gameId: 'learning-run',
               title: 'LexiGuide Learning Run',
-              score: distance,
-              starsGain: actualStars,
-              xpGain: actualXp,
-              accuracy: calculatedAccuracy,
-              roundsAttempted: challengesCompleted,
-              roundsCorrect: challengesCorrect,
-              is_completed: isCompleted,
-              completion_status: isCompleted ? 'completed' : 'incomplete',
+              score: Math.round(finalResult.distance || 0),
+              starsGain: starsEarned,
+              xpGain: xpEarned,
+              accuracy: finalResult.challengesCompleted > 0
+                ? Math.round(((finalResult.challengesCorrect || 0) / finalResult.challengesCompleted) * 100)
+                : 92,
               duration: finalResult.duration || 60,
               lettersCount,
               wordsCount,
               details: {
-                distance,
+                distance: finalResult.distance,
                 lettersCollected: finalResult.lettersCollected,
                 wordsCompleted: finalResult.wordsCompleted,
                 observedPatterns: finalResult.observedPatterns,
                 difficultLetters: finalResult.difficultLetters,
               },
             },
-            stars: actualStars,
-            xp: actualXp,
+            stars: starsEarned,
+            xp: xpEarned,
           })
         }
-        if (typeof showToast === 'function' && isCompleted) {
-          showToast(`🏃‍♂️ Amazing run! +${actualStars} ⭐ & +${actualXp} XP saved!`, 'success')
+        if (typeof showToast === 'function') {
+          showToast(`🏃‍♂️ Amazing run! +${starsEarned} ⭐ & +${xpEarned} XP saved!`, 'success')
         }
       } catch (err) {
         console.error('Failed to persist learning run session to LexiGuide:', err)
@@ -110,9 +113,71 @@ export default function LearningRunGame() {
     })
 
     return () => {
-      setHostSessionHandler(null);
+      // Auto-save progress if the player navigates away while a session is active
+      const activeSession = gameBridge.getCurrentSession()
+      if (activeSession) {
+        try {
+          const store = useGameStore.getState()
+          const observed = store.getObservedPatterns?.() || {}
+          const difficultLetters = Object.keys(store.tracker?.incorrectByLetter || {}).filter(
+            (l) => (store.tracker?.incorrectByLetter?.[l] || 0) > (store.tracker?.correctByLetter?.[l] || 0)
+          )
+
+          gameBridge.completeGameSession({
+            distance: store.distance || 0,
+            lettersCollected: store.lettersCollected || [],
+            wordsCompleted: store.wordsCompleted || [],
+            challengesCompleted: store.challengesCompleted || 0,
+            challengesCorrect: store.challengesCorrect || 0,
+            starsEarned: store.starsEarned || 0,
+            checkpointsReached: store.checkpointsReached || 0,
+            difficultLetters,
+            observedPatterns: observed.observedPatterns || {},
+          })
+        } catch (err) {
+          console.warn('Failed to auto-save session on unmount:', err)
+        }
+      }
+      audioService.stopMusic()
+      speechService.cancel()
+      setHostSessionHandler(null)
     }
   }, [activeChild?.id, saveLearningSession, showToast])
+
+  // Save accumulated progress upon intentional exit via Games button
+  const handleBack = useCallback(() => {
+    if (isExitingRef.current) return
+    isExitingRef.current = true
+
+    const activeSession = gameBridge.getCurrentSession()
+    if (activeSession) {
+      try {
+        const store = useGameStore.getState()
+        const observed = store.getObservedPatterns?.() || {}
+        const difficultLetters = Object.keys(store.tracker?.incorrectByLetter || {}).filter(
+          (l) => (store.tracker?.incorrectByLetter?.[l] || 0) > (store.tracker?.correctByLetter?.[l] || 0)
+        )
+
+        gameBridge.completeGameSession({
+          distance: store.distance || 0,
+          lettersCollected: store.lettersCollected || [],
+          wordsCompleted: store.wordsCompleted || [],
+          challengesCompleted: store.challengesCompleted || 0,
+          challengesCorrect: store.challengesCorrect || 0,
+          starsEarned: store.starsEarned || 0,
+          checkpointsReached: store.checkpointsReached || 0,
+          difficultLetters,
+          observedPatterns: observed.observedPatterns || {},
+        })
+      } catch (err) {
+        console.warn('Failed to complete session on exit:', err)
+      }
+    }
+
+    audioService.stopMusic()
+    speechService.cancel()
+    navigate('/child/games')
+  }, [navigate])
 
   return (
     <div className="w-full flex flex-col gap-3 pb-8" data-testid="learning-run-page">
@@ -121,18 +186,12 @@ export default function LearningRunGame() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => {
-              if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-                navigate(-1)
-              } else {
-                navigate('/child/games')
-              }
-            }}
+            onClick={handleBack}
             className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#F2FBFC] hover:bg-[#DDF9FC] text-[#08233A] hover:text-[#0899AA] font-bold text-sm border border-[#D7EEF1] transition-all cursor-pointer shadow-2xs active:scale-95"
             aria-label="Back to Gaming Zone"
           >
             <ArrowLeft size={16} />
-            <span>Back</span>
+            <span>Games</span>
           </button>
 
           <div className="hidden sm:flex items-center gap-2">

@@ -48,8 +48,6 @@ export function AuthProvider({ children, initialAuth = null }) {
       if (typeof window !== 'undefined' && window.localStorage) {
         window.localStorage.removeItem(AUTH_STORAGE_KEY)
         window.localStorage.removeItem(LEGACY_AUTH_STORAGE_KEY)
-        window.localStorage.removeItem('lexiguide_active_child_id')
-        window.localStorage.removeItem('readquest_active_child_id')
       }
     } catch {
       // Ignore localStorage errors
@@ -68,15 +66,13 @@ export function AuthProvider({ children, initialAuth = null }) {
 
   const loginDemo = useCallback((role = 'parent', customUser = null) => {
     const isTeacher = role === 'teacher'
-    const isChild = role === 'child'
     const newAuthState = {
-      token: isTeacher ? 'demo-teacher-token' : isChild ? 'demo-child-token' : 'demo-parent-token',
+      token: isTeacher ? 'demo-teacher-token' : 'demo-parent-token',
       user: {
-        id: isTeacher ? 1 : isChild ? 3 : 2,
-        name: customUser?.name || (isTeacher ? 'Ms. Rao' : isChild ? 'Aarav' : 'Demo Parent'),
-        email: customUser?.email || (isTeacher ? 'teacher@readquest.demo' : isChild ? 'child.aarav@readquest.demo' : 'parent@readquest.demo'),
-        role: isTeacher ? 'teacher' : isChild ? 'child' : 'parent',
-        studentId: isChild ? 1 : null,
+        id: isTeacher ? 2 : 1,
+        name: customUser?.name || (isTeacher ? 'Demo Educator' : 'Demo Parent'),
+        email: customUser?.email || (isTeacher ? 'teacher@readquest.demo' : 'parent@readquest.demo'),
+        role: isTeacher ? 'teacher' : 'parent',
       },
     }
     setAuthState(newAuthState)
@@ -90,8 +86,7 @@ export function AuthProvider({ children, initialAuth = null }) {
   }, [])
 
   const login = useCallback(async (email, password, expectedRole = null) => {
-    try {
-      const res = await endpoints.login(email, password)
+    const res = await endpoints.login(email, password)
       if (!res || !res.access_token) {
         throw new Error('Authentication response did not contain an access token.')
       }
@@ -107,7 +102,6 @@ export function AuthProvider({ children, initialAuth = null }) {
           name: res.name,
           email,
           role: res.role,
-          studentId: res.student_id ?? null,
         },
       }
 
@@ -121,45 +115,6 @@ export function AuthProvider({ children, initialAuth = null }) {
       } catch {}
 
       return newAuthState
-    } catch (err) {
-      // If the backend returned a genuine 401 or wrong-role rejection, rethrow so the form displays the error
-      if (err?.status === 401 || err?.message?.includes('required for this portal')) {
-        throw err
-      }
-
-      // If backend is unreachable on a static hosting environment like Netlify or returns 503
-      const isNetlify = typeof window !== 'undefined' && Boolean(window.location?.hostname?.includes('netlify.app'))
-      const isStaticHost = err?.status === 503 || Boolean(err?.message?.includes('static host'))
-
-      if (isStaticHost || isNetlify) {
-        const cleanRole = expectedRole || (email.includes('teacher') ? 'teacher' : email.includes('parent') ? 'parent' : 'child')
-        const isTeacher = cleanRole === 'teacher'
-        const isChild = cleanRole === 'child'
-        const namePart = email.split('@')[0].replace(/^(child|student|parent|teacher)\.?/i, '')
-        const capitalizedName = namePart ? namePart.charAt(0).toUpperCase() + namePart.slice(1) : (isTeacher ? 'Ms. Rao' : isChild ? 'Aarav' : 'Demo Parent')
-
-        const fallbackAuth = {
-          token: `demo-${cleanRole}-token`,
-          user: {
-            id: isTeacher ? 1 : isChild ? 3 : 2,
-            name: capitalizedName,
-            email: email.trim(),
-            role: cleanRole,
-            studentId: isChild ? 1 : null,
-          },
-        }
-        setAuthState(fallbackAuth)
-        setAuthToken(fallbackAuth.token)
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(fallbackAuth))
-          }
-        } catch {}
-        return fallbackAuth
-      }
-
-      throw err
-    }
   }, [])
 
   const register = useCallback(async (name, email, password, role) => {
@@ -176,7 +131,6 @@ export function AuthProvider({ children, initialAuth = null }) {
           name: res.name || name,
           email,
           role: res.role,
-          studentId: res.student_id ?? null,
         },
       }
 
@@ -191,39 +145,24 @@ export function AuthProvider({ children, initialAuth = null }) {
 
       return newAuthState
     } catch (err) {
-      if (err?.status === 400) {
-        throw err
+      // Offline fallback registration
+      const newAuthState = {
+        token: 'local-session-token-' + Date.now(),
+        user: {
+          id: 99,
+          name: name || 'Explorer User',
+          email,
+          role: role || 'parent',
+        },
       }
-
-      const isNetlify = typeof window !== 'undefined' && Boolean(window.location?.hostname?.includes('netlify.app'))
-      const isStaticHost = err?.status === 503 || Boolean(err?.message?.includes('static host'))
-
-      if (isStaticHost || isNetlify) {
-        const cleanRole = role || 'child'
-        const isTeacher = cleanRole === 'teacher'
-        const isChild = cleanRole === 'child'
-
-        const fallbackAuth = {
-          token: `demo-${cleanRole}-token`,
-          user: {
-            id: isTeacher ? 1 : isChild ? 3 : 2,
-            name: name.trim(),
-            email: email.trim(),
-            role: cleanRole,
-            studentId: isChild ? 1 : null,
-          },
+      setAuthState(newAuthState)
+      setAuthToken(newAuthState.token)
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newAuthState))
         }
-        setAuthState(fallbackAuth)
-        setAuthToken(fallbackAuth.token)
-        try {
-          if (typeof window !== 'undefined' && window.localStorage) {
-            window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(fallbackAuth))
-          }
-        } catch {}
-        return fallbackAuth
-      }
-
-      throw err
+      } catch {}
+      return newAuthState
     }
   }, [])
 

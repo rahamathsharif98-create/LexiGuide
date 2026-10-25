@@ -50,23 +50,13 @@ export default function StoryReader() {
 
   const handleSaveResult = async (compResult) => {
     if (saving) return
-    const accuracy = compResult.accuracy != null
-      ? Math.round(compResult.accuracy)
-      : Math.round(((compResult.correct || 0) / (compResult.total || 1)) * 100)
-    const starsEarned = accuracy >= 80 ? 4 : (accuracy >= 50 ? 2 : 1)
-    const xpEarned = starsEarned * 10
-
     const outcome = {
       type: 'story',
       skill: 'comprehension',
       title: 'Story Challenge',
-      accuracy,
-      roundsAttempted: story.questions.length,
-      roundsCorrect: compResult.correct || 0,
-      is_completed: true,
-      completion_status: 'completed',
-      xpGain: xpEarned,
-      starsGain: starsEarned,
+      accuracy: compResult.accuracy,
+      xpGain: 20,
+      starsGain: 4,
       _savedToBackend: isRealBackend,
     }
     if (isRealBackend) {
@@ -76,8 +66,8 @@ export default function StoryReader() {
         await saveLearningSession({
           skill: 'comprehension',
           outcome,
-          stars: starsEarned,
-          xp: xpEarned,
+          stars: 4,
+          xp: 20,
         })
       } catch (err) {
         setSaveError(err.message || 'Could not save story progress.')

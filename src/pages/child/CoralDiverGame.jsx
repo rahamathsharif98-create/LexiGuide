@@ -10,6 +10,8 @@ export default function CoralDiverGame() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  // Idempotency guard: ensures saveCompletedSession is called at most once per session.
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'coral-diver',
@@ -18,28 +20,29 @@ export default function CoralDiverGame() {
   });
 
   const handleRoundComplete = useCallback((result) => {
+    // Record the attempt for score/accuracy accumulation only.
+    // Do NOT call saveCompletedSession here — this fires on every correct bubble,
+    // which would cause duplicate backend saves per round.
     tracker.recordAttempt(result.isCorrect, {
       roundScore: result.score || 150,
       starsEarned: result.stars || 1,
       xpEarned: result.xp || 20,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { targetWord: result.level?.targetWord },
-      });
-    }
   }, [tracker]);
 
+  const handleResetSession = useCallback(() => {
+    // Allow a fresh save when the child starts a new session / replays.
+    isSavedRef.current = false;
+  }, []);
+
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    // Save the session exactly once on exit. The isSavedRef guard prevents
+    // a duplicate save if the child taps Back multiple times rapidly.
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {

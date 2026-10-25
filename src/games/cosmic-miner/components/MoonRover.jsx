@@ -6,18 +6,39 @@ export default function MoonRover({ targetPos, onReachTarget }) {
   const roverGroup = useRef();
   const antennaRef = useRef();
 
-  // Position & movement state
+  // Position, velocity & orientation state
   const currentPos = useRef(new THREE.Vector3(0, 0.4, 2));
-  const targetVec = useRef(new THREE.Vector3(0, 0.4, 2));
+  const currentVel = useRef(new THREE.Vector2(0, 0)); // (vx, vz)
+  const lookAngleRef = useRef(0);
   const keysPressed = useRef({});
+
+  // Movement physics configuration (smooth, natural, responsive)
+  // Moderately tuned: ~17% lower max speed, gentler steering, smooth accel/decel
+  const MAX_SPEED = 6.2; // Reduced from 7.5 (~17.3% reduction for natural pacing)
+  const ACCEL_RATE = 8.5; // Smooth ramp up to full speed (~0.14s)
+  const DECEL_RATE = 12.0; // Prompt, predictable stop on key release (~0.10s) without drifting
+  const TURN_RATE = 7.5; // Gentler steering response (~20% smoother turning)
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      keysPressed.current[e.key.toLowerCase()] = true;
+      const k = e.key?.toLowerCase() || '';
+      const c = e.code?.toLowerCase() || '';
+      keysPressed.current[k] = true;
+      keysPressed.current[c] = true;
+
+      // Prevent page scrolling when child drives rover with arrow keys
+      if (['arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) {
+        e.preventDefault();
+      }
     };
+
     const handleKeyUp = (e) => {
-      keysPressed.current[e.key.toLowerCase()] = false;
+      const k = e.key?.toLowerCase() || '';
+      const c = e.code?.toLowerCase() || '';
+      keysPressed.current[k] = false;
+      keysPressed.current[c] = false;
     };
+
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     return () => {
@@ -26,70 +47,102 @@ export default function MoonRover({ targetPos, onReachTarget }) {
     };
   }, []);
 
-  // Update target when passed from parent (e.g. crystal clicked)
+  // When a crystal is targeted, smoothly aim rover headlights/orientation towards it
+  // WITHOUT changing the rover's position or triggering automatic driving!
   useEffect(() => {
     if (targetPos) {
-      targetVec.current.set(targetPos[0], 0.4, targetPos[2]);
+      const dx = targetPos[0] - currentPos.current.x;
+      const dz = targetPos[2] - currentPos.current.z;
+      if (Math.hypot(dx, dz) > 0.1) {
+        lookAngleRef.current = Math.atan2(dx, dz);
+      }
     }
   }, [targetPos]);
 
   useFrame((state, delta) => {
     if (!roverGroup.current) return;
 
+    // Clamp delta to prevent huge physics jumps on frame lag / tab blur
+    const dt = Math.min(delta, 0.05);
+
     let moveX = 0;
     let moveZ = 0;
-    const speed = 7.5 * delta;
 
-    // Manual keyboard drive
-    if (keysPressed.current['arrowup'] || keysPressed.current['w']) moveZ -= 1;
-    if (keysPressed.current['arrowdown'] || keysPressed.current['s']) moveZ += 1;
-    if (keysPressed.current['arrowleft'] || keysPressed.current['a']) moveX -= 1;
-    if (keysPressed.current['arrowright'] || keysPressed.current['d']) moveX += 1;
+    // Direct responsive player drive via Arrow keys or W/A/S/D
+    if (keysPressed.current['arrowup'] || keysPressed.current['w'] || keysPressed.current['keyw']) moveZ -= 1;
+    if (keysPressed.current['arrowdown'] || keysPressed.current['s'] || keysPressed.current['keys']) moveZ += 1;
+    if (keysPressed.current['arrowleft'] || keysPressed.current['a'] || keysPressed.current['keya']) moveX -= 1;
+    if (keysPressed.current['arrowright'] || keysPressed.current['d'] || keysPressed.current['keyd']) moveX += 1;
 
-    if (moveX !== 0 || moveZ !== 0) {
+    const hasInput = moveX !== 0 || moveZ !== 0;
+    let targetVelX = 0;
+    let targetVelZ = 0;
+
+    if (hasInput) {
+      // Normalize directional vector: diagonal driving moves at identical speed to straight driving
       const len = Math.hypot(moveX, moveZ);
-      currentPos.current.x += (moveX / len) * speed;
-      currentPos.current.z += (moveZ / len) * speed;
-      targetVec.current.copy(currentPos.current);
+      targetVelX = (moveX / len) * MAX_SPEED;
+      targetVelZ = (moveZ / len) * MAX_SPEED;
 
-      const targetAngle = Math.atan2(moveX, moveZ);
-      roverGroup.current.rotation.y = THREE.MathUtils.lerp(
-        roverGroup.current.rotation.y,
-        targetAngle,
-        0.15
-      );
-    } else if (targetVec.current.distanceTo(currentPos.current) > 0.3) {
-      // Auto-drive towards clicked crystal
-      const diff = new THREE.Vector3().subVectors(targetVec.current, currentPos.current);
-      diff.y = 0;
-      const dist = diff.length();
-
-      if (dist > 0.2) {
-        diff.normalize();
-        currentPos.current.addScaledVector(diff, Math.min(dist, speed));
-
-        const targetAngle = Math.atan2(diff.x, diff.z);
-        roverGroup.current.rotation.y = THREE.MathUtils.lerp(
-          roverGroup.current.rotation.y,
-          targetAngle,
-          0.18
-        );
-      } else if (onReachTarget) {
-        onReachTarget();
-      }
+      // Update steering target angle in direction of active movement
+      lookAngleRef.current = Math.atan2(moveX, moveZ);
     }
 
-    // Low-gravity suspension bobbing
-    const bob = Math.sin(state.clock.elapsedTime * 6) * 0.03;
+    // Frame-rate independent smooth acceleration / deceleration
+    const rate = hasInput ? ACCEL_RATE : DECEL_RATE;
+    const lerpFactor = 1 - Math.exp(-rate * dt);
+
+    currentVel.current.x = THREE.MathUtils.lerp(currentVel.current.x, targetVelX, lerpFactor);
+    currentVel.current.y = THREE.MathUtils.lerp(currentVel.current.y, targetVelZ, lerpFactor);
+
+    // Snap to 0 when velocity is negligible and no keys are pressed to prevent creeping
+    if (!hasInput && currentVel.current.lengthSq() < 0.001) {
+      currentVel.current.set(0, 0);
+    }
+
+    // Integrate position
+    currentPos.current.x += currentVel.current.x * dt;
+    currentPos.current.z += currentVel.current.y * dt;
+
+    // Restrict rover within safe lunar playfield boundary and kill velocity on wall contact
+    if (currentPos.current.x < -10) {
+      currentPos.current.x = -10;
+      currentVel.current.x = 0;
+    } else if (currentPos.current.x > 10) {
+      currentPos.current.x = 10;
+      currentVel.current.x = 0;
+    }
+
+    if (currentPos.current.z < -8) {
+      currentPos.current.z = -8;
+      currentVel.current.y = 0;
+    } else if (currentPos.current.z > 5) {
+      currentPos.current.z = 5;
+      currentVel.current.y = 0;
+    }
+
+    // Shortest-arc smooth angular turning (prevents 360-degree wrapping glitch)
+    let angleDiff = (lookAngleRef.current - roverGroup.current.rotation.y) % (Math.PI * 2);
+    if (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
+    if (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
+
+    const turnFactor = 1 - Math.exp(-TURN_RATE * dt);
+    roverGroup.current.rotation.y += angleDiff * turnFactor;
+
+    // Low-gravity suspension bobbing proportional to driving velocity
+    const speedRatio = currentVel.current.length() / MAX_SPEED;
+    const idleBob = Math.sin(state.clock.elapsedTime * 2.5) * 0.01;
+    const driveBob = Math.sin(state.clock.elapsedTime * 10) * 0.025 * speedRatio;
+
     roverGroup.current.position.set(
       currentPos.current.x,
-      0.4 + bob,
+      0.4 + idleBob + driveBob,
       currentPos.current.z
     );
 
-    // Antenna wobble
+    // Antenna subtle wobble, accentuated when rover is in motion
     if (antennaRef.current) {
-      antennaRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 4) * 0.15;
+      antennaRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 5) * (0.08 + speedRatio * 0.12);
     }
   });
 

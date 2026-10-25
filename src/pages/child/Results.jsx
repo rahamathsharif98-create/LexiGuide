@@ -49,9 +49,7 @@ export default function Results() {
       <h1 className="font-display font-extrabold text-2xl text-slate-800 mb-1">AMAZING!</h1>
 
       <div className="flex justify-center gap-1 my-4 text-4xl">
-        {Array.from({ length: Math.max(0, Math.min(5, lastSessionSummary.starsGain ?? 1)) }).map((_, n) => (
-          <span key={n}>⭐</span>
-        ))}
+        {[1, 2, 3].map((n) => <span key={n}>⭐</span>)}
       </div>
 
       <Card className="mb-5">

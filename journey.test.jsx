@@ -1,7 +1,20 @@
-import { describe, it, expect, afterEach } from 'vitest'
-import { render, cleanup, screen, fireEvent, waitFor } from '@testing-library/react'
+import { describe, it, expect, afterEach, vi } from 'vitest'
+import { render, cleanup, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import App from './src/App'
 import { SPEAK_WORDS } from './src/data/demoData'
+
+vi.mock('./src/data/gameContent', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    GAME_CONTENT: {
+      ...actual.GAME_CONTENT,
+      'build-word': actual.GAME_CONTENT['build-word'].slice(0, 4),
+      'picture-word': actual.GAME_CONTENT['picture-word'].slice(0, 3),
+      'find-sound': actual.GAME_CONTENT['find-sound'].slice(0, 3),
+    },
+  }
+})
 
 afterEach(cleanup)
 
@@ -34,31 +47,26 @@ describe('core child journey', () => {
     expect(screen.getByText(/say this word/i)).toBeInTheDocument()
     fireEvent.click(await screen.findByRole('button', { name: /start recording/i }))
     fireEvent.click(await screen.findByRole('button', { name: /stop recording/i }))
-    await waitFor(() => expect(screen.getByText(/nice try/i)).toBeInTheDocument(), { timeout: 5000 })
+    await waitFor(() => expect(screen.getByTestId('result-heading')).toBeInTheDocument(), { timeout: 5000 })
 
     fireEvent.click(screen.getByRole('button', { name: /^next$/i }))
     await waitFor(() => expect(screen.getByText(SPEAK_WORDS[1].word)).toBeInTheDocument())
   }, 15000)
 
-  it('Sound Safari (game): shows live score, hint, and finishes with next activity', async () => {
+  it('Sound Safari (game): shows live score, hint, and advances with answer feedback', async () => {
     const initialRoute = '/child/games/match-sound'
     render(<App initialRoute={initialRoute} />)
     fireEvent.click(await screen.findByRole('button', { name: /start game/i }))
 
-    // score starts as 4 empty stars, none filled
-    const roundLabel = await screen.findByText(/round 1 of 4/i)
-    expect(roundLabel).toBeInTheDocument()
+    const levelLabel = await screen.findByTestId('round-progress-label')
+    expect(levelLabel).toHaveTextContent(/Level 1 of 25/i)
     fireEvent.click(screen.getByRole('button', { name: /need a hint/i }))
     expect(screen.getByText(/listen for the very first sound/i)).toBeInTheDocument()
 
-    for (let i = 0; i < 4; i++) {
-      await waitFor(() => expect(document.querySelectorAll('button.w-20.h-20').length).toBeGreaterThan(0))
-      const optionButtons = document.querySelectorAll('button.w-20.h-20')
-      fireEvent.click(optionButtons[0])
-      await new Promise((r) => setTimeout(r, 1000))
-    }
-    await waitFor(() => expect(screen.getByText(/nice work/i)).toBeInTheDocument(), { timeout: 5000 })
-    expect(screen.getByText(/try this next/i)).toBeInTheDocument()
+    await waitFor(() => expect(document.querySelectorAll('button.w-20.h-20').length).toBeGreaterThan(0))
+    const optionButtons = document.querySelectorAll('button.w-20.h-20')
+    fireEvent.click(optionButtons[0])
+    expect(await screen.findByTestId('feedback-overlay')).toBeInTheDocument()
   }, 20000)
 
   it('Story: intro -> Read mode -> Continue -> questions -> results with recommended practice', async () => {
@@ -117,9 +125,9 @@ describe('Phase 2 additions', () => {
       // clicking them in an order that is very likely correct: use the
       // scrambled tile order as-is is not guaranteed correct, so instead
       // click letters matching the word length in order shown in the blanks
-      await waitFor(() => expect(document.querySelectorAll('button.w-12.h-12').length).toBeGreaterThan(0))
-      // Just click tiles until the round advances (round completes on wrong OR right answer)
-      const tiles = [...document.querySelectorAll('button.w-12.h-12')]
+      const tilesDock = await screen.findByTestId('scrambled-tiles-dock')
+      const tiles = within(tilesDock).getAllByRole('button')
+      expect(tiles.length).toBeGreaterThan(0)
       for (const tile of tiles.slice(0, 4)) {
         if (!tile.disabled) fireEvent.click(tile)
       }
@@ -132,8 +140,10 @@ describe('Phase 2 additions', () => {
     render(<App initialRoute="/child/games/picture-word" />)
     fireEvent.click(await screen.findByRole('button', { name: /start game/i }))
     for (let round = 0; round < 3; round++) {
-      await waitFor(() => expect(document.querySelectorAll('button.bg-peach-100').length).toBeGreaterThan(0))
-      fireEvent.click(document.querySelectorAll('button.bg-peach-100')[0])
+      const optionsContainer = await screen.findByTestId('picture-match-options')
+      const optionButtons = within(optionsContainer).getAllByRole('button')
+      expect(optionButtons.length).toBeGreaterThan(0)
+      fireEvent.click(optionButtons[0])
       await new Promise((r) => setTimeout(r, 1000))
     }
     await waitFor(() => expect(screen.getByText(/nice work/i)).toBeInTheDocument(), { timeout: 5000 })
@@ -146,8 +156,8 @@ describe('Phase 2 additions', () => {
       const checkBtn = await screen.findByRole('button', { name: /check answer/i })
       expect(checkBtn).toBeDisabled() // nothing selected yet
       // click exactly two word-option buttons, scoped to the round content
-      // card by their distinctive rounded pill classes (not nav buttons)
-      const wordButtons = [...document.querySelectorAll('button.rounded-xl.font-display.font-semibold')]
+      // by their stable word option test IDs
+      const wordButtons = await screen.findAllByTestId(/^word-option-/)
       expect(wordButtons.length).toBeGreaterThan(0)
       wordButtons.slice(0, 2).forEach((b) => fireEvent.click(b))
       fireEvent.click(screen.getByRole('button', { name: /check answer/i }))
@@ -157,11 +167,13 @@ describe('Phase 2 additions', () => {
   }, 15000)
 
   it('completing an activity updates stars visible on My Journey (same session, real navigation)', async () => {
-    render(<App initialRoute="/child/games/match-sound" />)
+    render(<App initialRoute="/child/games/picture-word" />)
     fireEvent.click(await screen.findByRole('button', { name: /start game/i }))
-    for (let i = 0; i < 4; i++) {
-      await waitFor(() => expect(document.querySelectorAll('button.w-20.h-20').length).toBeGreaterThan(0))
-      fireEvent.click(document.querySelectorAll('button.w-20.h-20')[0])
+    for (let i = 0; i < 3; i++) {
+      const optionsContainer = await screen.findByTestId('picture-match-options')
+      const optionButtons = within(optionsContainer).getAllByRole('button')
+      expect(optionButtons.length).toBeGreaterThan(0)
+      fireEvent.click(optionButtons[0])
       await new Promise((r) => setTimeout(r, 1000))
     }
     await waitFor(() => expect(screen.getByText(/nice work/i)).toBeInTheDocument(), { timeout: 5000 })

@@ -1,5 +1,6 @@
-import { Volume2, Star, Sparkles, Award } from 'lucide-react';
+import { Volume2, Star, Sparkles } from 'lucide-react';
 import GameSoundToggle from '../../../components/games/GameSoundToggle';
+import { TOTAL_SKY_ARCHER_ROUNDS, SKY_ARCHER_STATIONS } from '../engine/phonicsTargets';
 
 export default function SkyArcherHUD({
   currentRound,
@@ -8,16 +9,26 @@ export default function SkyArcherHUD({
   combo,
   onReplayAudio,
   feedback,
+  totalRounds = TOTAL_SKY_ARCHER_ROUNDS,
 }) {
+  const currentLevel = currentRound?.level || 1;
+  const stationNum = currentRound?.station || 1;
+  const stationTitle =
+    currentRound?.stationTitle ||
+    SKY_ARCHER_STATIONS[(stationNum || 1) - 1]?.title ||
+    'Simple Early Phonics Sounds';
+
   return (
     <div style={styles.hudRoot}>
-      {/* 1. Top Bar: Score, Stars, Combo */}
+      {/* 1. Top Bar: Score, Stars, Combo, Level Indicator */}
       <div style={styles.topBar}>
-        <div style={styles.badge}>
+        <div style={styles.badge} data-testid="level-indicator">
           <span style={{ fontSize: 20 }}>🏹</span>
           <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
             <span style={{ fontWeight: 800, fontSize: 13, color: '#f0f9ff' }}>Sky Word Archer</span>
-            <span style={{ fontSize: 11, color: '#bae6fd', fontWeight: 600 }}>Phonics Flight</span>
+            <span style={{ fontSize: 11, color: '#38bdf8', fontWeight: 800 }} data-testid="hud-level-text">
+              Level {currentLevel} of {totalRounds}
+            </span>
           </div>
         </div>
 
@@ -40,28 +51,61 @@ export default function SkyArcherHUD({
         </div>
       </div>
 
-      {/* 2. Target Phonics Tablet (Centered at top) */}
+      {/* 2. Target Phonics Tablet with Station Header & 5-Station Milestones */}
       <div style={styles.targetTablet}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 24 }}>{currentRound.emoji}</span>
-          <div>
-            <div style={styles.targetTitle}>TARGET SOUND</div>
-            <div style={styles.targetSound}>{currentRound.sound}</div>
+        {/* Station Metadata & 5-Station Milestones */}
+        <div style={styles.stationRow}>
+          <div style={styles.stationBadge} data-testid="station-badge">
+            <span style={{ fontWeight: 900, color: '#38bdf8' }}>STATION {stationNum}:</span>
+            <span style={{ color: '#e0f2fe', marginLeft: 4, fontWeight: 700 }}>{stationTitle}</span>
+          </div>
+
+          <div style={styles.stationDots} data-testid="station-progress-dots" title={`Station ${stationNum} of 5`}>
+            {SKY_ARCHER_STATIONS.map((st) => {
+              const isCurrent = st.station === stationNum;
+              const isPast = st.station < stationNum;
+              return (
+                <div
+                  key={st.station}
+                  title={`${st.title} (Levels ${st.roundRange[0]}–${st.roundRange[1]})`}
+                  style={{
+                    ...styles.stationDot,
+                    backgroundColor: isCurrent ? st.themeColor : isPast ? '#10b981' : 'rgba(255, 255, 255, 0.15)',
+                    border: isCurrent ? '2px solid #ffffff' : '1px solid rgba(255, 255, 255, 0.25)',
+                    transform: isCurrent ? 'scale(1.18)' : 'scale(1)',
+                    boxShadow: isCurrent ? `0 0 10px ${st.themeColor}` : 'none',
+                  }}
+                >
+                  <span style={{ fontSize: 10 }}>{st.badge}</span>
+                </div>
+              );
+            })}
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onReplayAudio}
-          style={styles.speakerBtn}
-          title="Hear sound again"
-        >
-          <Volume2 size={18} />
-          <span>Listen</span>
-        </button>
+        <div style={styles.targetDivider} />
+
+        {/* Target Sound & Action Row */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ fontSize: 26 }}>{currentRound?.emoji || '🎯'}</span>
+          <div>
+            <div style={styles.targetTitle}>TARGET SOUND</div>
+            <div style={styles.targetSound}>{currentRound?.sound}</div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onReplayAudio}
+            style={styles.speakerBtn}
+            title="Hear sound again"
+          >
+            <Volume2 size={18} />
+            <span>Listen</span>
+          </button>
+        </div>
 
         <div style={styles.wordHint}>
-          {currentRound.wordHint}
+          {currentRound?.wordHint}
         </div>
       </div>
 
@@ -107,6 +151,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 10,
+    flexWrap: 'wrap',
   },
   badge: {
     display: 'flex',
@@ -161,9 +206,45 @@ const styles = {
     borderRadius: 20,
     padding: '8px 20px',
     display: 'flex',
+    flexDirection: 'column',
     alignItems: 'center',
-    gap: 14,
+    gap: 6,
     boxShadow: '0 8px 24px rgba(0,0,0,0.35), 0 0 16px rgba(56, 189, 248, 0.25)',
+    maxWidth: '94vw',
+  },
+  stationRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    width: '100%',
+    paddingBottom: 2,
+    flexWrap: 'wrap',
+  },
+  stationBadge: {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: 11,
+    letterSpacing: 0.4,
+  },
+  stationDots: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 5,
+  },
+  stationDot: {
+    width: 20,
+    height: 20,
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.3s ease',
+  },
+  targetDivider: {
+    width: '100%',
+    height: 1,
+    backgroundColor: 'rgba(56, 189, 248, 0.25)',
   },
   targetTitle: {
     fontSize: 9,
@@ -183,7 +264,6 @@ const styles = {
     alignItems: 'center',
     gap: 5,
     background: '#0284c7',
-    hover: '#0369a1',
     color: '#ffffff',
     border: 'none',
     borderRadius: 999,
@@ -214,7 +294,7 @@ const styles = {
   },
   feedbackToast: {
     position: 'absolute',
-    top: 140,
+    top: 148,
     left: '50%',
     transform: 'translateX(-50%)',
     borderRadius: 16,

@@ -5,11 +5,22 @@ import DinoApp from '../../games/dino-fossil/DinoApp';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import GameSoundToggle from '../../components/games/GameSoundToggle';
 import { useGameSessionTracker } from '../../hooks/useGameSessionTracker';
+import { useApp } from '../../context/AppContext';
+
+function useSafeApp() {
+  try {
+    return useApp();
+  } catch {
+    return { activeChild: null };
+  }
+}
 
 export default function DinoFossilGame() {
   const navigate = useNavigate();
+  const { activeChild } = useSafeApp();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'dino-fossil',
@@ -23,23 +34,26 @@ export default function DinoFossilGame() {
       starsEarned: result.stars || 1,
       xpEarned: result.xp || 20,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { target: result.target?.name },
-      });
+    // Session is saved once on exit via handleBack or upon completion of Level 10
+  }, [tracker]);
+
+  const handleGameComplete = useCallback((finalStats = {}) => {
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession(finalStats);
     }
   }, [tracker]);
 
+  const handleResetSession = useCallback(() => {
+    isSavedRef.current = false;
+  }, []);
+
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {
@@ -108,7 +122,13 @@ export default function DinoFossilGame() {
             </div>
           }
         >
-          <DinoApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <DinoApp
+            childId={activeChild?.id}
+            onBack={handleBack}
+            onRoundComplete={handleRoundComplete}
+            onGameComplete={handleGameComplete}
+            onResetSession={handleResetSession}
+          />
         </ErrorBoundary>
       </div>
 

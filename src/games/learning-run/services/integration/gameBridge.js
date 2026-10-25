@@ -15,6 +15,7 @@ let hostSessionHandler = null;
 
 export function setHostStudentId(studentId) {
   currentStudentId = studentId;
+  storageService.setStorageChildId(studentId);
 }
 
 export function setHostSessionHandler(handler) {
@@ -26,9 +27,11 @@ export function setHostSessionHandler(handler) {
  * @param {{ studentId?: string|null, worldId: string, characterId: string, difficulty: number }} params
  */
 export function startGameSession({ studentId = null, worldId, characterId, difficulty }) {
+  const resolvedStudentId = studentId ?? currentStudentId;
+  storageService.setStorageChildId(resolvedStudentId);
   currentSession = {
     sessionId: `session_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    studentId: studentId ?? currentStudentId, // injects the host student ID if available
+    studentId: resolvedStudentId, // injects the host student ID if available
     worldId,
     characterId,
     difficulty,
@@ -66,9 +69,11 @@ export function recordLearningEvent(eventType, payload = {}) {
 export function completeGameSession(result) {
   if (!currentSession) return null;
   const duration = Math.round((Date.now() - currentSession.startedAt) / 1000);
+  const targetStudentId = currentSession.studentId ?? currentStudentId;
+  storageService.setStorageChildId(targetStudentId);
 
   const finalResult = {
-    studentId: currentSession.studentId,
+    studentId: targetStudentId,
     sessionId: currentSession.sessionId,
     worldId: currentSession.worldId,
     characterId: currentSession.characterId,
@@ -117,7 +122,7 @@ export function completeGameSession(result) {
     const { unlockedIds } = mergeNewlyUnlocked(nextSave);
     nextSave.achievements = unlockedIds;
     return nextSave;
-  });
+  }, targetStudentId);
 
   if (typeof hostSessionHandler === 'function') {
     try {
@@ -132,8 +137,8 @@ export function completeGameSession(result) {
 }
 
 /** Returns current cumulative progress (standalone: from local save). */
-export function getGameProgress() {
-  const save = storageService.loadSave();
+export function getGameProgress(studentId = currentStudentId) {
+  const save = storageService.loadSave(studentId);
   return {
     stars: save.stars,
     bestDistance: save.bestDistance,

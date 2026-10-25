@@ -6,15 +6,18 @@ import PauseScreen from '../PauseScreen/PauseScreen';
 import ResultScreen from '../ResultScreen/ResultScreen';
 import { useGameStore } from '../../game/engine/gameStore';
 import { useAppStore } from '../../game/engine/appStore';
-import { CHARACTERS } from '../../game/engine/constants';
+import { CHARACTERS, MAX_CHECKPOINTS } from '../../game/engine/constants';
 import { gameBridge } from '../../services/integration/gameBridge';
 import { getDifficultLettersFromSave } from '../../learning/learningEngine/learningEngine';
 import { audioService } from '../../services/audio/audioService';
 
 export default function GameScreen() {
-  const { selectedCharacter, selectedWorld, goTo, save, applyRunResult } = useAppStore();
+  const { selectedCharacter, selectedWorld, goTo, save, applyRunResult, selectedStartingCheckpoint, setStartingCheckpoint } = useAppStore();
   const character = CHARACTERS.find((c) => c.id === selectedCharacter) || CHARACTERS[0];
-  const store = useGameStore();
+  const isGameOver = useGameStore((s) => s.isGameOver);
+  const isPaused = useGameStore((s) => s.isPaused);
+  const setPaused = useGameStore((s) => s.setPaused);
+  const resetRun = useGameStore((s) => s.resetRun);
   const [runKey, setRunKey] = useState(0);
   const [resultData, setResultData] = useState(null);
   const [engineError, setEngineError] = useState(null);
@@ -24,6 +27,10 @@ export default function GameScreen() {
   const startingDifficulty = getInitialDifficulty(save);
 
   useEffect(() => {
+    // Explicitly calibrate game store state to selectedStartingCheckpoint from frame 1
+    const chk = Math.min(MAX_CHECKPOINTS, Math.max(0, Number(selectedStartingCheckpoint) || 0));
+    resetRun(chk);
+
     gameBridge.startGameSession({
       studentId: null,
       worldId: selectedWorld,
@@ -40,55 +47,84 @@ export default function GameScreen() {
   }, [runKey]);
 
   useEffect(() => {
-    if (store.isGameOver && !completedRef.current) {
+    if (isGameOver && !completedRef.current) {
       completedRef.current = true;
-      const observed = store.getObservedPatterns();
-      const recommendation = store.getRecommendation();
-      const difficultLetters = Object.keys(store.tracker.incorrectByLetter || {}).filter(
-        (l) => (store.tracker.incorrectByLetter[l] || 0) > (store.tracker.correctByLetter[l] || 0)
+      const storeState = useGameStore.getState();
+      const observed = storeState.getObservedPatterns();
+      const recommendation = storeState.getRecommendation();
+      const difficultLetters = Object.keys(storeState.tracker.incorrectByLetter || {}).filter(
+        (l) => (storeState.tracker.incorrectByLetter[l] || 0) > (storeState.tracker.correctByLetter[l] || 0)
       );
 
       const result = gameBridge.completeGameSession({
-        distance: store.distance,
-        lettersCollected: store.lettersCollected,
-        wordsCompleted: store.wordsCompleted,
-        challengesCompleted: store.challengesCompleted,
-        challengesCorrect: store.challengesCorrect,
-        starsEarned: store.starsEarned,
-        checkpointsReached: store.checkpointsReached,
+        distance: storeState.distance,
+        lettersCollected: storeState.lettersCollected,
+        wordsCompleted: storeState.wordsCompleted,
+        challengesCompleted: storeState.challengesCompleted,
+        challengesCorrect: storeState.challengesCorrect,
+        starsEarned: storeState.starsEarned,
+        checkpointsReached: storeState.checkpointsReached,
         difficultLetters,
         observedPatterns: observed.observedPatterns,
       });
 
       applyRunResult(result);
-      setResultData({ result, recommendation });
+      setResultData({
+        result,
+        recommendation,
+        stumbles: storeState.stumbles,
+        checkpointsReached: storeState.checkpointsReached,
+        isCompleted: storeState.isCompleted,
+        resumeCheckpoint: storeState.isCompleted ? 10 : Math.min(MAX_CHECKPOINTS, Math.max(
+          storeState.checkpointsReached || 0,
+          selectedStartingCheckpoint || 0
+        )),
+      });
       audioService.stopMusic();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [store.isGameOver]);
+  }, [isGameOver, applyRunResult]);
 
   function handlePause() {
     audioService.playButton();
-    store.setPaused(true);
+    setPaused(true);
   }
   function handleResume() {
-    store.setPaused(false);
+    setPaused(false);
     audioService.resume();
   }
   function handleRestart() {
-    store.resetRun();
+    resetRun(selectedStartingCheckpoint || 0);
     setResultData(null);
     setEngineError(null);
     completedRef.current = false;
     setRunKey((k) => k + 1);
   }
   function handleMainMenu() {
-    store.resetRun();
+    resetRun(0);
     setResultData(null);
     goTo('start');
   }
   function handlePlayAgain() {
-    handleRestart();
+    // Resume from highest valid checkpoint reached in this run (or selected starting checkpoint)
+    const storeState = useGameStore.getState();
+    const resumeChk = Math.min(MAX_CHECKPOINTS, Math.max(
+      storeState.checkpointsReached || 0,
+      selectedStartingCheckpoint || 0
+    ));
+    setStartingCheckpoint(resumeChk);
+    resetRun(resumeChk);
+    setResultData(null);
+    setEngineError(null);
+    completedRef.current = false;
+    setRunKey((k) => k + 1);
+  }
+  function handleRestartFresh() {
+    setStartingCheckpoint(0);
+    resetRun(0);
+    setResultData(null);
+    setEngineError(null);
+    completedRef.current = false;
+    setRunKey((k) => k + 1);
   }
 
   return (
@@ -101,17 +137,33 @@ export default function GameScreen() {
         gl={{ powerPreference: 'high-performance', antialias: true, alpha: false }}
       >
         <color attach="background" args={['#bbf7d0']} />
-        <GameWorld character={character} worldId={selectedWorld} difficulty={startingDifficulty} onError={setEngineError} />
+        <GameWorld
+          character={character}
+          worldId={selectedWorld}
+          difficulty={startingDifficulty}
+          startingCheckpoint={selectedStartingCheckpoint || 0}
+          onError={setEngineError}
+        />
       </Canvas>
 
       <GameHUD character={character} onPause={handlePause} />
 
-      {store.isPaused && !store.isGameOver && (
+      {isPaused && !isGameOver && (
         <PauseScreen onResume={handleResume} onRestart={handleRestart} onSettings={() => goTo('settings')} onMainMenu={handleMainMenu} />
       )}
 
       {resultData && (
-        <ResultScreen result={resultData.result} recommendation={resultData.recommendation} onPlayAgain={handlePlayAgain} onMainMenu={handleMainMenu} />
+        <ResultScreen
+          result={resultData.result}
+          recommendation={resultData.recommendation}
+          stumbles={resultData.stumbles}
+          checkpointsReached={resultData.checkpointsReached}
+          resumeCheckpoint={resultData.resumeCheckpoint}
+          isCompleted={resultData.isCompleted}
+          onPlayAgain={handlePlayAgain}
+          onRestartFresh={handleRestartFresh}
+          onMainMenu={handleMainMenu}
+        />
       )}
 
       {engineError && (

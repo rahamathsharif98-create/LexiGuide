@@ -15,6 +15,7 @@ export default function SpiderHUD({
   streak,
   selectedRime,
   isVictory,
+  isError = false,
   onReplayPrompt,
 }) {
   const isFever = streak >= 3;
@@ -28,7 +29,7 @@ export default function SpiderHUD({
           <span className="text-xl">🕸️</span>
           <div>
             <div className="text-[10px] font-black uppercase tracking-wider text-indigo-300">
-              Web Strand {levelIndex + 1} / {totalLevels}
+              Web Strand {levelIndex + 1} / {totalLevels} • {level?.title || 'Word Weave'}
             </div>
             <div className="text-sm font-black text-white">
               {level?.hint || 'Weave the word!'}
@@ -77,8 +78,11 @@ export default function SpiderHUD({
 
           {/* Rime Slot */}
           <div
+            data-testid="hud-rime-slot"
             className={`px-4 py-1.5 rounded-2xl font-black text-xl sm:text-2xl border-2 border-dashed transition-all ${
-              selectedRime
+              isError
+                ? 'bg-rose-500 text-white border-rose-300 shadow-md animate-pulse'
+                : selectedRime
                 ? 'bg-emerald-500 text-slate-950 border-emerald-300 shadow-md scale-105'
                 : 'bg-purple-950/60 text-purple-300 border-purple-400/80 animate-pulse'
             }`}
@@ -116,8 +120,23 @@ export default function SpiderHUD({
 
       {/* 3. Bottom Child Instructions Pill */}
       <div className="flex justify-center">
-        <div className="px-5 py-2 rounded-2xl bg-indigo-950/90 backdrop-blur-md border border-indigo-400/40 text-center text-xs sm:text-sm font-bold text-indigo-200 shadow-lg">
-          ✨ Tap a glowing dewdrop on Spinny's web to weave the word!
+        <div
+          data-testid="hud-instructions-pill"
+          className={`px-5 py-2 rounded-2xl backdrop-blur-md text-center text-xs sm:text-sm font-bold shadow-lg transition-all ${
+            isError
+              ? 'bg-rose-950/90 border border-rose-400/60 text-rose-200 animate-bounce'
+              : isVictory
+              ? 'bg-emerald-950/90 border border-emerald-400/60 text-emerald-200'
+              : 'bg-indigo-950/90 border border-indigo-400/40 text-indigo-200'
+          }`}
+        >
+          {isError ? (
+            <span>❌ Almost! Try again! Spinny believes in you!</span>
+          ) : isVictory ? (
+            <span>🎉 Wonderful! You spun {level?.targetWord?.toUpperCase()}!</span>
+          ) : (
+            <span>✨ Tap a glowing dewdrop on Spinny's web to weave the word!</span>
+          )}
         </div>
       </div>
     </div>

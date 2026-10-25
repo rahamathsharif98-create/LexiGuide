@@ -306,6 +306,7 @@ export const STORIES = [
 // ---- Games catalog ----
 export const GAMES = [
   { id: 'match-sound', title: 'Sound Safari', icon: '🦁', color: 'brand', skill: 'phonologicalAwareness', desc: 'Hear a sound, pick the matching picture.', hint: 'Listen for the very first sound in the word!' },
+  { id: 'cosmic-safari', title: 'Cosmic Safari', icon: '🛸', color: 'brand', skill: 'phonologicalAwareness', desc: 'Hear animal phonemes and pick the right cosmic buddy.', hint: 'Listen for the very first sound in the animal\'s name!', route: '/child/games/cosmic-safari' },
   { id: 'trace-speak', title: 'Trace & Speak', icon: '✍️', color: 'berry', skill: 'phonologicalAwareness', desc: 'Trace multilingual letters and practice speaking words.', hint: 'Follow the guide lines smoothly with your finger!', route: '/child/games/trace-speak' },
   { id: 'build-word', title: 'Word Builder', icon: '🧩', color: 'mint', skill: 'wordRecognition', desc: 'Arrange letters to build the right word.', hint: 'Say the picture\'s name slowly, sound by sound.' },
   { id: 'find-sound', title: 'Letter Detective', icon: '🔍', color: 'berry', skill: 'phonologicalAwareness', desc: 'Investigate words and find the target sound.', hint: 'Say each word out loud — can you hear the sound hiding inside?' },

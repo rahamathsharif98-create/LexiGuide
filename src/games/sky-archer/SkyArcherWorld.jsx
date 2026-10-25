@@ -2,6 +2,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import SkyEnvironment from './components/SkyEnvironment';
 import BalloonTarget from './components/BalloonTarget';
+import ArrowProjectile from './components/ArrowProjectile';
 import LexiMascot3D from '../common/mascot/LexiMascot3D';
 import VFXCameraJuice from '../common/vfx/VFXCameraJuice';
 import VFXFloatingText3D from '../common/vfx/VFXFloatingText3D';
@@ -19,6 +20,8 @@ export default function SkyArcherWorld({
   floatingTextKey = 0,
   mascotState = 'idle',
   onHitBalloon,
+  activeArrow = null,
+  onArrowImpact,
 }) {
   const cameraGroup = useRef();
 
@@ -43,6 +46,17 @@ export default function SkyArcherWorld({
     <>
       <SkyEnvironment />
 
+      {/* 3D Animated Arrow Projectile Flying Toward Target Balloon */}
+      {activeArrow && (
+        <ArrowProjectile
+          key={activeArrow.id}
+          startPosition={activeArrow.startPos || [0, -1.5, 4.5]}
+          targetPosition={activeArrow.pos}
+          duration={0.28}
+          onImpact={() => onArrowImpact?.(activeArrow)}
+        />
+      )}
+
       {/* Camera Juice: Screen Shake on Balloon Hit */}
       <VFXCameraJuice
         shakeKey={burstKey}
@@ -56,6 +70,8 @@ export default function SkyArcherWorld({
 
       {/* Balloon Popping 3D Shards Explosion */}
       <VFXBurstParticles position={burstPos} triggerKey={burstKey} color={burstColor} count={36} speed={5.2} size={0.16} />
+      {/* Golden celebratory sparkles alongside color shards */}
+      <VFXBurstParticles position={burstPos} triggerKey={burstKey} color="#fef08a" count={20} speed={4.2} size={0.10} />
       <VFXShockwaveRing position={burstPos} triggerKey={burstKey} color="#ffffff" maxRadius={2.8} />
 
       {/* Floating 3D Action Popup Badge */}

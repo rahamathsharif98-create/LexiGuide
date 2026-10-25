@@ -9,6 +9,7 @@ export default function CloudHUD({
   stars = 0,
   streak = 1,
   isSummitReached = false,
+  isGameComplete = false,
   onSpeakPrompt,
   onResetBounce,
   onBack,
@@ -82,7 +83,7 @@ export default function CloudHUD({
       </div>
 
       {/* 2. CENTER: Summit Celebration Banner */}
-      {isSummitReached && (
+      {isSummitReached && !isGameComplete && (
         <div className="self-center bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 text-white px-8 py-4 rounded-3xl shadow-2xl border-2 border-yellow-200 animate-bounce flex items-center gap-3">
           <span className="text-4xl">🌈</span>
           <div>

@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { useGameStore } from '../game/engine/gameStore';
+import { speechService } from '../services/speech/speechService';
+import { MAX_STUMBLES, CHECKPOINT_DISTANCE } from '../game/engine/constants';
 
 const CHARACTER_EMOJI = { explorer: '🧭', reader: '📚', adventurer: '⚡' };
 
@@ -9,6 +11,8 @@ export default function GameHUD({ character, onPause }) {
     score,
     multiplier,
     starsEarned,
+    stage,
+    stumbles,
     activeWordQuest,
     turnPrompt,
     feedback,
@@ -18,6 +22,10 @@ export default function GameHUD({ character, onPause }) {
     isPaused,
     isGameOver,
   } = useGameStore();
+
+  const remainingShields = Math.max(0, MAX_STUMBLES - (stumbles || 0));
+  const distInStage = (distance || 0) % CHECKPOINT_DISTANCE;
+  const distToNext = CHECKPOINT_DISTANCE - distInStage;
 
   useEffect(() => {
     if (!feedback) return undefined;
@@ -43,6 +51,34 @@ export default function GameHUD({ character, onPause }) {
           </div>
         </div>
 
+        {/* 3-Shield Stumble / Balance Indicator */}
+        <div
+          style={styles.shieldsChip}
+          data-testid="stumble-shields"
+          aria-label={`${remainingShields} of ${MAX_STUMBLES} shields remaining`}
+          title={`${remainingShields} balance shields remaining`}
+        >
+          {Array.from({ length: MAX_STUMBLES }).map((_, idx) => {
+            const active = idx < remainingShields;
+            return (
+              <span
+                key={idx}
+                style={{
+                  fontSize: 15,
+                  opacity: active ? 1 : 0.22,
+                  filter: active ? 'drop-shadow(0 0 5px rgba(56,225,255,0.8))' : 'grayscale(1)',
+                  transform: active ? 'scale(1)' : 'scale(0.85)',
+                  transition: 'all 0.25s ease',
+                }}
+                role="img"
+                aria-label={active ? 'Active Shield' : 'Lost Shield'}
+              >
+                🛡️
+              </span>
+            );
+          })}
+        </div>
+
         {multiplier > 1 && (
           <div style={styles.multiplierChip}>
             <span>🔥</span>
@@ -51,6 +87,12 @@ export default function GameHUD({ character, onPause }) {
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={styles.stageChip} data-testid="stage-indicator">
+            <span style={{ fontWeight: 800 }}>🏛️ Stage {stage || 1}</span>
+            <span style={styles.nextWaypointBadge} data-testid="next-waypoint-indicator">
+              Next: {distToNext}m
+            </span>
+          </div>
           <div style={styles.distanceChipSimple}>{distance}m</div>
           <button style={styles.pauseBtn} onClick={onPause} aria-label="Pause">
             ⏸
@@ -102,9 +144,32 @@ export default function GameHUD({ character, onPause }) {
       )}
 
       {activeChallenge && (
-        <div style={styles.challengePrompt}>
-          <span style={{ fontSize: 20, marginRight: 6 }}>{activeChallenge.emoji}</span>
-          <span>{activeChallenge.prompt}</span>
+        <div style={styles.challengeBanner} data-testid="challenge-banner">
+          <div style={styles.challengeBannerHeader}>
+            <span style={{ fontSize: 26 }}>{activeChallenge.emoji}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <span style={styles.challengeQuestion}>{activeChallenge.prompt}</span>
+              {activeChallenge.wordHint && (
+                <span style={styles.challengeHintText}>
+                  Target Word: <strong style={{ color: '#ffd166' }}>{activeChallenge.wordHint}</strong>
+                </span>
+              )}
+            </div>
+            <button
+              type="button"
+              style={styles.speakerBtn}
+              onClick={() => {
+                const spoken = activeChallenge.type === 'complete-word'
+                  ? `Complete the word: ${activeChallenge.wordHint}`
+                  : (activeChallenge.wordHint ? `${activeChallenge.wordHint}! Which letter?` : activeChallenge.prompt);
+                speechService.speak(spoken);
+              }}
+              aria-label="Hear pronunciation"
+              title="Hear prompt again"
+            >
+              🔊
+            </button>
+          </div>
         </div>
       )}
 
@@ -167,6 +232,25 @@ const styles = {
     padding: '6px 14px 6px 10px',
     boxShadow: '0 4px 14px rgba(0,0,0,0.25)',
   },
+  shieldsChip: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    background: 'rgba(7, 26, 46, 0.75)',
+    border: '1.5px solid rgba(143, 232, 255, 0.35)',
+    borderRadius: 20,
+    padding: '4px 8px',
+  },
+  nextWaypointBadge: {
+    fontSize: 10,
+    color: '#8fe8ff',
+    fontWeight: 600,
+    opacity: 0.9,
+    marginLeft: 4,
+    padding: '1px 5px',
+    background: 'rgba(56,225,255,0.15)',
+    borderRadius: 8,
+  },
   multiplierChip: {
     display: 'flex',
     alignItems: 'center',
@@ -179,6 +263,19 @@ const styles = {
     borderRadius: 999,
     boxShadow: '0 0 16px rgba(255,140,0,0.5)',
     animation: 'pulse 1.5s ease-in-out infinite',
+  },
+  stageChip: {
+    background: 'linear-gradient(180deg, #10304e 0%, #071a2e 100%)',
+    border: '1.5px solid rgba(143,232,255,0.4)',
+    borderRadius: 999,
+    padding: '6px 12px',
+    fontWeight: 800,
+    fontSize: 12,
+    color: '#8fe8ff',
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
   },
   distanceChipSimple: {
     background: 'rgba(11,41,66,0.75)',
@@ -292,20 +389,52 @@ const styles = {
     gap: 6,
     zIndex: 15,
   },
-  challengePrompt: {
+  challengeBanner: {
     position: 'absolute',
-    top: 60,
+    top: 58,
     left: '50%',
     transform: 'translateX(-50%)',
-    background: 'rgba(9,34,54,0.92)',
-    border: '2px solid rgba(143,232,255,0.6)',
-    borderRadius: 16,
-    padding: '6px 18px',
-    textAlign: 'center',
-    fontWeight: 700,
-    fontSize: 13,
-    boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
-    zIndex: 15,
+    background: 'linear-gradient(180deg, rgba(8,35,58,0.96) 0%, rgba(5,20,35,0.95) 100%)',
+    border: '2px solid #ffd166',
+    borderRadius: 20,
+    padding: '8px 18px',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.5), 0 0 20px rgba(255,209,102,0.3)',
+    backdropFilter: 'blur(10px)',
+    zIndex: 25,
+    maxWidth: 'min(92vw, 460px)',
+  },
+  challengeBannerHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+  },
+  challengeQuestion: {
+    fontSize: 14,
+    fontWeight: 800,
+    color: '#ffffff',
+    letterSpacing: 0.3,
+  },
+  challengeHintText: {
+    fontSize: 12,
+    fontWeight: 600,
+    color: '#cdeeff',
+    marginTop: 2,
+  },
+  speakerBtn: {
+    pointerEvents: 'auto',
+    width: 32,
+    height: 32,
+    borderRadius: '50%',
+    border: '1.5px solid rgba(255,209,102,0.6)',
+    background: 'rgba(255,209,102,0.15)',
+    color: 'white',
+    fontSize: 14,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    marginLeft: 8,
+    flexShrink: 0,
   },
   feedbackToast: {
     position: 'absolute',

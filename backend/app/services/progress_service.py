@@ -42,11 +42,8 @@ def get_progress(db: Session, student_id: int, range_key: str) -> dict:
 
     note = None
     basis_rows = rows
-    if len(all_rows) == 0:
-        note = "Not enough practice data yet. Complete an activity or game to start tracking progress!"
-        basis_rows = []
-    elif len(rows) < 2:
-        note = f"Not enough practice data yet for a full trend over {days} days — showing the most recent snapshot instead."
+    if len(rows) < 2:
+        note = f"Not enough recorded sessions in the last {days} days for a full trend yet — showing the most recent snapshot instead."
         basis_rows = all_rows[-2:] if len(all_rows) >= 2 else all_rows
 
     skills_out = []

@@ -1,12 +1,19 @@
 import { useAppStore } from '../../game/engine/appStore';
-import { CHARACTERS } from '../../game/engine/constants';
+import { CHARACTERS, CHECKPOINT_DISTANCE } from '../../game/engine/constants';
 import { audioService } from '../../services/audio/audioService';
 import MagicalBackdrop from '../../components/MagicalBackdrop';
 
 const CHAR_EMOJI = { explorer: '🧭', reader: '📚', adventurer: '⚡' };
 
 export default function CharacterSelect() {
-  const { goTo, selectCharacter, selectedCharacter } = useAppStore();
+  const { goTo, selectCharacter, selectedCharacter, save, selectedStartingCheckpoint, setStartingCheckpoint } = useAppStore();
+
+  const checkpointProgress = save?.checkpointProgress || {};
+  const highestCheckpoint = checkpointProgress.highestCheckpoint || 0;
+  const highestStage = checkpointProgress.highestStage || (highestCheckpoint + 1);
+  const savedDistance = checkpointProgress.savedDistance !== undefined
+    ? checkpointProgress.savedDistance
+    : (highestCheckpoint * CHECKPOINT_DISTANCE);
 
   function choose(id) {
     audioService.playButton();
@@ -32,6 +39,38 @@ export default function CharacterSelect() {
             );
           })}
         </div>
+
+        {highestCheckpoint > 0 && (
+          <div style={styles.waypointBox} data-testid="character-waypoint-selector">
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#8fe8ff' }}>Starting Point:</span>
+            <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+              <button
+                type="button"
+                onClick={() => { audioService.playButton(); setStartingCheckpoint(0); }}
+                style={{
+                  ...styles.waypointPill,
+                  borderColor: selectedStartingCheckpoint === 0 ? '#ffd166' : 'rgba(143,232,255,0.3)',
+                  background: selectedStartingCheckpoint === 0 ? 'rgba(255,209,102,0.25)' : 'rgba(11,41,66,0.6)',
+                  color: selectedStartingCheckpoint === 0 ? '#ffd166' : '#ffffff',
+                }}
+              >
+                Stage 1 (0m)
+              </button>
+              <button
+                type="button"
+                onClick={() => { audioService.playButton(); setStartingCheckpoint(highestCheckpoint); }}
+                style={{
+                  ...styles.waypointPill,
+                  borderColor: selectedStartingCheckpoint === highestCheckpoint ? '#ffd166' : 'rgba(143,232,255,0.3)',
+                  background: selectedStartingCheckpoint === highestCheckpoint ? 'rgba(255,209,102,0.25)' : 'rgba(11,41,66,0.6)',
+                  color: selectedStartingCheckpoint === highestCheckpoint ? '#ffd166' : '#ffffff',
+                }}
+              >
+                Stage {highestStage} ({savedDistance}m)
+              </button>
+            </div>
+          </div>
+        )}
 
         <div style={styles.footerBtns}>
           <button className="big-button secondary" onClick={() => { audioService.playButton(); goTo('worldSelect'); }}>
@@ -66,4 +105,23 @@ const styles = {
   avatar: { width: 84, height: 84, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   selectedTag: { fontSize: 12, color: '#8fe8ff', fontWeight: 700 },
   footerBtns: { display: 'flex', gap: '1rem', marginTop: '0.5rem' },
+  waypointBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    background: 'rgba(11,41,66,0.8)',
+    border: '1.5px solid rgba(143,232,255,0.35)',
+    borderRadius: 16,
+    padding: '8px 16px',
+    boxShadow: '0 4px 16px rgba(0,0,0,0.25)',
+  },
+  waypointPill: {
+    padding: '5px 14px',
+    borderRadius: 999,
+    border: '1.5px solid',
+    fontSize: 12,
+    fontWeight: 700,
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+  },
 };

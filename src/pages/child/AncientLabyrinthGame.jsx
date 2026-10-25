@@ -5,11 +5,23 @@ import LabyrinthApp from '../../games/ancient-labyrinth/LabyrinthApp';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import GameSoundToggle from '../../components/games/GameSoundToggle';
 import { useGameSessionTracker } from '../../hooks/useGameSessionTracker';
+import { useApp } from '../../context/AppContext';
+
+function useSafeApp() {
+  try {
+    return useApp();
+  } catch {
+    return { activeChild: null };
+  }
+}
 
 export default function AncientLabyrinthGame() {
   const navigate = useNavigate();
+  const { activeChild } = useSafeApp();
   const containerRef = useRef(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const isSavedRef = useRef(false);
 
   const tracker = useGameSessionTracker({
     gameId: 'ancient-labyrinth',
@@ -23,23 +35,15 @@ export default function AncientLabyrinthGame() {
       starsEarned: result.stars || 1,
       xpEarned: result.xp || 20,
     });
-    if (result.isCorrect) {
-      tracker.saveCompletedSession({
-        stars: result.stars || 1,
-        xp: result.xp || 20,
-        score: result.score || 500,
-        details: { word: result.riddle?.word },
-      });
-    }
+    // Session is saved once on exit via handleBack
   }, [tracker]);
 
   const handleBack = useCallback(() => {
-    tracker.saveCompletedSession();
-    if (typeof window !== 'undefined' && window.history && window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/child/games');
+    if (!isSavedRef.current) {
+      isSavedRef.current = true;
+      tracker.saveCompletedSession();
     }
+    navigate('/child/games');
   }, [tracker, navigate]);
 
   const toggleFullscreen = useCallback(() => {
@@ -108,7 +112,11 @@ export default function AncientLabyrinthGame() {
             </div>
           }
         >
-          <LabyrinthApp onBack={handleBack} onRoundComplete={handleRoundComplete} />
+          <LabyrinthApp
+            childId={activeChild?.id}
+            onBack={handleBack}
+            onRoundComplete={handleRoundComplete}
+          />
         </ErrorBoundary>
       </div>
 

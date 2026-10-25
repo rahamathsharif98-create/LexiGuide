@@ -59,8 +59,9 @@ describe('Gaming Zone System Suite', () => {
     const soundsTab = screen.getByRole('button', { name: /sounds/i })
     fireEvent.click(soundsTab)
 
-    // Verify Sound Hunt and Sound Safari game cards are present
+    // Verify Sound Hunt and Cosmic Safari (with legacy match-sound alias) game cards are present
     expect(screen.getByTestId('game-card-sound-hunt')).toBeInTheDocument()
+    expect(screen.getByTestId('game-card-cosmic-safari')).toBeInTheDocument()
     expect(screen.getByTestId('game-card-match-sound')).toBeInTheDocument()
   })
 
@@ -144,5 +145,98 @@ describe('Gaming Zone System Suite', () => {
 
     expect(await screen.findByText(/Which letter is missing\? Tap to complete!/i)).toBeInTheDocument()
     expect(screen.getByText('C _ T')).toBeInTheDocument()
+  })
+
+  it('7. Cosmic Safari appears exactly once in the Games catalog with correct metadata', async () => {
+    render(
+      <AuthProvider>
+        <AppProvider>
+          <MemoryRouter initialEntries={['/child/games']}>
+            <Games />
+          </MemoryRouter>
+        </AppProvider>
+      </AuthProvider>
+    )
+
+    // Cosmic Safari card appears exactly once in the catalog grid
+    const cosmicSafariCards = screen.getAllByTestId('game-card-cosmic-safari')
+    expect(cosmicSafariCards).toHaveLength(1)
+
+    const card = cosmicSafariCards[0]
+    expect(card).toHaveTextContent(/Cosmic Safari/i)
+    expect(card).toHaveTextContent(/Hear animal phonemes and spot cosmic animal buddies across 25 progressive phonics levels!/i)
+    expect(card).toHaveTextContent(/Ready 🌱/i)
+
+    // Verify UFO 3D image
+    const ufoImg = screen.getByAltText(/Cosmic Safari/i)
+    expect(ufoImg).toBeInTheDocument()
+    expect(ufoImg).toHaveAttribute('src', '/assets/games/cosmic-ufo.jpg')
+  })
+
+  it('8. Clicking Play on Cosmic Safari navigates to /child/games/cosmic-safari', async () => {
+    render(
+      <AuthProvider>
+        <AppProvider>
+          <MemoryRouter initialEntries={['/child/games']}>
+            <Routes>
+              <Route path="/child/games" element={<Games />} />
+              <Route path="/child/games/cosmic-safari" element={<div data-testid="cosmic-safari-game-screen">Cosmic Safari Game Screen</div>} />
+            </Routes>
+          </MemoryRouter>
+        </AppProvider>
+      </AuthProvider>
+    )
+
+    const cosmicCard = screen.getByTestId('game-card-cosmic-safari')
+    const playBtn = cosmicCard.querySelector('button[aria-label="Play Cosmic Safari"]')
+    expect(playBtn).toBeInTheDocument()
+    fireEvent.click(playBtn)
+
+    expect(await screen.findByTestId('cosmic-safari-game-screen')).toBeInTheDocument()
+  })
+
+  it('9. Sounds category filter displays Cosmic Safari exactly once alongside sound siblings', async () => {
+    render(
+      <AuthProvider>
+        <AppProvider>
+          <MemoryRouter initialEntries={['/child/games']}>
+            <Games />
+          </MemoryRouter>
+        </AppProvider>
+      </AuthProvider>
+    )
+
+    const soundsTab = screen.getByRole('button', { name: /sounds/i })
+    fireEvent.click(soundsTab)
+
+    const cosmicCards = screen.getAllByTestId('game-card-cosmic-safari')
+    expect(cosmicCards).toHaveLength(1)
+    expect(screen.getByTestId('game-card-sound-hunt')).toBeInTheDocument()
+    expect(screen.getByTestId('game-card-sound-match')).toBeInTheDocument()
+    expect(screen.getByTestId('game-card-sound-rhythm')).toBeInTheDocument()
+  })
+
+  it('10. Favorite toggle for Cosmic Safari updates state and localStorage properly', async () => {
+    render(
+      <AuthProvider>
+        <AppProvider>
+          <MemoryRouter initialEntries={['/child/games']}>
+            <Games />
+          </MemoryRouter>
+        </AppProvider>
+      </AuthProvider>
+    )
+
+    const cosmicCard = screen.getByTestId('game-card-cosmic-safari')
+    const favBtn = cosmicCard.querySelector('button[aria-label*="favorites"]')
+    expect(favBtn).toBeInTheDocument()
+
+    // Default favorites includes match-sound and word-train, so initial click favorites cosmic-safari
+    fireEvent.click(favBtn)
+    expect(localStorage.getItem('lexi_favorite_games')).toContain('cosmic-safari')
+
+    // Second click unfavorites
+    fireEvent.click(favBtn)
+    expect(localStorage.getItem('lexi_favorite_games')).not.toContain('cosmic-safari')
   })
 })

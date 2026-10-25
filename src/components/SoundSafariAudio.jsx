@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Volume2 } from 'lucide-react'
 import { audioAtmosphere } from '../services/audioAtmosphereService'
 
@@ -6,22 +6,31 @@ import { audioAtmosphere } from '../services/audioAtmosphereService'
  * SoundSafariAudio
  * 
  * Provides accessible, child-friendly audio playback for the Sound Safari game.
- * Uses the browser's native SpeechSynthesis API as the local voice engine.
- * Cancels active speech on unmount or question change, handles errors gracefully,
- * triggers audio atmosphere ducking, and provides honest fallback when voices are absent.
+ * When a real audio recording URL (audio prop) is provided, it plays the authentic
+ * recorded animal audio via HTML5 Audio.
+ * If audio is not provided, it falls back gracefully to SpeechSynthesisUtterance.
+ * Cancels active playback on unmount or question change, handles errors gracefully,
+ * triggers audio atmosphere ducking, and provides honest fallback when audio is unavailable.
  */
-export function SoundSafariAudio({ sound, label, language = 'en' }) {
+export function SoundSafariAudio({ audio, sound, label, language = 'en' }) {
   const [isPlaying, setIsPlaying] = useState(false)
   const [hasPlayed, setHasPlayed] = useState(false)
   const [hasError, setHasError] = useState(false)
   const [nativeVoiceMissing, setNativeVoiceMissing] = useState(false)
+  const audioRef = useRef(null)
 
   const isSpeechSupported = typeof window !== 'undefined' &&
     'speechSynthesis' in window &&
     'SpeechSynthesisUtterance' in window
 
-  // Clean up any ongoing speech when the target sound/question changes
+  // Clean up any ongoing audio / speech when target audio or sound changes
   useEffect(() => {
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause()
+        audioRef.current.currentTime = 0
+      } catch {}
+    }
     if (typeof window !== 'undefined' && window.speechSynthesis) {
       window.speechSynthesis.cancel()
     }
@@ -31,16 +40,28 @@ export function SoundSafariAudio({ sound, label, language = 'en' }) {
     setHasError(false)
 
     return () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause()
+          audioRef.current.currentTime = 0
+        } catch {}
+      }
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel()
       }
       audioAtmosphere?.restoreMusic?.()
     }
-  }, [sound, label])
+  }, [audio, sound, label])
 
-  // Stop speech cleanly when the component unmounts
+  // Stop audio and speech cleanly when the component unmounts
   useEffect(() => {
     return () => {
+      if (audioRef.current) {
+        try {
+          audioRef.current.pause()
+          audioRef.current.currentTime = 0
+        } catch {}
+      }
       if (typeof window !== 'undefined' && window.speechSynthesis) {
         window.speechSynthesis.cancel()
       }
@@ -48,7 +69,51 @@ export function SoundSafariAudio({ sound, label, language = 'en' }) {
     }
   }, [])
 
-  const handleSpeak = () => {
+  const handlePlayRealAudio = () => {
+    try {
+      if (typeof window === 'undefined') return
+      audioAtmosphere?.duckMusic?.()
+      setIsPlaying(true)
+      setHasError(false)
+
+      if (!audioRef.current) {
+        audioRef.current = new Audio(audio)
+      } else {
+        if (audioRef.current.src !== audio && !audioRef.current.src.endsWith(audio)) {
+          audioRef.current.src = audio
+        }
+        audioRef.current.currentTime = 0
+      }
+
+      const player = audioRef.current
+      player.onended = () => {
+        audioAtmosphere?.restoreMusic?.()
+        setIsPlaying(false)
+        setHasPlayed(true)
+      }
+      player.onerror = () => {
+        audioAtmosphere?.restoreMusic?.()
+        setIsPlaying(false)
+        setHasPlayed(true)
+        setHasError(true)
+      }
+
+      const playPromise = player.play()
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          audioAtmosphere?.restoreMusic?.()
+          setIsPlaying(false)
+          setHasPlayed(true)
+        })
+      }
+    } catch {
+      audioAtmosphere?.restoreMusic?.()
+      setIsPlaying(false)
+      setHasError(true)
+    }
+  }
+
+  const handleSpeakTTS = () => {
     if (!isSpeechSupported) {
       setHasError(true)
       return
@@ -153,12 +218,19 @@ export function SoundSafariAudio({ sound, label, language = 'en' }) {
     }
   }
 
+  const handlePlay = () => {
+    if (audio) {
+      handlePlayRealAudio()
+    } else {
+      handleSpeakTTS()
+    }
+  }
 
   return (
     <div className="flex flex-col items-center gap-2">
       <button
         type="button"
-        onClick={handleSpeak}
+        onClick={handlePlay}
         data-testid="hear-sound-btn"
         aria-label={hasPlayed ? 'Listen Again' : 'Hear the Sound'}
         className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl font-display font-bold text-sm transition-all shadow-md cursor-pointer border-b-4 active:border-b-0 active:translate-y-1 min-h-[48px] ${
@@ -173,7 +245,7 @@ export function SoundSafariAudio({ sound, label, language = 'en' }) {
         <span>{isPlaying ? 'Playing…' : (hasPlayed ? '🔊 Listen Again' : '🔊 Hear the Sound')}</span>
       </button>
 
-      {nativeVoiceMissing && (
+      {nativeVoiceMissing && !audio && (
         <p
           data-testid="voice-honest-notice"
           className="text-[11px] text-sky-800 bg-sky-50 border border-sky-200 rounded-xl px-3 py-1.5 mt-1 max-w-sm text-center font-medium"
@@ -182,7 +254,7 @@ export function SoundSafariAudio({ sound, label, language = 'en' }) {
         </p>
       )}
 
-      {(!isSpeechSupported || hasError) && (
+      {((!audio && !isSpeechSupported) || hasError) && (
         <p
           data-testid="sound-unavailable-fallback"
           className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-1.5 mt-1 max-w-sm text-center animate-fade-in font-medium"

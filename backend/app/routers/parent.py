@@ -20,12 +20,8 @@ router = APIRouter(prefix="/api/parent", tags=["parent"])
 def get_children(current_user: User = Depends(require_role(UserRole.parent)), db: Session = Depends(get_db)):
     parent = db.query(Parent).filter(Parent.user_id == current_user.id).first()
     if not parent:
-        parent = Parent(user_id=current_user.id)
-        db.add(parent)
-        db.commit()
-        db.refresh(parent)
+        return []
     return parent.children
-
 
 
 @router.get("/children/{child_id}/summary", response_model=ParentChildSummaryOut)

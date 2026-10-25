@@ -1,29 +1,16 @@
 import { useEffect } from 'react'
-import { MemoryRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { MemoryRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 
 function HistorySync() {
   const location = useLocation()
-  const navigate = useNavigate()
-
   useEffect(() => {
     if (typeof window !== 'undefined' && window.history && window.location) {
       const fullPath = location.pathname + location.search + location.hash
       if (window.location.pathname + window.location.search + window.location.hash !== fullPath) {
-        window.history.pushState({ path: fullPath }, '', fullPath)
+        window.history.pushState(null, '', fullPath)
       }
     }
   }, [location])
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    const handlePopState = () => {
-      const targetPath = window.location.pathname + window.location.search + window.location.hash
-      navigate(targetPath, { replace: true })
-    }
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [navigate])
-
   return null
 }
 import { AppProvider } from './context/AppContext'
@@ -31,7 +18,6 @@ import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { ErrorBoundary } from './components/ErrorBoundary'
 import Landing from './pages/Landing'
-import ChildLogin from './pages/child/ChildLogin'
 import ProfileSelect from './pages/child/ProfileSelect'
 import { ChildLayout } from './pages/child/ChildLayout'
 import Home from './pages/child/Home'
@@ -94,8 +80,6 @@ export default function App({
           <ErrorBoundary>
             <Routes>
               <Route path="/" element={<Landing />} />
-              <Route path="/child/login" element={<ChildLogin />} />
-              <Route path="/login" element={<Navigate to="/child/login" replace />} />
               <Route path="/select-profile" element={<ProfileSelect />} />
               <Route path="/child/register" element={<StudentRegister />} />
               <Route path="/register" element={<StudentRegister />} />
@@ -124,6 +108,8 @@ export default function App({
               <Route path="/games/cloud-bouncer" element={<Navigate to="/child/games/cloud-bouncer" replace />} />
               <Route path="/games/voxel-crafter" element={<Navigate to="/child/games/voxel-crafter" replace />} />
               <Route path="/games/safari-photo" element={<Navigate to="/child/games/safari-photo" replace />} />
+              <Route path="/games/cosmic-safari" element={<Navigate to="/child/games/cosmic-safari" replace />} />
+              <Route path="/games/sound-safari" element={<Navigate to="/child/games/sound-safari" replace />} />
               <Route path="/games/ancient-labyrinth" element={<Navigate to="/child/games/ancient-labyrinth" replace />} />
               <Route path="/games/spider-weaver" element={<Navigate to="/child/games/spider-weaver" replace />} />
 

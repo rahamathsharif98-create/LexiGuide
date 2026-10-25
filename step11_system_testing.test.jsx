@@ -139,7 +139,7 @@ describe('Step 11: Final System Testing & Cross-Portal E2E Audit', () => {
     render(<App initialRoute="/child/games" />)
 
     expect(await screen.findByText(/Word Builder/i)).toBeInTheDocument()
-    expect(screen.getByText(/Sound Safari/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/Sound Safari/i)[0]).toBeInTheDocument()
     expect(screen.getByText(/Letter Detective/i)).toBeInTheDocument()
     expect(screen.getByText(/Picture Match/i)).toBeInTheDocument()
   })
