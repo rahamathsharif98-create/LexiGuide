@@ -243,6 +243,13 @@ class GameSoundService {
     setTimeout(() => this.playSparkle(), 320);
   }
 
+  playRoar() {
+    if (this.soundMode === 'muted') return;
+    // Playful friendly dinosaur roar: low rumble with pitch rise & fall
+    this._tone({ freq: 110, freqEnd: 175, duration: 0.35, type: 'sawtooth', gain: 0.16 });
+    this._tone({ freq: 85, freqEnd: 60, duration: 0.45, type: 'triangle', gain: 0.18, delay: 0.12 });
+  }
+
   playGentleOops() {
     if (this.soundMode === 'muted') return;
     this._tone({ freq: 330, freqEnd: 293, duration: 0.22, type: 'sine', gain: 0.08 });

@@ -13,6 +13,7 @@ export default function VoxelWorld({
   blocks = [],
   isCrafted = false,
   rewardName = 'Trophy',
+  wordLength = 4,
   burstPos = [0, 1.6, 0],
   burstKey = 0,
   floatingText = 'PERFECT!',
@@ -82,6 +83,7 @@ export default function VoxelWorld({
             targetPos={block.pos}
             isPlaced={block.isPlaced}
             slotIndex={block.slotIndex}
+            totalSlots={wordLength}
             isNext={block.isNext}
             onClick={() => onSelectBlock(block)}
           />

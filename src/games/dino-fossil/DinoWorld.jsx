@@ -10,6 +10,7 @@ import VFXBurstParticles from '../common/vfx/VFXBurstParticles';
 import VFXShockwaveRing from '../common/vfx/VFXShockwaveRing';
 
 export default function DinoWorld({
+  target,
   slabs = [],
   isExcavated = false,
   burstPos = [0, 1, 0],
@@ -47,7 +48,7 @@ export default function DinoWorld({
 
       <Suspense fallback={null}>
         {/* Archaeological Dig Site */}
-        <DigSiteEnvironment isExcavated={isExcavated} />
+        <DigSiteEnvironment target={target} isExcavated={isExcavated} />
 
         {/* Ambient Floating Dust & Amber Sparkles */}
         <VFXAmbientMotes mode="embers" count={25} area={[14, 6, 12]} center={[0, 2, 0]} />

@@ -12,6 +12,7 @@ import VFXShockwaveRing from '../common/vfx/VFXShockwaveRing';
 export default function LabyrinthWorld({
   keystones = [],
   isUnlocked = false,
+  isVictory = false,
   burstPos = [0, 1, 0],
   burstKey = 0,
   floatingText = 'RUNE UNLOCKED!',
@@ -21,37 +22,43 @@ export default function LabyrinthWorld({
 }) {
   return (
     <Canvas
-      camera={{ position: [0, 4.5, 7.5], fov: 55 }}
+      camera={{ position: [0, 5.0, 8.0], fov: 55 }}
       style={{ width: '100%', height: '100%', background: '#0c0a09' }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
     >
-      <color attach="background" args={['#0c0a09']} />
-      <fog attach="fog" args={['#1c1917', 5, 30]} />
+      <color attach="background" args={['#120e0a']} />
+      <fog attach="fog" args={['#16120e', 12, 38]} />
 
-      <ambientLight intensity={0.45} color="#fdba74" />
+      <ambientLight intensity={0.65} color="#fed7aa" />
       <directionalLight
-        position={[0, 15, 5]}
-        intensity={0.9}
-        color="#fed7aa"
+        position={[4, 16, 6]}
+        intensity={0.85}
+        color="#fef3c7"
       />
-      <pointLight position={[0, 3, 0]} intensity={0.8} color="#f97316" distance={15} />
+      <pointLight position={[0, 3.2, -1]} intensity={0.7} color="#f97316" distance={16} />
 
       {/* Dynamic Camera Juice: Screen Shake & Victory Orbit */}
       <VFXCameraJuice
         shakeKey={burstKey}
         intensity={0.22}
-        orbitActive={isUnlocked}
+        isVictory={isUnlocked || isVictory}
+        orbitActive={isUnlocked || isVictory}
         orbitSpeed={0.4}
-        basePosition={[0, 4.5, 7.5]}
-        targetLookAt={[0, 2.0, -3]}
+        basePosition={[0, 5.0, 8.0]}
+        targetLookAt={[0, 1.5, -2.8]}
       />
 
       <Suspense fallback={null}>
         {/* Labyrinth Environment & Vault Door */}
-        <LabyrinthEnvironment isUnlocked={isUnlocked} />
+        <LabyrinthEnvironment isUnlocked={isUnlocked} isVictory={isVictory} />
 
-        {/* Ambient Rising Torch Flame Embers */}
-        <VFXAmbientMotes mode="embers" count={45} area={[16, 8, 16]} center={[0, 2, -2]} />
+        {/* Ambient Rising Torch Flame Embers (enhanced flurry during victory) */}
+        <VFXAmbientMotes
+          mode="embers"
+          count={isVictory ? 75 : 45}
+          area={[16, 8, 16]}
+          center={[0, 2, -2]}
+        />
 
         {/* Ancient Rune Unlock Burst */}
         <VFXBurstParticles position={burstPos} triggerKey={burstKey} color="#f59e0b" count={30} speed={4.2} size={0.14} />
@@ -65,13 +72,13 @@ export default function LabyrinthWorld({
           triggerKey={floatingTextKey}
         />
 
-        {/* Explorer Fox Mascot Companion inside the labyrinth corridor */}
-        <group position={[4.0, 0, -1]} rotation={[0, -0.6, 0]}>
-          <mesh position={[0, 0.4, 0]}>
-            <boxGeometry args={[1.4, 0.8, 1.4]} />
+        {/* Explorer Fox Mascot Companion positioned against side wall out of letter sightlines */}
+        <group position={[4.8, 0, -0.8]} rotation={[0, -0.7, 0]}>
+          <mesh position={[0, 0.35, 0]}>
+            <boxGeometry args={[1.2, 0.7, 1.2]} />
             <meshStandardMaterial color="#57534e" roughness={0.9} />
           </mesh>
-          <LexiMascot3D position={[0, 0.8, 0]} scale={0.72} state={mascotState} theme="explorer" />
+          <LexiMascot3D position={[0, 0.7, 0]} scale={0.72} state={mascotState} theme="explorer" />
         </group>
 
         {/* Floating Glyph Keystones */}

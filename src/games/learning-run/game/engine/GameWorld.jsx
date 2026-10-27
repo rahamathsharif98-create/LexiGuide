@@ -27,6 +27,11 @@ import {
   JUMP_HEIGHT,
   SLIDE_DURATION,
   COLLECT_RADIUS,
+  CHECKPOINT_SEGMENT_INTERVAL,
+  CHECKPOINT_DISTANCE,
+  MAX_CHECKPOINTS,
+  MAX_STAGE,
+  FINAL_COMPLETION_DISTANCE,
 } from './constants';
 
 const GROUND_TILE_COUNT = 8;
@@ -41,10 +46,14 @@ function makePool(size, factory) {
   return new Array(size).fill(0).map(() => ({ current: factory() }));
 }
 
-export default function GameWorld({ character, worldId, difficulty: initialDifficulty, paused, onError }) {
+export default function GameWorld({ character, worldId, difficulty: initialDifficulty, startingCheckpoint = 0, paused, onError }) {
   const store = useGameStore();
   const storeRef = useRef(store);
   storeRef.current = store;
+
+  const validStartingCheckpoint = Math.min(MAX_CHECKPOINTS, Math.max(0, Math.floor(Number(startingCheckpoint)) || 0));
+  const initialDistance = validStartingCheckpoint * CHECKPOINT_DISTANCE;
+  const initialSegmentIndex = validStartingCheckpoint * CHECKPOINT_SEGMENT_INTERVAL;
 
   // --- Mutable engine state (kept out of React state for perf) ---
   const playerRuntime = useRef({
@@ -57,18 +66,20 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
     isSliding: false,
     slideElapsed: 0,
     tilt: 0,
+    turnTilt: 0,
     running: true,
     magnetActive: false,
     shieldActive: false,
   });
 
   const speedRef = useRef(BASE_SPEED);
-  const distanceRef = useRef(0);
+  const distanceRef = useRef(initialDistance);
   const shakeRef = useRef({ time: 0, intensity: 0 });
   const spawnCursor = useRef(SPAWN_AHEAD_Z);
-  const nextSegmentIndex = useRef(0);
+  const nextSegmentIndex = useRef(initialSegmentIndex);
   const powerUpTimer = useRef({ kind: null, remaining: 0 });
   const lastDifficultySync = useRef(initialDifficulty);
+  const checkpointQueue = useRef(Array.from({ length: validStartingCheckpoint }, (_, i) => i + 1));
 
   const groundTiles = useMemo(
     () => new Array(GROUND_TILE_COUNT).fill(0).map((_, i) => ({ current: -i * SEGMENT_LENGTH })),
@@ -91,7 +102,18 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
     () => makePool(POWERUP_POOL_SIZE, () => ({ active: false, lane: 1, z: 0, kind: 'magnet' })),
     []
   );
-  const gateRef = useRef({ active: false, z: 0, lanes: ['A', 'B', 'C'], correctLetter: 'A', resolved: false, version: 0, challengeType: 'starting-letter', wordHint: '' });
+  const gateRef = useRef({
+    active: false,
+    z: 0,
+    lanes: ['A', 'B', 'C'],
+    correctLetter: 'A',
+    resolved: false,
+    version: 0,
+    challengeType: 'starting-letter',
+    wordHint: '',
+    prompt: '',
+    announced: false,
+  });
 
   // --- Input handling ---
   const moveLeft = useCallback(() => {
@@ -133,13 +155,13 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
   });
 
   useEffect(() => {
-    store.startRun(initialDifficulty);
+    store.startRun(initialDifficulty, startingCheckpoint);
     audioService.resume();
     return () => {
       speechService.cancel();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [startingCheckpoint]);
 
   function findFreeSlot(pool) {
     return pool.find((p) => !p.current.active);
@@ -199,6 +221,8 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
       gateRef.current.correctLetter = segment.challenge.correctLetter;
       gateRef.current.challengeType = segment.challenge.type;
       gateRef.current.wordHint = segment.challenge.wordHint;
+      gateRef.current.prompt = segment.challenge.prompt;
+      gateRef.current.announced = false;
       gateRef.current.resolved = false;
       gateRef.current.version += 1;
       storeRef.current.startChallenge(segment.challenge);
@@ -207,13 +231,12 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
     spawnCursor.current -= SEGMENT_LENGTH;
   }
 
-  const checkpointQueue = useRef([]);
   const hasErroredRef = useRef(false);
 
   useFrame((_, rawDelta) => {
     if (hasErroredRef.current) return;
     const s = storeRef.current;
-    if (s.isPaused || s.isGameOver || !s.isRunning) return;
+    if (s.isPaused || s.isGameOver || s.isCompleted || !s.isRunning) return;
     try {
       runFrame(s, rawDelta);
     } catch (err) {
@@ -232,8 +255,20 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
     const slowActive = powerUpTimer.current.kind === 'slow-time' && powerUpTimer.current.remaining > 0;
     speedRef.current = slowActive ? targetSpeed * 0.55 : targetSpeed;
     distanceRef.current += speedRef.current * delta;
+
+    // Check Stage 11 final expedition completion (at configured 1650m)
+    if (distanceRef.current >= FINAL_COMPLETION_DISTANCE) {
+      distanceRef.current = FINAL_COMPLETION_DISTANCE;
+      speedRef.current = 0;
+      s.setDistance(FINAL_COMPLETION_DISTANCE);
+      s.completeExpedition();
+      audioService.playCorrect();
+      speechService.speak('Expedition complete! Outstanding runner!');
+      return;
+    }
+
     const flooredDistance = Math.floor(distanceRef.current);
-    if (flooredDistance !== s.distance) {
+    if (flooredDistance !== s.distance && (flooredDistance % 5 === 0 || flooredDistance - s.distance >= 5)) {
       s.setDistance(flooredDistance);
     }
 
@@ -248,10 +283,11 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
       }
     }
 
-    // --- Content generation ---
-    while (spawnCursor.current > -distanceRef.current - 260) {
+    // --- Content generation (bounded strictly to Stage 11) ---
+    const maxSegments = MAX_STAGE * CHECKPOINT_SEGMENT_INTERVAL;
+    while (spawnCursor.current > -distanceRef.current - 260 && nextSegmentIndex.current < maxSegments) {
       const targetLetter = s.activeWordQuest?.missingLetter || null;
-      const seg = generateSegment(nextSegmentIndex.current, s.difficulty, targetLetter);
+      const seg = generateSegment(nextSegmentIndex.current, s.difficulty, targetLetter, s.activeWordQuest);
       nextSegmentIndex.current += 1;
       spawnSegmentContent(seg);
     }
@@ -264,11 +300,19 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
       }
     });
 
-    // --- Player lane lerp ---
+    // --- Player lane lerp & dynamic tilt ---
     const p = playerRuntime.current;
     const targetX = LANE_X[p.lane];
     p.renderX += (targetX - p.renderX) * Math.min(1, delta * 10);
-    p.tilt = (targetX - p.renderX) * -0.15;
+    const laneLean = (targetX - p.renderX) * -0.15;
+
+    // Smoothly decay corner-turn tilt back to zero over ~0.45s
+    if (Math.abs(p.turnTilt || 0) > 0.001) {
+      p.turnTilt += (0 - p.turnTilt) * Math.min(1, delta * 5);
+    } else {
+      p.turnTilt = 0;
+    }
+    p.tilt = laneLean + (p.turnTilt || 0);
 
     // --- Turn junctions processing (Temple Run turns) ---
     turnPool.forEach((slot) => {
@@ -290,7 +334,9 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
           turn.resolved = true;
           s.takeTurn(true, turn.direction);
           audioService.playButton();
-          p.tilt = turn.direction === 'left' ? -0.55 : 0.55;
+          // Initiate a pronounced turn lean that smoothly decays over subsequent frames
+          p.turnTilt = turn.direction === 'left' ? -0.55 : 0.55;
+          p.tilt = laneLean + p.turnTilt;
           shakeRef.current = { time: 0.3, intensity: 0.25 };
         } else if (turn.z > 1.2) {
           // Missed turn safety
@@ -402,10 +448,20 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
       }
     });
 
-    // --- Challenge gate crossing ---
+    // --- Challenge gate crossing & approaching voice prompt ---
     const g = gateRef.current;
     if (g.active) {
       g.z += speedRef.current * delta;
+
+      // Speak phonics prompt cleanly as child approaches the gate (~35m before crossing)
+      if (!g.announced && g.z > -36 && g.z < -5) {
+        g.announced = true;
+        const spoken = g.challengeType === 'complete-word'
+          ? `Complete the word: ${g.wordHint}`
+          : (g.wordHint ? `${g.wordHint}! Which letter?` : g.prompt);
+        speechService.speak(spoken);
+      }
+
       if (!g.resolved && g.z > -0.3) {
         g.resolved = true;
         const correct = p.lane === g.lanes.indexOf(g.correctLetter);
@@ -422,10 +478,9 @@ export default function GameWorld({ character, worldId, difficulty: initialDiffi
       }
     }
 
-    // --- Checkpoint crossing (every ~5th segment, tracked via distance) ---
-    const checkpointEvery = SEGMENT_LENGTH * 5;
-    const checkpointsPassed = Math.floor(distanceRef.current / checkpointEvery);
-    if (checkpointsPassed > checkpointQueue.current.length) {
+    // --- Checkpoint crossing (every milestone waypoint, tracked via distance) ---
+    const checkpointsPassed = Math.floor(distanceRef.current / CHECKPOINT_DISTANCE);
+    if (checkpointsPassed > checkpointQueue.current.length && checkpointQueue.current.length < MAX_CHECKPOINTS) {
       checkpointQueue.current.push(checkpointsPassed);
       s.reachCheckpoint();
       audioService.playCheckpoint();

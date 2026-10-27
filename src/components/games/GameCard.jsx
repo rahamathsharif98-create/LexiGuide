@@ -32,6 +32,17 @@ const GAME_VFX_MAP = {
     ),
   },
   'match-sound': {
+    wrapperClass: 'animate-vfx-sound-pulse',
+    overlay: (
+      <>
+        <span className="absolute top-3 right-4 text-base filter drop-shadow-sm animate-vfx-note-1 z-10">🔊</span>
+        <span className="absolute bottom-5 left-3 text-sm filter drop-shadow-sm animate-vfx-note-2 z-10">🎵</span>
+        <span className="absolute top-6 left-3 text-xs animate-story-sparkle-1 z-10">🦁</span>
+        <span className="absolute bottom-6 right-3 text-xs animate-story-sparkle-2 z-10">✨</span>
+      </>
+    ),
+  },
+  'cosmic-safari': {
     wrapperClass: 'animate-vfx-ufo',
     overlay: (
       <>

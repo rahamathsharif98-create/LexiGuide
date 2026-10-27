@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
-
 .learning-run-container {
   --cyan: #38e1ff;
   --cyan-bright: #8fe8ff;
@@ -10,14 +8,18 @@
   --green: #6bd98a;
   --red: #ff6b6b;
   --white: #f4fbff;
-  --font-display: 'Baloo 2', 'Nunito', system-ui, sans-serif;
-  --font-body: 'Nunito', system-ui, sans-serif;
+  --font-display: 'Poppins', 'Baloo 2', 'Nunito', system-ui, -apple-system, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
   color-scheme: dark;
   font-family: var(--font-body);
   background: radial-gradient(ellipse at top, #123a5c 0%, #071a2e 60%, #030d18 100%);
   color: var(--white);
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
   width: 100%;
   height: 100%;
   position: relative;

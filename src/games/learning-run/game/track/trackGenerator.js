@@ -80,7 +80,7 @@ const SEGMENT_KIND_CYCLE = [
   'reward',      // Segment 9: Giant coin bonanza!
 ];
 
-export function generateSegment(index, difficulty, targetLetter = null) {
+export function generateSegment(index, difficulty, targetLetter = null, activeWordQuest = null) {
   segmentCounter += 1;
   const isCheckpoint = index > 0 && index % 6 === 5;
   const kind = isCheckpoint ? 'checkpoint' : SEGMENT_KIND_CYCLE[index % SEGMENT_KIND_CYCLE.length];
@@ -95,7 +95,7 @@ export function generateSegment(index, difficulty, targetLetter = null) {
     obstacles: buildObstacles(kind),
     coins: buildCoins(kind, difficulty, targetLetter),
     powerUp: buildPowerUp(),
-    challenge: kind === 'challenge' ? generateChallenge(difficulty) : null,
+    challenge: kind === 'challenge' ? generateChallenge(difficulty, activeWordQuest) : null,
     isCheckpoint,
     isTurn,
     turnDirection,

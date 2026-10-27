@@ -38,6 +38,7 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
   const [hintsUsed, setHintsUsed] = useState(0);
   const [retriesCount, setRetriesCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const isSavingRef = useRef(false);
 
   const recordAttempt = useCallback((isCorrect, options = {}) => {
     const { roundScore = 100, starsEarned = 1, xpEarned = 15, hintUsed = false, retry = false } = options;
@@ -53,7 +54,8 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
   }, []);
 
   const saveCompletedSession = useCallback(async (overrides = {}) => {
-    if (isSaving) return null;
+    if (isSaving || isSavingRef.current) return null;
+    isSavingRef.current = true;
 
     const totalAttempted = overrides.roundsAttempted ?? roundsAttempted;
     const totalCorrect = overrides.roundsCorrect ?? roundsCorrect;
@@ -140,6 +142,7 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
       console.error('[useGameSessionTracker] Failed to save session for ' + gameId + ':', err);
       return null;
     } finally {
+      isSavingRef.current = false;
       setIsSaving(false);
     }
   }, [

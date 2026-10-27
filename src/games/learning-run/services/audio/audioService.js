@@ -1,7 +1,10 @@
 // audioService: lightweight WebAudio-based sound effects + generative ambient music.
+// Synchronized with LexiGuide's centralized gameSoundService.
 // We intentionally avoid bundling any copyrighted music/sfx files. All sounds here
 // are synthesized at runtime with the Web Audio API. If Web Audio is unavailable,
 // every method becomes a safe no-op so the game never crashes.
+
+import { gameSound } from '../../../../services/gameSoundService';
 
 class AudioService {
   constructor() {
@@ -11,6 +14,40 @@ class AudioService {
     this.musicNodes = null;
     this.available = false;
     this._initAttempted = false;
+    this._wasPlayingMusicBeforeMute = false;
+    this._unsubscribeSound = null;
+    this.soundMode = typeof gameSound !== 'undefined' && typeof gameSound.getSoundMode === 'function'
+      ? gameSound.getSoundMode()
+      : 'voice_and_sfx';
+
+    this._syncWithGlobalSound();
+  }
+
+  _syncWithGlobalSound() {
+    if (typeof gameSound !== 'undefined' && typeof gameSound.subscribe === 'function') {
+      if (this._unsubscribeSound) {
+        this._unsubscribeSound();
+      }
+      this.soundMode = gameSound.getSoundMode();
+      this._applySoundMode(this.soundMode);
+      this._unsubscribeSound = gameSound.subscribe((mode) => {
+        this._applySoundMode(mode);
+      });
+    }
+  }
+
+  _applySoundMode(mode) {
+    const prevMode = this.soundMode;
+    this.soundMode = mode;
+    if (mode === 'muted') {
+      if (this.musicNodes) {
+        this._wasPlayingMusicBeforeMute = true;
+      }
+      this.stopMusic();
+    } else if (prevMode === 'muted' && this._wasPlayingMusicBeforeMute) {
+      this._wasPlayingMusicBeforeMute = false;
+      this.startMusic();
+    }
   }
 
   _ensureContext() {
@@ -28,6 +65,7 @@ class AudioService {
   }
 
   resume() {
+    if (this.soundMode === 'muted') return;
     if (this._ensureContext() && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
@@ -43,7 +81,7 @@ class AudioService {
   }
 
   _tone({ freq = 440, duration = 0.15, type = 'sine', gain = 0.15, freqEnd = null, delay = 0 }) {
-    if (!this.enabledSfx || !this._ensureContext()) return;
+    if (this.soundMode === 'muted' || !this.enabledSfx || !this._ensureContext()) return;
     const t0 = this.ctx.currentTime + delay;
     const osc = this.ctx.createOscillator();
     const g = this.ctx.createGain();
@@ -100,7 +138,7 @@ class AudioService {
   }
 
   startMusic() {
-    if (!this.enabledMusic || !this._ensureContext() || this.musicNodes) return;
+    if (this.soundMode === 'muted' || !this.enabledMusic || !this._ensureContext() || this.musicNodes) return;
     // Gentle generative ambient pad using detuned oscillators + slow LFO — original, non-copyrighted.
     const master = this.ctx.createGain();
     master.gain.value = 0.05;
@@ -139,6 +177,14 @@ class AudioService {
       /* noop */
     }
     this.musicNodes = null;
+  }
+
+  cleanup() {
+    if (this._unsubscribeSound) {
+      this._unsubscribeSound();
+      this._unsubscribeSound = null;
+    }
+    this.stopMusic();
   }
 }
 

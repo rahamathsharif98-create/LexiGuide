@@ -69,6 +69,52 @@ describe('3D Game Cards & Unique Assets Verification', () => {
     expect(card).toHaveAttribute('tabIndex', '0');
   });
 
+  it('verifies Sound Safari and Safari Wildlife Photographer have distinct, appropriate cover images', () => {
+    const soundSafari = GAMING_ZONE_GAMES.find(g => g.id === 'match-sound');
+    const wildlifePhotographer = GAMING_ZONE_GAMES.find(g => g.id === 'safari-photo');
+
+    expect(soundSafari).toBeDefined();
+    expect(wildlifePhotographer).toBeDefined();
+
+    // Must be completely distinct image paths
+    expect(soundSafari.image3d).not.toBe(wildlifePhotographer.image3d);
+    expect(soundSafari.image3d).toBe('/assets/games/sound-safari.svg');
+    expect(wildlifePhotographer.image3d).toBe('/assets/games/safari-photo.svg');
+
+    // Theme contexts must also preserve distinct images
+    if (soundSafari.themeContext) {
+      Object.values(soundSafari.themeContext).forEach(tc => {
+        if (tc.image3d) {
+          expect(tc.image3d).not.toBe(wildlifePhotographer.image3d);
+          expect(tc.image3d).toBe('/assets/games/sound-safari.svg');
+        }
+      });
+    }
+  });
+
+  it('renders distinct cover images for Sound Safari and Safari Wildlife Photographer in GameCard', () => {
+    const soundSafari = GAMING_ZONE_GAMES.find(g => g.id === 'match-sound');
+    const wildlifePhotographer = GAMING_ZONE_GAMES.find(g => g.id === 'safari-photo');
+
+    const { unmount: unmount1 } = render(
+      <MemoryRouter>
+        <GameCard game={soundSafari} />
+      </MemoryRouter>
+    );
+    const soundImg = screen.getByRole('img', { name: soundSafari.title });
+    expect(soundImg).toHaveAttribute('src', '/assets/games/sound-safari.svg');
+    unmount1();
+
+    const { unmount: unmount2 } = render(
+      <MemoryRouter>
+        <GameCard game={wildlifePhotographer} />
+      </MemoryRouter>
+    );
+    const photoImg = screen.getByRole('img', { name: wildlifePhotographer.title });
+    expect(photoImg).toHaveAttribute('src', '/assets/games/safari-photo.svg');
+    unmount2();
+  });
+
   it('checks /child/games in App renders without duplication and cleanly mounts', async () => {
     localStorage.setItem('readquest_active_child_id', '1');
     const { default: App } = await import('../App');

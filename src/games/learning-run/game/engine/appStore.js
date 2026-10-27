@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { storageService } from '../../services/storage/storageService';
 import { audioService } from '../../services/audio/audioService';
 import { speechService } from '../../services/speech/speechService';
+import { MAX_CHECKPOINTS } from './constants';
 
 // SCREEN values: 'start' | 'characterSelect' | 'worldSelect' | 'howToPlay' |
 // 'achievements' | 'settings' | 'game' | 'result'
@@ -13,11 +14,14 @@ export const useAppStore = create((set) => ({
   save: initialSave,
   selectedWorld: 'safari-temple',
   selectedCharacter: initialSave.selectedCharacter || 'explorer',
+  selectedStartingCheckpoint: 0,
   lastResult: null,
 
   goTo: (screen) => set({ screen }),
 
   selectWorld: (worldId) => set({ selectedWorld: worldId }),
+
+  setStartingCheckpoint: (chk) => set({ selectedStartingCheckpoint: Math.min(MAX_CHECKPOINTS, Math.max(0, Math.floor(Number(chk)) || 0)) }),
 
   selectCharacter: (characterId) => {
     storageService.updateSave((s) => ({ ...s, selectedCharacter: characterId }));
@@ -40,7 +44,7 @@ export const useAppStore = create((set) => ({
 
   resetProgress: () => {
     const fresh = storageService.resetSave();
-    set({ save: fresh });
+    set({ save: fresh, selectedStartingCheckpoint: 0 });
   },
 }));
 

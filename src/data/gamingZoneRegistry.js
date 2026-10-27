@@ -185,14 +185,31 @@ export const GAMING_ZONE_GAMES = [
     id: 'match-sound',
     title: 'Sound Safari',
     category: 'sounds',
-    icon: '🛸',
-    image3d: '/assets/games/cosmic-ufo.jpg',
+    icon: '🦁',
+    image3d: '/assets/games/sound-safari.svg',
     desc: 'Hear animal phonemes and pick the right buddy.',
     skill: 'phonologicalAwareness',
     route: '/child/games/match-sound',
     dimension: '3D Adventure',
     difficulty: 'Ready 🌱',
     audioPrompt: 'Hear the sound, pick the matching animal!',
+    themeContext: {
+      space: { title: 'Sound Safari', icon: '🦁', image3d: '/assets/games/sound-safari.svg', prompt: 'Hear animal phonemes across the star sanctuary!' },
+      animals: { title: 'Sound Safari', icon: '🦁', image3d: '/assets/games/sound-safari.svg', prompt: 'Hear the friendly wild animals!' },
+    },
+  },
+  {
+    id: 'cosmic-safari',
+    title: 'Cosmic Safari',
+    category: 'sounds',
+    icon: '🛸',
+    image3d: '/assets/games/cosmic-ufo.jpg',
+    desc: 'Hear animal phonemes and spot cosmic animal buddies across 25 progressive phonics levels!',
+    skill: 'phonologicalAwareness',
+    route: '/child/games/cosmic-safari',
+    dimension: '3D Adventure',
+    difficulty: 'Ready 🌱',
+    audioPrompt: 'Hear the sound, pick the matching cosmic animal buddy!',
     themeContext: {
       space: { title: 'Cosmic Safari', icon: '🛸', image3d: '/assets/games/cosmic-ufo.jpg' },
       animals: { title: 'Wild Safari', icon: '🦁', image3d: '/assets/games/cosmic-ufo.jpg' },
@@ -220,7 +237,7 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Listen to gentle sound beats and tap the pattern.',
     skill: 'phonologicalAwareness',
     route: '/child/games/sound-rhythm',
-    dimension: '3D Adventure',
+    dimension: '2D Rhythm',
     difficulty: 'Growing 🌿',
     audioPrompt: 'Listen to the rhythm and tap the matching pattern.',
   },
@@ -262,7 +279,7 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Fill in the missing letter to complete the word.',
     skill: 'wordRecognition',
     route: '/child/games/missing-letter',
-    dimension: '3D Adventure',
+    dimension: '2D Letter Learning',
     difficulty: 'Growing 🌿',
     audioPrompt: 'Which letter is missing? Tap to complete the word.',
   },
@@ -277,7 +294,7 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Snap letters together in order to build words.',
     skill: 'wordRecognition',
     route: '/child/games/build-word',
-    dimension: '3D Adventure',
+    dimension: '2D Letter Learning',
     difficulty: 'Growing 🌿',
     audioPrompt: 'Put the letters in order to build the word.',
   },
@@ -290,7 +307,7 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Connect the picture to the right word.',
     skill: 'wordRecognition',
     route: '/child/games/picture-word',
-    dimension: '3D Adventure',
+    dimension: '2D Letter Learning',
     difficulty: 'Ready 🌱',
     audioPrompt: 'Look at the picture and tap the matching word.',
   },
@@ -318,7 +335,7 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Say words into your microphone with instant encouragement.',
     skill: 'pronunciation',
     route: '/child/speak',
-    dimension: '3D Adventure',
+    dimension: 'Speaking',
     difficulty: 'Ready 🌱',
     audioPrompt: 'Listen to the word, then tap speak and say it aloud!',
   },
@@ -333,13 +350,16 @@ export const GAMING_ZONE_GAMES = [
     desc: 'Put 3 story pictures in the right order.',
     skill: 'comprehension',
     route: '/child/games/story-puzzle',
-    dimension: '3D Adventure',
+    dimension: 'Sequencing',
     difficulty: 'Growing 🌿',
     audioPrompt: 'What happens first, next, and last? Put the story in order.',
   },
 ]
 
 export function getGameById(id) {
+  if (id === 'sound-safari') {
+    return GAMING_ZONE_GAMES.find((g) => g.id === 'match-sound') || null
+  }
   return GAMING_ZONE_GAMES.find((g) => g.id === id) || null
 }
 

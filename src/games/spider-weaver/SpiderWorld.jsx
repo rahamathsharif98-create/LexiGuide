@@ -17,6 +17,8 @@ export default function SpiderWorld({
   level,
   options = [],
   selectedRime = null,
+  wrongRime = null,
+  isError = false,
   spiderState = 'idle',
   burstPos = [0, 1.5, 0],
   burstKey = 0,
@@ -61,18 +63,23 @@ export default function SpiderWorld({
         <VFXBurstParticles
           position={burstPos}
           triggerKey={burstKey}
-          color="#34d399"
-          count={35}
-          speed={4.0}
+          color={isError ? '#f43f5e' : '#34d399'}
+          count={isError ? 20 : 35}
+          speed={isError ? 2.5 : 4.0}
           size={0.16}
         />
-        <VFXShockwaveRing position={burstPos} triggerKey={burstKey} color="#10b981" maxRadius={2.8} />
+        <VFXShockwaveRing
+          position={burstPos}
+          triggerKey={burstKey}
+          color={isError ? '#ef4444' : '#10b981'}
+          maxRadius={isError ? 1.8 : 2.8}
+        />
 
         {/* 3D Action Comic Popup Text */}
         <VFXFloatingText3D
           text={floatingText}
           position={[burstPos[0], burstPos[1] + 1.4, burstPos[2]]}
-          color="#facc15"
+          color={isError ? '#fb7185' : '#facc15'}
           triggerKey={floatingTextKey}
         />
 
@@ -92,7 +99,8 @@ export default function SpiderWorld({
             rime={option}
             position={nodePositions[idx] || [0, 2, 0]}
             isTarget={option === level?.targetRime}
-            isSelected={selectedRime === option}
+            isSelected={selectedRime === option && !isError}
+            isError={wrongRime === option || (selectedRime === option && isError)}
             onSelect={onSelectOption}
           />
         ))}

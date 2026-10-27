@@ -2,6 +2,69 @@ import React from 'react';
 import { Volume2, Sparkles, ArrowLeft, RotateCcw, Compass } from 'lucide-react';
 import GameSoundToggle from '../../../components/games/GameSoundToggle';
 
+export const TARGET_MEANINGS = {
+  'fossil-bone': {
+    title: 'BONE',
+    badge: 'Ancient Fossil Bone',
+    icon: '🦴',
+    description: 'A sturdy prehistoric bone from an ancient dinosaur skeleton!',
+  },
+  'fossil-tail': {
+    title: 'TAIL',
+    badge: 'Dinosaur Tail',
+    icon: '🦎',
+    description: 'A mighty armored dinosaur tail with sharp defensive spikes that swishes!',
+  },
+  'fossil-roar': {
+    title: 'ROAR',
+    badge: 'Dinosaur Roar',
+    icon: '🦖',
+    description: 'A dinosaur opening its mouth wide to let out a ferocious, friendly roar!',
+  },
+  'fossil-claw': {
+    title: 'CLAW',
+    badge: 'Sharp Talon Claw',
+    icon: '🐾',
+    description: 'Three sharp curved dinosaur talons for exploring and climbing ancient rocks!',
+  },
+  'fossil-rex': {
+    title: 'T-REX',
+    badge: 'Tyrannosaurus Rex',
+    icon: '🦖',
+    description: 'The iconic king of the dinosaurs with giant jaws, sharp teeth, and small arms!',
+  },
+  'fossil-fang': {
+    title: 'FANG',
+    badge: 'Saber Dinosaur Fang',
+    icon: '🦷',
+    description: 'A razor-sharp fossilized tooth from a prehistoric carnivore with serrated edges!',
+  },
+  'fossil-horn': {
+    title: 'HORN',
+    badge: 'Triceratops Horn',
+    icon: '🦏',
+    description: 'A mighty brow horn fossil used by armored herbivore dinosaurs for defense!',
+  },
+  'fossil-spine': {
+    title: 'SPINE',
+    badge: 'Spinosaurus Spine',
+    icon: '🦕',
+    description: 'A tall prehistoric sail spine that ran along the backbone of giant swimming dinosaurs!',
+  },
+  'fossil-track': {
+    title: 'TRACK',
+    badge: 'Fossil Dinosaur Track',
+    icon: '🐾',
+    description: 'A giant three-toed footprint preserved in stone from a wandering ancient giant!',
+  },
+  'fossil-skull': {
+    title: 'SKULL',
+    badge: 'Armored Dinosaur Skull',
+    icon: '💀',
+    description: 'A magnificent prehistoric skull with eye sockets and armored crest plates!',
+  },
+};
+
 export default function DinoHUD({
   target,
   excavatedChunks = [],
@@ -10,10 +73,17 @@ export default function DinoHUD({
   streak = 1,
   isExcavated = false,
   onSpeakPrompt,
+  onSpeakWord,
   onResetFossil,
   onBack,
 }) {
   const chunks = [target?.onset, target?.rime];
+  const meaning = TARGET_MEANINGS[target?.id] || {
+    title: target?.name || 'FOSSIL',
+    badge: '🦖 Dinosaur Specimen',
+    icon: target?.emoji || '🦖',
+    description: `You uncovered the prehistoric ${target?.name} specimen!`,
+  };
 
   return (
     <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4 z-20 font-sans select-none">
@@ -101,15 +171,47 @@ export default function DinoHUD({
         </div>
       </div>
 
-      {/* 2. CENTER: Fossil Roar Victory Banner */}
+      {/* 2. CENTER: Fossil Victory Meaning Showcase */}
       {isExcavated && (
-        <div className="self-center bg-gradient-to-r from-amber-600 via-orange-500 to-yellow-500 text-stone-950 px-8 py-4 rounded-3xl shadow-2xl border-2 border-yellow-300 animate-bounce flex items-center gap-3">
-          <span className="text-4xl">🦖</span>
-          <div>
-            <h2 className="text-xl font-black tracking-wide text-white">ROAAAR! FOSSIL EXCAVATED! 🦴</h2>
-            <p className="text-sm text-stone-950 font-extrabold">
-              You uncovered the ancient {target?.name} dinosaur!
+        <div
+          data-testid="fossil-meaning-visual"
+          data-target-id={target?.id}
+          className="self-center bg-stone-900/95 border-3 border-amber-400 rounded-3xl p-5 sm:p-6 text-white shadow-2xl backdrop-blur-md flex flex-col sm:flex-row items-center gap-4 max-w-lg mx-auto pointer-events-auto animate-bounce z-30"
+        >
+          {/* Recognizable Meaning Shape / Icon Badge */}
+          <div
+            data-testid={`meaning-shape-${target?.id || 'default'}`}
+            className="w-20 h-20 rounded-2xl bg-amber-500/30 border-2 border-amber-400 flex items-center justify-center text-5xl shadow-inner shrink-0"
+          >
+            <span role="img" aria-label={meaning.title}>
+              {meaning.icon}
+            </span>
+          </div>
+
+          {/* Meaning Description & Audio Pronunciation */}
+          <div className="flex-1 text-center sm:text-left">
+            <p className="text-[11px] font-extrabold text-amber-300 uppercase tracking-wider mb-0.5">
+              🦴 ROAAAR! FOSSIL EXCAVATED! 🦴
             </p>
+            <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-400 text-stone-950 font-black text-xs uppercase tracking-wide mb-1">
+              {meaning.badge}
+            </span>
+            <h2 className="text-2xl font-black text-amber-200 tracking-wide">
+              {meaning.title}
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-300 font-semibold mt-1">
+              {meaning.description}
+            </p>
+
+            <button
+              type="button"
+              onClick={onSpeakWord || onSpeakPrompt}
+              className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer"
+              aria-label={`Hear ${target?.name} pronounced`}
+            >
+              <Volume2 className="w-3.5 h-3.5" />
+              <span>Hear "{target?.name}" 🔊</span>
+            </button>
           </div>
         </div>
       )}

@@ -9,6 +9,7 @@ import {
   resampleStroke,
 } from '../utils/tracingEvaluation'
 import { THEME_PACKAGES } from '../services/personalizationService'
+import { saveLetterTraceCheckpoint } from '../games/letter-trace/engine/letterTraceCheckpoint'
 
 describe('Trace & Say: Canonical Strokes & Tracing Evaluation Engine', () => {
   beforeEach(() => {
@@ -31,7 +32,9 @@ describe('Trace & Say: Canonical Strokes & Tracing Evaluation Engine', () => {
   })
 
   it('1. Starter letter sets have valid canonical strokes for Telugu, Hindi, and English', () => {
-    expect(LETTER_STROKE_DATA.te.length).toBeGreaterThanOrEqual(5)
+    // Active playable Telugu letters: exactly 4 (te-ta temporarily excluded)
+    expect(LETTER_STROKE_DATA.te.length).toBe(4)
+    expect(LETTER_STROKE_DATA.te.find((x) => x.id === 'te-ta')).toBeUndefined()
     expect(LETTER_STROKE_DATA.hi.length).toBeGreaterThanOrEqual(5)
     expect(LETTER_STROKE_DATA.en.length).toBeGreaterThanOrEqual(5)
 
@@ -167,5 +170,173 @@ describe('Trace & Say: Canonical Strokes & Tracing Evaluation Engine', () => {
     // Restore
     window.SpeechRecognition = origRecognition
     window.webkitSpeechRecognition = origWebkit
+  })
+
+  it('8. Letter A Validation: Rejects incomplete traces (left leg only, or legs only with missing crossbar)', () => {
+    const canonicalA = LETTER_STROKE_DATA.en.find((l) => l.letter === 'A').canonicalStrokes
+    expect(canonicalA).toHaveLength(3) // left leg, right leg, crossbar
+
+    // Case A: Child draws only the left leg of letter A (exact scenario in user bug report)
+    const leftOnly = [
+      resampleStroke(canonicalA[0], 0.05),
+    ]
+    const leftOutcome = evaluateChildTracing(leftOnly, canonicalA)
+    expect(leftOutcome.passed).toBe(false)
+    expect(leftOutcome.reason).toBe('incomplete_letter')
+    expect(leftOutcome.missingStrokesCount).toBeGreaterThan(0)
+    expect(leftOutcome.encouragingFeedback).toMatch(/Trace all the lines|finish the letter/i)
+
+    // Case B: Child draws both leaning legs but forgets the crossbar
+    const legsOnly = [
+      resampleStroke(canonicalA[0], 0.05),
+      resampleStroke(canonicalA[1], 0.05),
+    ]
+    const legsOutcome = evaluateChildTracing(legsOnly, canonicalA)
+    expect(legsOutcome.passed).toBe(false)
+    expect(legsOutcome.reason).toBe('incomplete_letter')
+    expect(legsOutcome.missingStrokesCount).toBe(1)
+    expect(legsOutcome.encouragingFeedback).toMatch(/bridge across the middle/i)
+  })
+
+  it('9. Letter A Validation: Accepts complete letter A with child handwriting jitter', () => {
+    const canonicalA = LETTER_STROKE_DATA.en.find((l) => l.letter === 'A').canonicalStrokes
+
+    // Simulate child drawing all 3 strokes with realistic fine-motor jitter (+/- 0.03)
+    const completeChildA = canonicalA.map((stroke) =>
+      stroke.map((pt) => ({
+        x: pt.x + 0.02,
+        y: pt.y - 0.015,
+      }))
+    )
+
+    const outcome = evaluateChildTracing(completeChildA, canonicalA)
+    expect(outcome.passed).toBe(true)
+    expect(outcome.reason).toBe('success')
+    expect(outcome.score).toBeGreaterThanOrEqual(70)
+    expect(outcome.missingStrokesCount).toBe(0)
+    expect(outcome.coverage).toBeGreaterThanOrEqual(0.85)
+    expect(outcome.encouragingFeedback).toMatch(/Terrific tracing/i)
+  })
+
+  it('10. Curved letters (C and S): Rejects partial curves and accepts complete curves with child jitter', () => {
+    const canonicalC = LETTER_STROKE_DATA.en.find((l) => l.letter === 'C').canonicalStrokes
+    const canonicalS = LETTER_STROKE_DATA.en.find((l) => l.letter === 'S').canonicalStrokes
+
+    // Partial C (top arc only, cut short)
+    const partialC = [
+      canonicalC[0].slice(0, 4),
+    ]
+    const partialCOutcome = evaluateChildTracing(partialC, canonicalC)
+    expect(partialCOutcome.passed).toBe(false)
+    expect(partialCOutcome.reason).toBe('low_coverage')
+    expect(partialCOutcome.encouragingFeedback).toMatch(/further along/i)
+
+    // Complete C with jitter
+    const goodC = [
+      canonicalC[0].map((pt) => ({ x: pt.x + 0.02, y: pt.y - 0.02 })),
+    ]
+    const goodCOutcome = evaluateChildTracing(goodC, canonicalC)
+    expect(goodCOutcome.passed).toBe(true)
+    expect(goodCOutcome.reason).toBe('success')
+
+    // Complete S with jitter
+    const goodS = [
+      canonicalS[0].map((pt) => ({ x: pt.x + 0.015, y: pt.y - 0.015 })),
+    ]
+    const goodSOutcome = evaluateChildTracing(goodS, canonicalS)
+    expect(goodSOutcome.passed).toBe(true)
+    expect(goodSOutcome.reason).toBe('success')
+  })
+
+  it('11. Incomplete trace handling: Clicking Done Tracing on incomplete input preserves strokes and shows retry guidance', () => {
+    // Unlock Stage 2 (Level 6, Letter A) via checkpoint
+    saveLetterTraceCheckpoint('guest', {
+      levelIndex: 5, // Level 6
+      score: 500,
+      stars: 5,
+    })
+
+    render(<TraceAndSpeak initialLanguage="en" />)
+
+    // Open stages roadmap and pick Stage 2 (Level 6, Letter A)
+    fireEvent.click(screen.getByTestId('trace-stages-btn'))
+    fireEvent.click(screen.getByTestId('select-stage-2'))
+
+    expect(screen.getByTestId('trace-level-text').textContent).toBe('Level 6/25')
+
+    const canvas = screen.getByTestId('tracing-canvas')
+    expect(canvas).toBeInTheDocument()
+
+    // Simulate child drawing a single partial stroke along the left leg of A
+    fireEvent.pointerDown(canvas, { clientX: 160, clientY: 70, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 140, clientY: 110, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 120, clientY: 160, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 100, clientY: 200, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 80, clientY: 250, pointerId: 1 })
+    fireEvent.pointerUp(canvas, { pointerId: 1 })
+
+    // Done Tracing button is now active (green)
+    const doneBtn = screen.getByRole('button', { name: /Done Tracing/i })
+    expect(doneBtn).toBeInTheDocument()
+    expect(doneBtn).not.toBeDisabled()
+
+    // Child presses "Done Tracing!" with only 1 stroke of A drawn
+    fireEvent.click(doneBtn)
+
+    // Must NOT advance to reveal screen! Game stays on canvas
+    expect(screen.queryByText(/Tracing Complete!/i)).not.toBeInTheDocument()
+    expect(screen.getByTestId('tracing-canvas')).toBeInTheDocument()
+
+    // Must display encouraging guidance
+    expect(screen.getByText(/Almost there/i)).toBeInTheDocument()
+  })
+
+  it('12. Continuing trace: Adding the remaining strokes of letter A after an incomplete attempt allows successful completion', () => {
+    saveLetterTraceCheckpoint('guest', {
+      levelIndex: 5, // Level 6 (Letter A)
+      score: 500,
+      stars: 5,
+    })
+
+    render(<TraceAndSpeak initialLanguage="en" />)
+    fireEvent.click(screen.getByTestId('trace-stages-btn'))
+    fireEvent.click(screen.getByTestId('select-stage-2'))
+
+    const canvas = screen.getByTestId('tracing-canvas')
+
+    // Stroke 1: Left leg (from top (160, 70) to bottom-left (80, 256))
+    fireEvent.pointerDown(canvas, { clientX: 160, clientY: 70, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 140, clientY: 110, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 120, clientY: 160, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 100, clientY: 200, pointerId: 1 })
+    fireEvent.pointerMove(canvas, { clientX: 80, clientY: 256, pointerId: 1 })
+    fireEvent.pointerUp(canvas, { pointerId: 1 })
+
+    // Incomplete attempt
+    const doneBtn = screen.getByRole('button', { name: /Done Tracing/i })
+    fireEvent.click(doneBtn)
+    expect(screen.queryByText(/Tracing Complete!/i)).not.toBeInTheDocument()
+
+    // Stroke 2: Right leg (from top (160, 70) to bottom-right (240, 256))
+    fireEvent.pointerDown(canvas, { clientX: 160, clientY: 70, pointerId: 2 })
+    fireEvent.pointerMove(canvas, { clientX: 180, clientY: 110, pointerId: 2 })
+    fireEvent.pointerMove(canvas, { clientX: 200, clientY: 160, pointerId: 2 })
+    fireEvent.pointerMove(canvas, { clientX: 220, clientY: 200, pointerId: 2 })
+    fireEvent.pointerMove(canvas, { clientX: 240, clientY: 256, pointerId: 2 })
+    fireEvent.pointerUp(canvas, { pointerId: 2 })
+
+    // Stroke 3: Crossbar bridge (from left (112, 179) to right (208, 179))
+    fireEvent.pointerDown(canvas, { clientX: 112, clientY: 179, pointerId: 3 })
+    fireEvent.pointerMove(canvas, { clientX: 136, clientY: 179, pointerId: 3 })
+    fireEvent.pointerMove(canvas, { clientX: 160, clientY: 179, pointerId: 3 })
+    fireEvent.pointerMove(canvas, { clientX: 184, clientY: 179, pointerId: 3 })
+    fireEvent.pointerMove(canvas, { clientX: 208, clientY: 179, pointerId: 3 })
+    fireEvent.pointerUp(canvas, { pointerId: 3 })
+
+    // Now all 3 strokes are drawn! Click Done Tracing
+    fireEvent.click(doneBtn)
+
+    // Successfully evaluates and shows success praise
+    expect(screen.getByText(/Terrific tracing/i)).toBeInTheDocument()
   })
 })

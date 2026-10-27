@@ -1,9 +1,19 @@
 import { useAppStore } from '../../game/engine/appStore';
 import { audioService } from '../../services/audio/audioService';
+import { CHECKPOINT_DISTANCE } from '../../game/engine/constants';
 import MagicalBackdrop from '../../components/MagicalBackdrop';
 
 export default function StartScreen() {
   const goTo = useAppStore((s) => s.goTo);
+  const save = useAppStore((s) => s.save);
+  const setStartingCheckpoint = useAppStore((s) => s.setStartingCheckpoint);
+
+  const checkpointProgress = save?.checkpointProgress || {};
+  const highestCheckpoint = checkpointProgress.highestCheckpoint || 0;
+  const highestStage = checkpointProgress.highestStage || (highestCheckpoint + 1);
+  const savedDistance = checkpointProgress.savedDistance !== undefined
+    ? checkpointProgress.savedDistance
+    : (highestCheckpoint * CHECKPOINT_DISTANCE);
 
   function press(fn) {
     audioService.playButton();
@@ -21,10 +31,55 @@ export default function StartScreen() {
           <p style={styles.tagline}>Run • Read • Learn • Grow</p>
         </div>
 
+        {highestCheckpoint > 0 && (
+          <div style={styles.waypointCard} data-testid="waypoint-card">
+            <div style={styles.waypointHeader}>
+              <span style={{ fontSize: 18 }}>🏛️</span>
+              <span style={{ fontWeight: 800, color: '#eafcff', fontSize: 13 }}>Saved Waypoint:</span>
+              <span style={styles.stageBadge}>Stage {highestStage}</span>
+            </div>
+            <div style={styles.waypointDetails}>
+              Checkpoint {highestCheckpoint} • <strong>{savedDistance}m</strong> reached
+            </div>
+          </div>
+        )}
+
         <div style={styles.buttons}>
-          <button className="big-button" onClick={() => press(() => goTo('worldSelect'))}>
-            ▶ Play
-          </button>
+          {highestCheckpoint > 0 ? (
+            <>
+              <button
+                className="big-button"
+                onClick={() => press(() => {
+                  setStartingCheckpoint(highestCheckpoint);
+                  goTo('worldSelect');
+                })}
+                data-testid="resume-run-btn"
+              >
+                ▶ Resume Stage {highestStage}
+              </button>
+              <button
+                className="big-button secondary"
+                onClick={() => press(() => {
+                  setStartingCheckpoint(0);
+                  goTo('worldSelect');
+                })}
+                data-testid="new-run-btn"
+              >
+                ↺ Start from Stage 1
+              </button>
+            </>
+          ) : (
+            <button
+              className="big-button"
+              onClick={() => press(() => {
+                setStartingCheckpoint(0);
+                goTo('worldSelect');
+              })}
+              data-testid="play-btn"
+            >
+              ▶ Play
+            </button>
+          )}
           <button className="big-button secondary" onClick={() => press(() => goTo('howToPlay'))}>
             📚 How to Play
           </button>
@@ -88,5 +143,37 @@ const styles = {
     flexDirection: 'column',
     gap: '1rem',
     width: 'min(90vw, 340px)',
+  },
+  waypointCard: {
+    background: 'linear-gradient(180deg, rgba(16,48,78,0.95) 0%, rgba(7,26,46,0.92) 100%)',
+    border: '2px solid rgba(143,232,255,0.4)',
+    borderRadius: 18,
+    padding: '10px 18px',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 4,
+    boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+    maxWidth: 340,
+    width: '90%',
+  },
+  waypointHeader: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+  },
+  stageBadge: {
+    background: 'rgba(255,209,102,0.2)',
+    border: '1px solid #ffd166',
+    color: '#ffd166',
+    fontWeight: 800,
+    fontSize: 12,
+    padding: '2px 8px',
+    borderRadius: 8,
+  },
+  waypointDetails: {
+    fontSize: 12,
+    color: '#8fe8ff',
+    fontWeight: 600,
   },
 };

@@ -18,6 +18,12 @@ export const SEGMENT_LENGTH = 30;
 export const VISIBLE_SEGMENTS = 8; // segments kept alive ahead of the player
 export const SPAWN_DISTANCE = SEGMENT_LENGTH * VISIBLE_SEGMENTS;
 
+export const CHECKPOINT_SEGMENT_INTERVAL = 5; // segments per milestone waypoint
+export const CHECKPOINT_DISTANCE = SEGMENT_LENGTH * CHECKPOINT_SEGMENT_INTERVAL; // 150 meters
+export const MAX_CHECKPOINTS = 10;
+export const MAX_STAGE = MAX_CHECKPOINTS + 1; // Stage 11 (10 unlocked temple waypoints)
+export const FINAL_COMPLETION_DISTANCE = MAX_STAGE * CHECKPOINT_DISTANCE; // 1650 meters (end of Stage 11)
+
 export const OBSTACLE_HALF_WIDTH = 1.0;
 export const PLAYER_HALF_WIDTH = 0.55;
 export const COLLECT_RADIUS = 1.15;

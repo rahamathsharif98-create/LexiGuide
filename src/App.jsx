@@ -124,6 +124,8 @@ export default function App({
               <Route path="/games/cloud-bouncer" element={<Navigate to="/child/games/cloud-bouncer" replace />} />
               <Route path="/games/voxel-crafter" element={<Navigate to="/child/games/voxel-crafter" replace />} />
               <Route path="/games/safari-photo" element={<Navigate to="/child/games/safari-photo" replace />} />
+              <Route path="/games/cosmic-safari" element={<Navigate to="/child/games/cosmic-safari" replace />} />
+              <Route path="/games/sound-safari" element={<Navigate to="/child/games/sound-safari" replace />} />
               <Route path="/games/ancient-labyrinth" element={<Navigate to="/child/games/ancient-labyrinth" replace />} />
               <Route path="/games/spider-weaver" element={<Navigate to="/child/games/spider-weaver" replace />} />
 

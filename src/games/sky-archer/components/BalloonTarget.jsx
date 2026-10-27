@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { getLetterTexture } from '../../learning-run/utils/textTexture';
 
@@ -22,6 +22,12 @@ export default function BalloonTarget({
   const group = useRef();
   const colors = BALLOON_COLORS[colorIndex % BALLOON_COLORS.length];
   const texture = useMemo(() => getLetterTexture(letter, { textColor: '#ffffff', size: 128 }), [letter]);
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = 'default';
+    };
+  }, []);
 
   useFrame((state) => {
     if (!group.current) return;

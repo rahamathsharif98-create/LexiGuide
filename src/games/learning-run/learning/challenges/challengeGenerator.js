@@ -19,8 +19,21 @@ function shuffle(arr) {
 
 /**
  * Build a learning-gate challenge: three lane options (A/B/C style), one correct.
+ * When an activeWordQuest is provided, the challenge directly synchronizes with the
+ * quest word and maintains stable lane choices throughout that challenge.
  */
-export function generateChallenge(difficulty = 1) {
+export function generateChallenge(difficulty = 1, activeWordQuest = null) {
+  if (activeWordQuest) {
+    return {
+      type: 'complete-word',
+      prompt: `Complete the word: ${activeWordQuest.masked}`,
+      emoji: activeWordQuest.emoji,
+      correctLetter: activeWordQuest.missingLetter,
+      lanes: activeWordQuest.lanes || [activeWordQuest.missingLetter, 'B', 'S'],
+      wordHint: activeWordQuest.word,
+    };
+  }
+
   const roll = Math.random();
   const pool = getLettersByDifficulty(difficulty);
 

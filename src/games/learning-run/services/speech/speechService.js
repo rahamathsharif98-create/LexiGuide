@@ -1,11 +1,34 @@
 // speechService: abstraction over pronunciation/TTS.
-// Uses the browser's SpeechSynthesis API when available. Designed so LexiGuide
-// can later swap this for its own AI/STT/TTS pipeline without touching game code.
+// Integrates with LexiGuide's gameSoundService for soothing companion voice.
+// Respects sound modes ('voice_and_sfx' allows speech; 'sfx_only' and 'muted' silence speech).
+
+import { gameSound } from '../../../../services/gameSoundService';
 
 class SpeechService {
   constructor() {
     this.available = typeof window !== 'undefined' && 'speechSynthesis' in window;
     this.enabled = true;
+    this._unsubscribeSound = null;
+    this.soundMode = typeof gameSound !== 'undefined' && typeof gameSound.getSoundMode === 'function'
+      ? gameSound.getSoundMode()
+      : 'voice_and_sfx';
+
+    this._syncWithGlobalSound();
+  }
+
+  _syncWithGlobalSound() {
+    if (typeof gameSound !== 'undefined' && typeof gameSound.subscribe === 'function') {
+      if (this._unsubscribeSound) {
+        this._unsubscribeSound();
+      }
+      this.soundMode = gameSound.getSoundMode();
+      this._unsubscribeSound = gameSound.subscribe((mode) => {
+        this.soundMode = mode;
+        if (mode === 'muted' || mode === 'sfx_only') {
+          this.cancel();
+        }
+      });
+    }
   }
 
   setEnabled(v) {
@@ -13,17 +36,25 @@ class SpeechService {
     if (!v) this.cancel();
   }
 
-  speak(text, { rate = 0.85, pitch = 1.1 } = {}) {
-    if (!this.enabled || !this.available || !text) return;
+  speak(text, options = {}) {
+    if (!this.enabled || !text) return;
+    if (this.soundMode !== 'voice_and_sfx') return;
+
+    if (typeof gameSound !== 'undefined' && typeof gameSound.speakCompanion === 'function') {
+      gameSound.speakCompanion(text, options);
+      return;
+    }
+
+    if (!this.available) return;
     try {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(text);
-      utter.rate = rate;
-      utter.pitch = pitch;
-      utter.volume = 1;
+      utter.rate = options.rate ?? 0.85;
+      utter.pitch = options.pitch ?? 1.1;
+      utter.volume = options.volume ?? 1;
       window.speechSynthesis.speak(utter);
     } catch {
-      /* Speech unavailable — silently no-op so gameplay is unaffected. */
+      /* Speech unavailable */
     }
   }
 
@@ -33,6 +64,9 @@ class SpeechService {
   }
 
   cancel() {
+    if (typeof gameSound !== 'undefined' && typeof gameSound.stopSpeech === 'function') {
+      gameSound.stopSpeech();
+    }
     if (this.available) {
       try {
         window.speechSynthesis.cancel();
@@ -40,6 +74,14 @@ class SpeechService {
         /* noop */
       }
     }
+  }
+
+  cleanup() {
+    if (this._unsubscribeSound) {
+      this._unsubscribeSound();
+      this._unsubscribeSound = null;
+    }
+    this.cancel();
   }
 }
 

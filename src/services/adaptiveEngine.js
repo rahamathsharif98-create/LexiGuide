@@ -41,13 +41,13 @@ export function generateRecommendations(fingerprint, errorPatterns = [], options
   const persistent = errorPatterns.filter((p) => p.trend === 'persistent').sort((a, b) => b.severity - a.severity)[0]
   if (persistent) {
     recs.unshift({
-      skill: 'phonologicalAwareness',
-      reason: `Friendly sound exploration with cheerful animal friends — take your time and have fun!`,
-      icon: '🦁',
-      title: 'Sound Safari',
-      route: '/child/games/match-sound',
-      difficulty: 'Gentle',
-      time: '4 min',
+      skill: 'targeted',
+      reason: `Recommended because you've been practicing "${persistent.pattern}" — let's give it focused attention.`,
+      icon: '🔍',
+      title: 'Letter Detective',
+      route: '/child/games/find-sound',
+      difficulty: 'Focus',
+      time: '5 min',
     })
   }
 

@@ -4,11 +4,18 @@
  * 
  * Focus: Multisensory Onset-Rime Blending and Word Weaving
  * Designed specifically for children with reading difficulties and dyslexia.
+ * 
+ * Progression:
+ * 1. Early levels: High-contrast short-vowel CVC/CCVC with distinct distractors
+ * 2. Middle levels: Common digraphs and consonant blends with varied endings
+ * 3. Advanced levels: Challenging r-controlled vowels, nasal minimal pairs, and plosives
+ * 4. Grand finale: Multi-syllable mascot climax
  */
 
 export const SPIDER_LEVELS = [
   {
     id: 1,
+    title: 'Whirling Spin',
     targetWord: 'spin',
     onset: 'sp',
     targetRime: 'in',
@@ -19,6 +26,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 2,
+    title: 'Silky Home',
     targetWord: 'web',
     onset: 'w',
     targetRime: 'eb',
@@ -29,6 +37,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 3,
+    title: 'Polka Dot',
     targetWord: 'spot',
     onset: 'sp',
     targetRime: 'ot',
@@ -39,6 +48,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 4,
+    title: 'Twinkle Star',
     targetWord: 'star',
     onset: 'st',
     targetRime: 'ar',
@@ -49,6 +59,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 5,
+    title: 'Garden Friend',
     targetWord: 'frog',
     onset: 'fr',
     targetRime: 'og',
@@ -59,6 +70,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 6,
+    title: 'Ocean Voyage',
     targetWord: 'ship',
     onset: 'sh',
     targetRime: 'ip',
@@ -69,6 +81,7 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 7,
+    title: 'Friendly Chat',
     targetWord: 'chat',
     onset: 'ch',
     targetRime: 'at',
@@ -79,6 +92,40 @@ export const SPIDER_LEVELS = [
   },
   {
     id: 8,
+    title: 'Shimmering Spark',
+    targetWord: 'spark',
+    onset: 'sp',
+    targetRime: 'ark',
+    options: ['ark', 'art', 'arm'],
+    hint: 'A bright glowing shimmer on the silk!',
+    emoji: '✨',
+    audioPrompt: 'Spinny sees a bright glow! Connect SP and /ark/ to weave SPARK!',
+  },
+  {
+    id: 9,
+    title: 'Silk Swing',
+    targetWord: 'swing',
+    onset: 'sw',
+    targetRime: 'ing',
+    options: ['ing', 'ang', 'ong'],
+    hint: 'Swing from strand to strand!',
+    emoji: '🎪',
+    audioPrompt: 'Weave silk to swing high! Tap /ing/ to make SWING!',
+  },
+  {
+    id: 10,
+    title: 'Garden Track',
+    targetWord: 'track',
+    onset: 'tr',
+    targetRime: 'ack',
+    options: ['ack', 'ick', 'ock'],
+    hint: 'A silk trail across the garden!',
+    emoji: '🛤️',
+    audioPrompt: 'Follow the silk path! Connect TR and /ack/ to weave TRACK!',
+  },
+  {
+    id: 11,
+    title: 'The Grand Spider',
     targetWord: 'spider',
     onset: 'sp',
     targetRime: 'ider',
