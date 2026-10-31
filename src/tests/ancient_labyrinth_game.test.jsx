@@ -509,6 +509,12 @@ describe('Ancient Labyrinth — Session saving on exit only', () => {
       </MemoryRouter>
     );
 
+    // Complete riddle so there is an active session
+    fireEvent.click(screen.getByTestId('keystone-O'));
+    fireEvent.click(screen.getByTestId('keystone-P'));
+    fireEvent.click(screen.getByTestId('keystone-E'));
+    fireEvent.click(screen.getByTestId('keystone-N'));
+
     const backBtn = screen.getAllByRole('button', { name: /Back to Games/i })[0];
     await act(async () => {
       fireEvent.click(backBtn);

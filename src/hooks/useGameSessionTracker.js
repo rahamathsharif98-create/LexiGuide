@@ -35,12 +35,16 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
   const [accumulatedScore, setAccumulatedScore] = useState(0);
   const [accumulatedStars, setAccumulatedStars] = useState(0);
   const [accumulatedXp, setAccumulatedXp] = useState(0);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [retriesCount, setRetriesCount] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const isSavingRef = useRef(false);
 
   const recordAttempt = useCallback((isCorrect, options = {}) => {
-    const { roundScore = 100, starsEarned = 1, xpEarned = 15 } = options;
+    const { roundScore = 100, starsEarned = 1, xpEarned = 15, hintUsed = false, retry = false } = options;
     setRoundsAttempted((prev) => prev + 1);
+    if (hintUsed) setHintsUsed((prev) => prev + 1);
+    if (retry) setRetriesCount((prev) => prev + 1);
     if (isCorrect) {
       setRoundsCorrect((prev) => prev + 1);
       setAccumulatedScore((prev) => prev + roundScore);
@@ -51,25 +55,51 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
 
   const saveCompletedSession = useCallback(async (overrides = {}) => {
     // Synchronous ref guard — prevents duplicate saves across rapid calls in the same render
-    if (isSavingRef.current) return;
+    if (isSaving || isSavingRef.current) return null;
     isSavingRef.current = true;
     setIsSaving(true);
 
-    const durationSeconds = Math.max(15, Math.round((Date.now() - startTimeRef.current) / 1000));
     const totalAttempted = overrides.roundsAttempted ?? roundsAttempted;
     const totalCorrect = overrides.roundsCorrect ?? roundsCorrect;
 
+    // Check if there is an explicit completion or explicit reward/accuracy override
+    const hasExplicitCompletion = (
+      overrides.isCompleted === true ||
+      overrides.completed === true ||
+      (overrides.stars != null && overrides.stars > 0) ||
+      overrides.accuracy != null
+    );
+
+    // SCENARIO D: If user navigated away with 0 attempts made and no explicit completion,
+    // do NOT record false completed activity or inflate progress.
+    if (totalAttempted === 0 && !hasExplicitCompletion) {
+      isSavingRef.current = false;
+      setIsSaving(false);
+      return null;
+    }
+
+    const durationSeconds = Math.max(5, Math.round((Date.now() - startTimeRef.current) / 1000));
+    const isCompleted = overrides.isCompleted ?? (
+      overrides.completed === true ||
+      (overrides.stars != null && overrides.stars > 0) ||
+      totalAttempted >= initialTarget
+    );
+
     // Calculate real empirical accuracy percentage
-    let accuracy = 90;
+    let accuracy = 0;
     if (totalAttempted > 0) {
       accuracy = Math.round((totalCorrect / totalAttempted) * 100);
     } else if (overrides.accuracy != null) {
       accuracy = Math.round(overrides.accuracy);
     }
 
-    const stars = overrides.stars ?? Math.max(1, accumulatedStars);
-    const xp = overrides.xp ?? Math.max(15, accumulatedXp);
-    const score = overrides.score ?? Math.max(100, accumulatedScore);
+    const totalHints = overrides.hintsUsed ?? hintsUsed;
+    const totalRetries = overrides.retriesCount ?? retriesCount;
+    const supportLevel = totalHints > 0 ? 'assisted' : 'independent';
+
+    const stars = isCompleted ? (overrides.stars ?? Math.max(1, accumulatedStars)) : 0;
+    const xp = isCompleted ? (overrides.xp ?? Math.max(15, accumulatedXp)) : Math.min(accumulatedXp, 10);
+    const score = overrides.score ?? accumulatedScore;
 
     const outcome = {
       type: 'game',
@@ -79,13 +109,24 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
       score,
       accuracy,
       duration: durationSeconds,
+      roundsAttempted: totalAttempted,
+      roundsCorrect: totalCorrect,
+      hintsUsed: totalHints,
+      retriesCount: totalRetries,
+      is_completed: isCompleted,
+      completion_status: isCompleted ? 'completed' : 'incomplete',
+      support_level: supportLevel,
       starsGain: stars,
       xpGain: xp,
       metrics: {
         accuracy,
         roundsAttempted: totalAttempted,
         roundsCorrect: totalCorrect,
+        hintsUsed: totalHints,
+        retriesCount: totalRetries,
+        supportLevel,
         durationSeconds,
+        isCompleted,
       },
       details: overrides.details || {},
       _savedToBackend: isRealBackend,
@@ -104,21 +145,27 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
         applySessionOutcome(outcome);
       }
 
-      if (typeof showToast === 'function') {
-        showToast('Great practice in ' + gameTitle + '! +' + stars + ' Stars & +' + xp + ' XP!', 'success');
+      if (isCompleted && typeof showToast === 'function') {
+        showToast(`Great practice in ${gameTitle}! +${stars} Stars & +${xp} XP!`, 'success');
       }
+      return outcome;
     } catch (err) {
       console.error('[useGameSessionTracker] Failed to save session for ' + gameId + ':', err);
+      return null;
     } finally {
       isSavingRef.current = false;
       setIsSaving(false);
     }
   }, [
+    isSaving,
     roundsAttempted,
     roundsCorrect,
     accumulatedStars,
     accumulatedXp,
     accumulatedScore,
+    hintsUsed,
+    retriesCount,
+    initialTarget,
     gameId,
     gameTitle,
     skill,
@@ -138,6 +185,8 @@ export function useGameSessionTracker({ gameId, gameTitle, skill, initialTarget 
       score: accumulatedScore,
       stars: accumulatedStars,
       xp: accumulatedXp,
+      hintsUsed,
+      retriesCount,
     },
   };
 }

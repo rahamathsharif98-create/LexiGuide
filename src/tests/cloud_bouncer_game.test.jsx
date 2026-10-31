@@ -276,6 +276,10 @@ describe('P0 Fix #3 — Save race condition (isSavingRef guard)', () => {
       })
     );
 
+    act(() => {
+      result.current.recordAttempt(true, { roundScore: 200, starsEarned: 1, xpEarned: 25 });
+    });
+
     // First save
     await act(async () => {
       await result.current.saveCompletedSession();
@@ -301,6 +305,10 @@ describe('P0 Fix #3 — Save race condition (isSavingRef guard)', () => {
         skill: 'sightWordRecognition',
       })
     );
+
+    act(() => {
+      result.current.recordAttempt(true, { roundScore: 200, starsEarned: 1, xpEarned: 25 });
+    });
 
     // First save fails
     await act(async () => {

@@ -360,6 +360,11 @@ describe('Voxel Crafter Step 2: Critical Fixes & Session Safety', () => {
       </MemoryRouter>
     );
 
+    // Spell Round 1 (FORT)
+    await act(async () => {
+      spellWord('FORT');
+    });
+
     const backBtn = screen.getByTestId('page-back-btn');
     await act(async () => {
       fireEvent.click(backBtn);

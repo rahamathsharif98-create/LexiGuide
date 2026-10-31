@@ -266,6 +266,10 @@ describe('Session tracking & no duplicate session saves', () => {
       </MemoryRouter>
     );
 
+    // Complete a round so the session has active attempts
+    const correctNode = screen.getByTestId('rime-node-in');
+    fireEvent.click(correctNode);
+
     const backBtn = screen.getByRole('button', { name: /Back to Games/i });
 
     // Simulate rapid repeated taps on the Back button

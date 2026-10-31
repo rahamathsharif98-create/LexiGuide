@@ -196,13 +196,31 @@ describe('useGameSessionTracker — Coral Diver session accumulation', () => {
     );
 
     await act(async () => {
-      // Simulate rapid double-save (the hook has its own isSavingRef guard)
-      result.current.saveCompletedSession();
-      result.current.saveCompletedSession();
-      result.current.saveCompletedSession();
+      // Simulate rapid double-save on completed session (the hook has its own isSavingRef guard)
+      result.current.saveCompletedSession({ stars: 2, xp: 50 });
+      result.current.saveCompletedSession({ stars: 2, xp: 50 });
+      result.current.saveCompletedSession({ stars: 2, xp: 50 });
     });
 
     expect(mockSaveLearningSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('saveCompletedSession returns null and does not call backend when 0 attempts made (Scenario D)', async () => {
+    const { result } = renderHook(() =>
+      useGameSessionTracker({
+        gameId: 'coral-diver',
+        gameTitle: 'Coral Reef Submarine Diver',
+        skill: 'rhymeDiscrimination',
+      })
+    );
+
+    let outcome;
+    await act(async () => {
+      outcome = await result.current.saveCompletedSession();
+    });
+
+    expect(outcome).toBeNull();
+    expect(mockSaveLearningSession).not.toHaveBeenCalled();
   });
 });
 
@@ -277,6 +295,11 @@ describe('CoralDiverGame — Session save integrity (P1 fix)', () => {
   it('rapid repeated Back taps save the session only once (isSavedRef guard)', async () => {
     renderCoralDiverGame();
 
+    // Complete a round so the session has active attempts
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('sim-correct-round'));
+    });
+
     await act(async () => {
       // Simulate rapid double-tap on Back to Games button
       fireEvent.click(screen.getByText('Back to Games'));
@@ -290,6 +313,11 @@ describe('CoralDiverGame — Session save integrity (P1 fix)', () => {
   // ── In-game Back callback also uses the guard ────────────────
   it('in-game Back callback (from CoralDiverApp) saves exactly once and navigates', async () => {
     renderCoralDiverGame();
+
+    // Complete a round so the session has active attempts
+    await act(async () => {
+      fireEvent.click(screen.getByTestId('sim-correct-round'));
+    });
 
     await act(async () => {
       fireEvent.click(screen.getByTestId('sim-back'));

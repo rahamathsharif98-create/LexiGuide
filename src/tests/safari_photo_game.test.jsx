@@ -220,6 +220,11 @@ describe('Safari Photo Step 2: Critical Bug Fixes & Session Safety', () => {
       </MemoryRouter>
     );
 
+    const lionBtn = screen.getByTestId('animal-lion');
+    await act(async () => {
+      fireEvent.click(lionBtn);
+    });
+
     // Click Back to Games
     const backBtn = screen.getByTestId('page-back-btn');
     await act(async () => {
